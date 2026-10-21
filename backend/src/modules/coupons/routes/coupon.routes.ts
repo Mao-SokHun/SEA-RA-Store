@@ -3,6 +3,7 @@ import { couponController } from '../controllers/coupon.controller';
 import { authenticate, optionalAuth, authorize } from '../../../common/middleware/auth';
 import { query, body } from 'express-validator';
 import { validate } from '../../../common/middleware/validate';
+import { preventDoubleSubmit } from '../../../common/middleware/antiDoubleSubmit';
 
 const router = Router();
 
@@ -38,6 +39,7 @@ router.post(
   '/',
   authenticate,
   authorize('admin'),
+  preventDoubleSubmit({ windowMs: 3000 }),
   [
     body('code').trim().notEmpty().isLength({ min: 3, max: 50 }).withMessage('Valid coupon code is required'),
     body('discountType').isIn(['percentage', 'fixed']).withMessage('discountType must be percentage or fixed'),

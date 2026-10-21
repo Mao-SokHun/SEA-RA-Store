@@ -184,6 +184,21 @@ export class WalletService {
       );
     }
 
+    // Prevent duplicate withdrawal requests within a 15-second debounce window
+    const recentPending = await prisma.withdrawalRequest.findFirst({
+      where: {
+        userId: userIdBigInt,
+        status: 'pending',
+        createdAt: { gte: new Date(Date.now() - 15 * 1000) },
+      },
+    });
+
+    if (recentPending) {
+      throw new BadRequestError(
+        'A withdrawal request was recently submitted and is pending. Please wait before submitting another.'
+      );
+    }
+
     // Atomic withdrawal request & wallet balance deduction
     const result = await prisma.$transaction(async (tx) => {
       // 1. Deduct held funds from wallet (Atomic CAS guard)

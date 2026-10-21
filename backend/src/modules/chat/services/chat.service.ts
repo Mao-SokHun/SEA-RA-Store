@@ -44,6 +44,33 @@ export class ChatService {
     const { order } = await this.getOrderAndVerifyAccess(orderNumber, senderId, userRole);
     const senderIdBigInt = BigInt(senderId);
 
+    // Prevent duplicate identical messages sent within 1.5 seconds
+    const recentDuplicate = await prisma.chatMessage.findFirst({
+      where: {
+        orderId: order.id,
+        senderId: senderIdBigInt,
+        content: data.content,
+        createdAt: { gte: new Date(Date.now() - 1500) },
+      },
+      include: {
+        sender: { select: { id: true, username: true, role: true } },
+      },
+    });
+
+    if (recentDuplicate) {
+      return {
+        id: recentDuplicate.id.toString(),
+        orderNumber,
+        senderId: recentDuplicate.senderId.toString(),
+        senderName: recentDuplicate.sender.username,
+        senderRole: recentDuplicate.sender.role,
+        messageType: recentDuplicate.messageType,
+        content: recentDuplicate.content,
+        isRead: recentDuplicate.isRead,
+        createdAt: recentDuplicate.createdAt,
+      };
+    }
+
     const message = await prisma.chatMessage.create({
       data: {
         orderId: order.id,

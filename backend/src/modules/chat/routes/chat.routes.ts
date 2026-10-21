@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { chatController } from '../controllers/chat.controller';
 import { authenticate } from '../../../common/middleware/auth';
 import { validate } from '../../../common/middleware/validate';
+import { preventDoubleSubmit } from '../../../common/middleware/antiDoubleSubmit';
 import { sendMessageValidator, getChatHistoryValidator } from '../validators/chat.validator';
 
 const router = Router();
@@ -28,6 +29,7 @@ router.get(
  */
 router.post(
   '/:orderNumber',
+  preventDoubleSubmit({ windowMs: 1500, message: 'Message is currently sending. Please do not spam clicks.' }),
   sendMessageValidator,
   validate,
   chatController.sendMessage

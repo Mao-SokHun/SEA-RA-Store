@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { disputeController } from '../controllers/dispute.controller';
 import { authenticate, authorize } from '../../../common/middleware/auth';
 import { validate } from '../../../common/middleware/validate';
+import { preventDoubleSubmit } from '../../../common/middleware/antiDoubleSubmit';
 import {
   createDisputeValidator,
   resolveDisputeValidator,
@@ -34,6 +35,7 @@ router.get(
 router.post(
   '/admin/:orderNumber/resolve',
   authorize('admin'),
+  preventDoubleSubmit({ windowMs: 4000 }),
   resolveDisputeValidator,
   validate,
   disputeController.adminResolveDispute
@@ -56,6 +58,7 @@ router.get(
  */
 router.post(
   '/:orderNumber',
+  preventDoubleSubmit({ windowMs: 4000, message: 'Dispute submission in progress. Please do not click repeatedly.' }),
   createDisputeValidator,
   validate,
   disputeController.createDispute

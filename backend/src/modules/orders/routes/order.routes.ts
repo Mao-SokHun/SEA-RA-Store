@@ -3,6 +3,7 @@ import { orderController } from '../controllers/order.controller';
 import { validate } from '../../../common/middleware/validate';
 import { authenticate } from '../../../common/middleware/auth';
 import { checkoutLimiter } from '../../../common/middleware/rateLimiter';
+import { preventDoubleSubmit } from '../../../common/middleware/antiDoubleSubmit';
 import {
   checkoutValidator,
   orderNumberParamValidator,
@@ -19,7 +20,14 @@ router.use(authenticate);
  * @desc    Initiate checkout and lock account with 15-minute reservation timer
  * @access  Private
  */
-router.post('/checkout', checkoutLimiter, checkoutValidator, validate, orderController.checkout);
+router.post(
+  '/checkout',
+  preventDoubleSubmit({ windowMs: 4000, message: 'Checkout is currently in progress. Please do not click repeatedly.' }),
+  checkoutLimiter,
+  checkoutValidator,
+  validate,
+  orderController.checkout
+);
 
 /**
  * @route   GET /api/v1/orders
@@ -40,7 +48,13 @@ router.get('/:orderNumber', orderNumberParamValidator, validate, orderController
  * @desc    Cancel unpaid order & release 15-min reservation lock
  * @access  Private (Buyer or Admin)
  */
-router.post('/:orderNumber/cancel', orderNumberParamValidator, validate, orderController.cancelOrder);
+router.post(
+  '/:orderNumber/cancel',
+  preventDoubleSubmit({ windowMs: 3000 }),
+  orderNumberParamValidator,
+  validate,
+  orderController.cancelOrder
+);
 
 /**
  * @route   POST /api/v1/orders/:orderNumber/confirm-received
@@ -49,6 +63,7 @@ router.post('/:orderNumber/cancel', orderNumberParamValidator, validate, orderCo
  */
 router.post(
   '/:orderNumber/confirm-received',
+  preventDoubleSubmit({ windowMs: 4000, message: 'Confirming handover is in progress. Please do not click repeatedly.' }),
   orderNumberParamValidator,
   validate,
   orderController.confirmReceived

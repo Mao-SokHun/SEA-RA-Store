@@ -69,11 +69,20 @@ export class DisputeService {
 
     // Atomic dispute creation & order status freeze
     const dispute = await prisma.$transaction(async (tx) => {
-      // 1. Freeze order status
-      await tx.order.update({
-        where: { id: order.id },
+      // 1. Freeze order status (Atomic CAS: only if still in valid state)
+      const freezeCount = await tx.order.updateMany({
+        where: {
+          id: order.id,
+          status: { in: validDisputeStatuses },
+        },
         data: { status: 'in_dispute' },
       });
+
+      if (freezeCount.count === 0) {
+        throw new ConflictError(
+          'A dispute has already been submitted or this order is no longer in an eligible state.'
+        );
+      }
 
       // 2. Create dispute
       const newDispute = await tx.dispute.create({

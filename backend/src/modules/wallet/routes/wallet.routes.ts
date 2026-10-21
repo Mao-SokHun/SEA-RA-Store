@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { walletController } from '../controllers/wallet.controller';
 import { authenticate, authorize } from '../../../common/middleware/auth';
 import { validate } from '../../../common/middleware/validate';
+import { preventDoubleSubmit } from '../../../common/middleware/antiDoubleSubmit';
 import {
   withdrawValidator,
   queryTransactionsValidator,
@@ -40,6 +41,7 @@ router.get(
  */
 router.post(
   '/withdraw',
+  preventDoubleSubmit({ windowMs: 5000, message: 'Withdrawal request is currently processing. Please do not click repeatedly.' }),
   withdrawValidator,
   validate,
   walletController.requestWithdrawal
@@ -59,6 +61,7 @@ router.get('/withdrawals', walletController.getMyWithdrawals);
  */
 router.post(
   '/topup',
+  preventDoubleSubmit({ windowMs: 4000 }),
   topupValidator,
   validate,
   walletController.topup
@@ -83,6 +86,7 @@ router.get(
 router.post(
   '/admin/withdrawals/:id/approve',
   authorize('admin'),
+  preventDoubleSubmit({ windowMs: 3000 }),
   adminWithdrawalActionValidator,
   validate,
   walletController.adminApproveWithdrawal
@@ -96,6 +100,7 @@ router.post(
 router.post(
   '/admin/withdrawals/:id/reject',
   authorize('admin'),
+  preventDoubleSubmit({ windowMs: 3000 }),
   adminWithdrawalActionValidator,
   validate,
   walletController.adminRejectWithdrawal

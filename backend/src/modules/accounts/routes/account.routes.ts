@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { accountController } from '../controllers/account.controller';
 import { validate } from '../../../common/middleware/validate';
 import { authenticate, optionalAuth } from '../../../common/middleware/auth';
+import { preventDoubleSubmit } from '../../../common/middleware/antiDoubleSubmit';
 import {
   createAccountValidator,
   updateAccountValidator,
@@ -36,20 +37,39 @@ router.get('/:id', optionalAuth, accountController.getListingDetails);
  * @desc    Create a new game account listing with Zero-Knowledge Vault credentials
  * @access  Private (Authenticated Sellers / Buyers)
  */
-router.post('/', authenticate, createAccountValidator, validate, accountController.createListing);
+router.post(
+  '/',
+  authenticate,
+  preventDoubleSubmit({ windowMs: 4000, message: 'Listing creation in progress. Please do not click repeatedly.' }),
+  createAccountValidator,
+  validate,
+  accountController.createListing
+);
 
 /**
  * @route   PATCH /api/v1/accounts/:id
  * @desc    Update listing details (only if available)
  * @access  Private (Owner / Admin)
  */
-router.patch('/:id', authenticate, updateAccountValidator, validate, accountController.updateListing);
+router.patch(
+  '/:id',
+  authenticate,
+  preventDoubleSubmit({ windowMs: 2500 }),
+  updateAccountValidator,
+  validate,
+  accountController.updateListing
+);
 
 /**
  * @route   DELETE /api/v1/accounts/:id
  * @desc    Delete or withdraw listing
  * @access  Private (Owner / Admin)
  */
-router.delete('/:id', authenticate, accountController.deleteListing);
+router.delete(
+  '/:id',
+  authenticate,
+  preventDoubleSubmit({ windowMs: 2500 }),
+  accountController.deleteListing
+);
 
 export default router;

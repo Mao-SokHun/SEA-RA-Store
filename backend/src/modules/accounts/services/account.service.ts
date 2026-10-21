@@ -95,6 +95,20 @@ export class AccountService {
     const encryptedCodesStr = backupCodes ? encryptVaultField(backupCodes) : null;
     const [passIv, passTag] = encryptedPassStr.split(':');
 
+    // Prevent duplicate listing creation if identical listing was submitted in the last 5 seconds
+    const recentDuplicate = await prisma.gameAccount.findFirst({
+      where: {
+        sellerId: sellerIdBigInt,
+        gameId: gameIdBigInt,
+        title: data.title,
+        createdAt: { gte: new Date(Date.now() - 5000) },
+      },
+    });
+
+    if (recentDuplicate) {
+      return this.getListingById(recentDuplicate.id.toString(), sellerId);
+    }
+
     // 4. Atomic transaction to create Account, Binds, Images, and Vault Credentials
     const listing = await prisma.$transaction(async (tx) => {
       // Create Game Account

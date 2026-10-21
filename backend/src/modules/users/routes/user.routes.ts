@@ -4,6 +4,7 @@ import { authenticate } from '../../../common/middleware/auth';
 import { body } from 'express-validator';
 import { validate } from '../../../common/middleware/validate';
 import { authLimiter } from '../../../common/middleware/rateLimiter';
+import { preventDoubleSubmit } from '../../../common/middleware/antiDoubleSubmit';
 
 const router = Router();
 
@@ -17,6 +18,7 @@ router.use(authenticate);
  */
 router.patch(
   '/profile',
+  preventDoubleSubmit({ windowMs: 2000 }),
   [
     body('phone').optional().trim().isLength({ min: 6, max: 20 }).withMessage('Phone must be 6-20 characters'),
   ],
@@ -31,6 +33,7 @@ router.patch(
  */
 router.post(
   '/change-password',
+  preventDoubleSubmit({ windowMs: 3000 }),
   authLimiter,
   [
     body('oldPassword').notEmpty().withMessage('Current password is required'),
@@ -54,6 +57,10 @@ router.get('/notifications/telegram', userController.getTelegramSettings);
  * @desc    Update user's Telegram settings or link chat ID
  * @access  Private
  */
-router.patch('/notifications/telegram', userController.updateTelegramSettings);
+router.patch(
+  '/notifications/telegram',
+  preventDoubleSubmit({ windowMs: 2000 }),
+  userController.updateTelegramSettings
+);
 
 export default router;

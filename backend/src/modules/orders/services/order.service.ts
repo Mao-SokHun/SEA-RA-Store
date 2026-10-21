@@ -48,7 +48,43 @@ export class OrderService {
       },
     });
 
-    // 2. Execute Atomic Concurrency Reservation & Order Creation Transaction
+    // 2. If the same buyer already has a valid pending order for this account, return it (Idempotent checkout)
+    const existingBuyerOrder = await prisma.order.findFirst({
+      where: {
+        buyerId: buyerIdBigInt,
+        gameAccountId: accountIdBigInt,
+        status: 'pending',
+      },
+      include: {
+        gameAccount: true,
+      },
+    });
+
+    if (
+      existingBuyerOrder &&
+      existingBuyerOrder.gameAccount.reservedUntil &&
+      existingBuyerOrder.gameAccount.reservedUntil > new Date()
+    ) {
+      return {
+        orderNumber: existingBuyerOrder.orderNumber,
+        status: existingBuyerOrder.status,
+        financials: {
+          subtotalAmount: Number(existingBuyerOrder.subtotalAmount),
+          discountAmount: Number(existingBuyerOrder.discountAmount),
+          totalAmount: Number(existingBuyerOrder.totalAmount),
+          currency: 'USD',
+        },
+        reservation: {
+          reservedUntil: existingBuyerOrder.gameAccount.reservedUntil,
+          expiresInSeconds: Math.floor(
+            (existingBuyerOrder.gameAccount.reservedUntil.getTime() - Date.now()) / 1000
+          ),
+        },
+        createdAt: existingBuyerOrder.createdAt,
+      };
+    }
+
+    // 3. Execute Atomic Concurrency Reservation & Order Creation Transaction
     const result = await prisma.$transaction(async (tx) => {
       // Find account with all listing details
       const account = await tx.gameAccount.findUnique({

@@ -79,14 +79,23 @@ export class OrderService {
       const reservationDurationMs = config.platform.reservationTimeoutMinutes * 60 * 1000;
       const reservedUntil = new Date(Date.now() + reservationDurationMs);
 
-      // Lock account with status = 'reserved'
-      await tx.gameAccount.update({
-        where: { id: account.id },
+      // Atomic CAS lock: only reserve if status is still 'available'
+      const lockResult = await tx.gameAccount.updateMany({
+        where: {
+          id: account.id,
+          status: 'available',
+        },
         data: {
           status: 'reserved',
           reservedUntil,
         },
       });
+
+      if (lockResult.count === 0) {
+        throw new ConflictError(
+          'This account listing was just reserved or purchased by another customer. Please try again.'
+        );
+      }
 
       // 3. Coupon Calculation (if coupon code provided)
       let discountAmount = 0;
@@ -419,11 +428,18 @@ export class OrderService {
     }
 
     await prisma.$transaction(async (tx) => {
-      // 1. Mark order cancelled
-      await tx.order.update({
-        where: { id: order.id },
+      // 1. Mark order cancelled (atomic guard: only cancel if still pending)
+      const cancelResult = await tx.order.updateMany({
+        where: {
+          id: order.id,
+          status: 'pending',
+        },
         data: { status: 'cancelled' },
       });
+
+      if (cancelResult.count === 0) {
+        throw new BadRequestError('Order is not in pending status or was already processed.');
+      }
 
       // 2. Release game account back to available
       await tx.gameAccount.update({
@@ -496,11 +512,18 @@ export class OrderService {
     const netAmount = Number(order.sellerNetAmount);
 
     await prisma.$transaction(async (tx) => {
-      // 1. Mark Order Completed
-      await tx.order.update({
-        where: { id: order.id },
+      // 1. Mark Order Completed (atomic guard: only complete if still in_escrow or paid)
+      const completeResult = await tx.order.updateMany({
+        where: {
+          id: order.id,
+          status: { in: ['paid', 'in_escrow'] },
+        },
         data: { status: 'completed' },
       });
+
+      if (completeResult.count === 0) {
+        throw new BadRequestError('Order was already confirmed or is not in a valid escrow state.');
+      }
 
       // 2. Mark Account Sold
       await tx.gameAccount.update({

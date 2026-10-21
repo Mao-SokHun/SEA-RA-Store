@@ -15,6 +15,7 @@ export function errorHandler(
       success: false,
       code: err.code,
       message: err.message,
+      ...('errors' in err ? { errors: (err as any).errors } : {}),
       ...(config.nodeEnv === 'development' ? { stack: err.stack } : {}),
     });
     return;

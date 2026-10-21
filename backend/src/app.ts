@@ -19,6 +19,7 @@ import chatRoutes from './modules/chat/routes/chat.routes';
 import disputeRoutes from './modules/disputes/routes/dispute.routes';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
+import { generalLimiter } from './common/middleware/rateLimiter';
 import './common/utils/json'; // Setup BigInt toJSON serialization
 
 export function createApp(): Application {
@@ -108,6 +109,9 @@ export function createApp(): Application {
     res.setHeader('Content-Type', 'application/json');
     res.send(swaggerSpec);
   });
+
+  // Rate Limiting on API
+  app.use(config.apiPrefix, generalLimiter);
 
   // API Routes
   app.use(`${config.apiPrefix}/auth`, authRoutes);

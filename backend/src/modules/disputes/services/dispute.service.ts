@@ -284,6 +284,29 @@ export class DisputeService {
     const { resolution, adminNotes } = data;
 
     await prisma.$transaction(async (tx) => {
+      // Atomic guard: only resolve if dispute is currently open or under_review
+      const targetDisputeStatus =
+        resolution === 'refund_buyer'
+          ? 'resolved_buyer'
+          : resolution === 'payout_seller'
+          ? 'resolved_seller'
+          : 'dismissed';
+
+      const disputeCount = await tx.dispute.updateMany({
+        where: {
+          id: order.dispute!.id,
+          status: { in: ['open', 'under_review'] },
+        },
+        data: {
+          status: targetDisputeStatus,
+          adminNotes,
+        },
+      });
+
+      if (disputeCount.count === 0) {
+        throw new BadRequestError('Dispute was already resolved or is no longer open.');
+      }
+
       // 1. REFUND BUYER
       if (resolution === 'refund_buyer') {
         const refundAmount = Number(order.totalAmount);
@@ -310,7 +333,7 @@ export class DisputeService {
           });
         }
 
-        // Update Order & Dispute status
+        // Update Order status
         await tx.order.update({
           where: { id: order.id },
           data: { status: 'refunded' },
@@ -320,14 +343,6 @@ export class DisputeService {
         await tx.gameAccount.update({
           where: { id: order.gameAccountId },
           data: { status: 'available' },
-        });
-
-        await tx.dispute.update({
-          where: { id: order.dispute!.id },
-          data: {
-            status: 'resolved_buyer',
-            adminNotes,
-          },
         });
       }
       // 2. PAYOUT SELLER
@@ -356,7 +371,7 @@ export class DisputeService {
           });
         }
 
-        // Update Order & Dispute status
+        // Update Order status
         await tx.order.update({
           where: { id: order.id },
           data: { status: 'completed' },
@@ -367,14 +382,6 @@ export class DisputeService {
           where: { id: order.gameAccountId },
           data: { status: 'sold' },
         });
-
-        await tx.dispute.update({
-          where: { id: order.dispute!.id },
-          data: {
-            status: 'resolved_seller',
-            adminNotes,
-          },
-        });
       }
       // 3. DISMISS
       else if (resolution === 'dismiss') {
@@ -382,14 +389,6 @@ export class DisputeService {
         await tx.order.update({
           where: { id: order.id },
           data: { status: 'in_escrow' },
-        });
-
-        await tx.dispute.update({
-          where: { id: order.dispute!.id },
-          data: {
-            status: 'dismissed',
-            adminNotes,
-          },
         });
       }
 

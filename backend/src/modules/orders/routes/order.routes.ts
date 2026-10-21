@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { orderController } from '../controllers/order.controller';
 import { validate } from '../../../common/middleware/validate';
 import { authenticate } from '../../../common/middleware/auth';
+import { checkoutLimiter } from '../../../common/middleware/rateLimiter';
 import {
   checkoutValidator,
   orderNumberParamValidator,
@@ -18,7 +19,7 @@ router.use(authenticate);
  * @desc    Initiate checkout and lock account with 15-minute reservation timer
  * @access  Private
  */
-router.post('/checkout', checkoutValidator, validate, orderController.checkout);
+router.post('/checkout', checkoutLimiter, checkoutValidator, validate, orderController.checkout);
 
 /**
  * @route   GET /api/v1/orders

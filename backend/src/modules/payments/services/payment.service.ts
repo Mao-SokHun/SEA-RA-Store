@@ -151,15 +151,39 @@ export class PaymentService {
 
     // Execute atomic wallet deduction and order transition
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Deduct wallet balance
-      const updatedWallet = await tx.wallet.update({
-        where: { id: buyerWallet.id },
+      // 1. Move order to 'in_escrow' (Atomic guard: only transition if status is still 'pending')
+      const orderCount = await tx.order.updateMany({
+        where: {
+          id: order.id,
+          status: 'pending',
+        },
+        data: { status: 'in_escrow' },
+      });
+
+      if (orderCount.count === 0) {
+        throw new BadRequestError('Order is not in pending status or has already been paid.');
+      }
+
+      // 2. Deduct wallet balance (Atomic CAS: ensure balance >= orderTotal)
+      const deductCount = await tx.wallet.updateMany({
+        where: {
+          id: buyerWallet.id,
+          balance: { gte: new Prisma.Decimal(orderTotal) },
+        },
         data: {
           balance: { decrement: new Prisma.Decimal(orderTotal) },
         },
       });
 
-      // 2. Record ledger transaction
+      if (deductCount.count === 0) {
+        throw new BadRequestError('Insufficient wallet balance or concurrent payment in progress');
+      }
+
+      const updatedWallet = await tx.wallet.findUniqueOrThrow({
+        where: { id: buyerWallet.id },
+      });
+
+      // 3. Record ledger transaction
       await tx.walletTransaction.create({
         data: {
           walletId: buyerWallet.id,
@@ -170,7 +194,7 @@ export class PaymentService {
         },
       });
 
-      // 3. Upsert payment record as 'paid'
+      // 4. Upsert payment record as 'paid'
       await tx.payment.upsert({
         where: { orderId: order.id },
         create: {
@@ -188,12 +212,6 @@ export class PaymentService {
           status: 'paid',
           paidAt: new Date(),
         },
-      });
-
-      // 4. Move order to 'in_escrow'
-      await tx.order.update({
-        where: { id: order.id },
-        data: { status: 'in_escrow' },
       });
 
       // 5. Audit Log
@@ -277,11 +295,18 @@ export class PaymentService {
         },
       });
 
-      // 2. Transition order to in_escrow
-      await tx.order.update({
-        where: { id: order.id },
+      // 2. Transition order to in_escrow (Atomic idempotency check: only if still pending)
+      const updateCount = await tx.order.updateMany({
+        where: {
+          id: order.id,
+          status: 'pending',
+        },
         data: { status: 'in_escrow' },
       });
+
+      if (updateCount.count === 0) {
+        return; // Idempotent: already processed by a concurrent webhook call
+      }
 
       // 3. Security Audit Log
       await tx.securityAuditLog.create({

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authController } from '../controllers/auth.controller';
 import { validate } from '../../../common/middleware/validate';
 import { authenticate } from '../../../common/middleware/auth';
+import { authLimiter } from '../../../common/middleware/rateLimiter';
 import {
   registerValidator,
   loginValidator,
@@ -17,14 +18,14 @@ const router = Router();
  * @desc    Register a new user account
  * @access  Public
  */
-router.post('/register', registerValidator, validate, authController.register);
+router.post('/register', authLimiter, registerValidator, validate, authController.register);
 
 /**
  * @route   POST /api/v1/auth/login
  * @desc    Authenticate user and get tokens
  * @access  Public
  */
-router.post('/login', loginValidator, validate, authController.login);
+router.post('/login', authLimiter, loginValidator, validate, authController.login);
 
 /**
  * @route   POST /api/v1/auth/refresh-token
@@ -45,14 +46,14 @@ router.post('/logout', authController.logout);
  * @desc    Request password reset token
  * @access  Public
  */
-router.post('/forgot-password', forgotPasswordValidator, validate, authController.forgotPassword);
+router.post('/forgot-password', authLimiter, forgotPasswordValidator, validate, authController.forgotPassword);
 
 /**
  * @route   POST /api/v1/auth/reset-password
  * @desc    Reset password using reset token
  * @access  Public
  */
-router.post('/reset-password', resetPasswordValidator, validate, authController.resetPassword);
+router.post('/reset-password', authLimiter, resetPasswordValidator, validate, authController.resetPassword);
 
 /**
  * @route   GET /api/v1/auth/me

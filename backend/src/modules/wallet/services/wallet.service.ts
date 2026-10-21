@@ -185,12 +185,23 @@ export class WalletService {
 
     // Atomic withdrawal request & wallet balance deduction
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Deduct held funds from wallet
-      const updatedWallet = await tx.wallet.update({
-        where: { id: wallet.id },
+      // 1. Deduct held funds from wallet (Atomic CAS guard)
+      const deductCount = await tx.wallet.updateMany({
+        where: {
+          id: wallet.id,
+          balance: { gte: new Prisma.Decimal(withdrawAmount) },
+        },
         data: {
           balance: { decrement: new Prisma.Decimal(withdrawAmount) },
         },
+      });
+
+      if (deductCount.count === 0) {
+        throw new BadRequestError('Insufficient wallet balance or concurrent transaction in progress');
+      }
+
+      const updatedWallet = await tx.wallet.findUniqueOrThrow({
+        where: { id: wallet.id },
       });
 
       // 2. Create withdrawal request

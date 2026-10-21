@@ -10,6 +10,8 @@ import { errorHandler } from './common/middleware/errorHandler';
 import { notFoundHandler } from './common/middleware/notFoundHandler';
 import { sendSuccess } from './common/utils/response';
 import authRoutes from './modules/auth/routes/auth.routes';
+import gameRoutes from './modules/accounts/routes/game.routes';
+import accountRoutes from './modules/accounts/routes/account.routes';
 import './common/utils/json'; // Setup BigInt toJSON serialization
 
 export function createApp(): Application {
@@ -87,6 +89,8 @@ export function createApp(): Application {
 
   // API Routes
   app.use(`${config.apiPrefix}/auth`, authRoutes);
+  app.use(`${config.apiPrefix}/games`, gameRoutes);
+  app.use(`${config.apiPrefix}/accounts`, accountRoutes);
 
   // 404 Handler
   app.use(notFoundHandler);

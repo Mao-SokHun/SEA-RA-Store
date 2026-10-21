@@ -12,6 +12,7 @@ import { sendSuccess } from './common/utils/response';
 import authRoutes from './modules/auth/routes/auth.routes';
 import gameRoutes from './modules/accounts/routes/game.routes';
 import accountRoutes from './modules/accounts/routes/account.routes';
+import orderRoutes from './modules/orders/routes/order.routes';
 import './common/utils/json'; // Setup BigInt toJSON serialization
 
 export function createApp(): Application {
@@ -91,6 +92,7 @@ export function createApp(): Application {
   app.use(`${config.apiPrefix}/auth`, authRoutes);
   app.use(`${config.apiPrefix}/games`, gameRoutes);
   app.use(`${config.apiPrefix}/accounts`, accountRoutes);
+  app.use(`${config.apiPrefix}/orders`, orderRoutes);
 
   // 404 Handler
   app.use(notFoundHandler);

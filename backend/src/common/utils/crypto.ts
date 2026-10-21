@@ -70,3 +70,34 @@ export function decryptAES(
 
   return decrypted;
 }
+
+/**
+ * Encrypt a field into a self-contained string: iv:authTag:ciphertext
+ * Guarantees unique IV per field without two-time pad vulnerability
+ */
+export function encryptVaultField(plaintext: string, keyHex: string = config.encryptionKey): string {
+  const { iv, authTag, encryptedData } = encryptAES(plaintext, keyHex);
+  return `${iv}:${authTag}:${encryptedData}`;
+}
+
+/**
+ * Decrypt a self-contained string iv:authTag:ciphertext
+ */
+export function decryptVaultField(
+  combinedOrData: string,
+  fallbackIv?: string,
+  fallbackAuthTag?: string,
+  keyHex: string = config.encryptionKey
+): string {
+  if (combinedOrData.includes(':')) {
+    const parts = combinedOrData.split(':');
+    if (parts.length === 3) {
+      return decryptAES(parts[2], parts[0], parts[1], keyHex);
+    }
+  }
+  if (fallbackIv && fallbackAuthTag) {
+    return decryptAES(combinedOrData, fallbackIv, fallbackAuthTag, keyHex);
+  }
+  throw new Error('Invalid vault field format for decryption');
+}
+

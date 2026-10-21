@@ -4,7 +4,7 @@ import {
   ForbiddenError,
   NotFoundError,
 } from '../../../common/errors/AppError';
-import { encryptAES } from '../../../common/utils/crypto';
+import { encryptAES, encryptVaultField } from '../../../common/utils/crypto';
 import { Prisma } from '@prisma/client';
 
 export interface CreateAccountDTO {
@@ -87,13 +87,13 @@ export class AccountService {
     // 2. Only admin can create B2C platform-owned listings
     const isPlatformOwned = userRole === 'admin' ? Boolean(data.isPlatformOwned) : false;
 
-    // 3. Encrypt credentials via AES-256-GCM
+    // 3. Encrypt credentials via AES-256-GCM Vault
     const { loginIdentifier, loginPassword, backupCodes, extraInstructions } = data.credentials;
 
-    // Encrypt identifier & password together or with unique IVs
-    const encryptedId = encryptAES(loginIdentifier);
-    const encryptedPass = encryptAES(loginPassword);
-    const encryptedCodes = backupCodes ? encryptAES(backupCodes).encryptedData : null;
+    const encryptedIdStr = encryptVaultField(loginIdentifier);
+    const encryptedPassStr = encryptVaultField(loginPassword);
+    const encryptedCodesStr = backupCodes ? encryptVaultField(backupCodes) : null;
+    const [passIv, passTag] = encryptedPassStr.split(':');
 
     // 4. Atomic transaction to create Account, Binds, Images, and Vault Credentials
     const listing = await prisma.$transaction(async (tx) => {
@@ -118,11 +118,11 @@ export class AccountService {
         data: {
           gameAccountId: account.id,
           keyVersion: 1,
-          initializationVector: encryptedPass.iv, // 16 bytes hex
-          authTag: encryptedPass.authTag, // 16 bytes hex
-          encryptedLoginIdentifier: encryptedId.encryptedData,
-          encryptedLoginPassword: encryptedPass.encryptedData,
-          encryptedBackupCodes: encryptedCodes,
+          initializationVector: passIv, // 16 bytes hex
+          authTag: passTag, // 16 bytes hex
+          encryptedLoginIdentifier: encryptedIdStr,
+          encryptedLoginPassword: encryptedPassStr,
+          encryptedBackupCodes: encryptedCodesStr,
           extraInstructions,
         },
       });

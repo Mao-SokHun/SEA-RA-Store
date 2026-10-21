@@ -15,7 +15,7 @@ export class GameController {
 
   getGameById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const game = await gameService.getGameById(id);
       sendSuccess(res, game, 'Game retrieved successfully');
     } catch (error) {
@@ -34,7 +34,7 @@ export class GameController {
 
   updateGame = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const game = await gameService.updateGame(id, req.body);
       sendSuccess(res, game, 'Game updated successfully');
     } catch (error) {

@@ -7,7 +7,7 @@ export function validate(req: Request, res: Response, next: NextFunction): void 
   if (!errors.isEmpty()) {
     const errorDetails = errors.array().map((err) => ({
       field: err.type === 'field' ? err.path : undefined,
-      message: err.msg,
+      message: String(err.msg),
     }));
     return next(new ValidationError('Input validation failed', errorDetails));
   }

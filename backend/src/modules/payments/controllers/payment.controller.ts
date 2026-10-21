@@ -51,7 +51,7 @@ export class PaymentController {
 
   getPaymentStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { orderNumber } = req.params;
+      const orderNumber = req.params.orderNumber as string;
       const result = await paymentService.getPaymentStatus(orderNumber);
       sendSuccess(res, result, 'Payment status retrieved successfully');
     } catch (error) {

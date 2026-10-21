@@ -48,12 +48,17 @@ export class ConflictError extends AppError {
   }
 }
 
+export interface ValidationErrorItem {
+  field?: string;
+  message: string;
+}
+
 export class ValidationError extends AppError {
-  public readonly errors: Record<string, string>[];
+  public readonly errors: ValidationErrorItem[];
 
   constructor(
     message: string = 'Validation Error',
-    errors: Record<string, string>[] = []
+    errors: ValidationErrorItem[] = []
   ) {
     super(message, 422, 'VALIDATION_ERROR');
     this.errors = errors;

@@ -13,12 +13,11 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "baseUrl": "./src",
     "paths": {
-      "@config/*": ["config/*"],
-      "@common/*": ["common/*"],
-      "@modules/*": ["modules/*"],
-      "@database/*": ["database/*"]
+      "@config/*": ["./src/config/*"],
+      "@common/*": ["./src/common/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@database/*": ["./src/database/*"]
     },
     "typeRoots": ["./node_modules/@types", "./src/common/types"]
   },

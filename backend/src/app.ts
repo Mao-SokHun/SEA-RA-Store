@@ -14,6 +14,11 @@ import gameRoutes from './modules/accounts/routes/game.routes';
 import accountRoutes from './modules/accounts/routes/account.routes';
 import orderRoutes from './modules/orders/routes/order.routes';
 import paymentRoutes from './modules/payments/routes/payment.routes';
+import walletRoutes from './modules/wallet/routes/wallet.routes';
+import chatRoutes from './modules/chat/routes/chat.routes';
+import disputeRoutes from './modules/disputes/routes/dispute.routes';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
 import './common/utils/json'; // Setup BigInt toJSON serialization
 
 export function createApp(): Application {
@@ -80,13 +85,28 @@ export function createApp(): Application {
       description: 'Production-ready Backend API for Game Account Trading Platform',
       endpoints: {
         health: '/health',
+        documentation: '/api/docs',
         auth: `${config.apiPrefix}/auth`,
         accounts: `${config.apiPrefix}/accounts`,
         orders: `${config.apiPrefix}/orders`,
+        payments: `${config.apiPrefix}/payments`,
         wallet: `${config.apiPrefix}/wallet`,
+        chat: `${config.apiPrefix}/chat`,
+        disputes: `${config.apiPrefix}/disputes`,
         games: `${config.apiPrefix}/games`,
       },
     }, 'Welcome to Game Account Marketplace API');
+  });
+
+  // Interactive Swagger API Documentation
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'Game Marketplace API Documentation',
+  }));
+
+  app.get('/api/docs.json', (req: Request, res: Response) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
   });
 
   // API Routes
@@ -95,6 +115,9 @@ export function createApp(): Application {
   app.use(`${config.apiPrefix}/accounts`, accountRoutes);
   app.use(`${config.apiPrefix}/orders`, orderRoutes);
   app.use(`${config.apiPrefix}/payments`, paymentRoutes);
+  app.use(`${config.apiPrefix}/wallet`, walletRoutes);
+  app.use(`${config.apiPrefix}/chat`, chatRoutes);
+  app.use(`${config.apiPrefix}/disputes`, disputeRoutes);
 
   // 404 Handler
   app.use(notFoundHandler);

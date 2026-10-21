@@ -106,32 +106,40 @@
 - Zero-Knowledge AES-256-GCM Vault for account credentials
 - Multi-image screenshots and multi-provider binds (clean/changeable/unchangeable)
 
-### Step 5: Order & Concurrency Lock
+### Step 5: Order & Concurrency Lock ✅ COMPLETED
 
-- Checkout endpoint with Redis Redlock (15 min)
-- Order state machine
-- Auto-release worker (cron/keyspace notification)
+- Checkout endpoint with 15-minute concurrency reservation lock (preventing double-spend)
+- Immutable JSON snapshot of listing details (`listing_snapshot`)
+- Full Escrow State Machine (`pending` -> `in_escrow` -> `completed` / `cancelled` / `in_dispute` / `refunded`)
+- Buyer vault credential decryption upon successful escrow/payment
+- Handover confirmation (`POST /orders/:orderNumber/confirm-received`) with 10% platform commission deduction and seller wallet credit
 
-### Step 6: Payment & Webhook (Bakong KHQR)
+### Step 6: Payment & Webhook (Bakong KHQR) ✅ COMPLETED
 
-- KHQR generator
-- Webhook verification (HMAC-SHA256, idempotency)
-- Coupon engine & warranty fee calculation
+- Bakong KHQR EMVCo generator with CRC16-CCITT and PNG Base64 rendering
+- Pay with Wallet (atomic balance deduction and ledger record)
+- Bakong Webhook with HMAC-SHA256 signature verification & idempotency guard
+- Payment polling endpoint (`GET /payments/status/:orderNumber`) & sandbox simulation endpoint
 
-### Step 7: Wallet & Escrow Engine
+### Step 7: Wallet & Escrow Engine ✅ COMPLETED
 
-- Ledger accounting (B2C/C2C)
-- Commission deduction (10%)
-- Withdrawal management
-- Double-entry rollback & referral distribution
+- High-precision Decimal balance management
+- Atomic withdrawal request with ledger debit and status tracking
+- Admin withdrawal approvals and bank execution logging
+- Automated refunds back to user wallets upon withdrawal rejection
+- Transaction history pagination with transaction type filters
 
-### Step 8: Real-time Chat & Dispute
+### Step 8: Real-time Chat & Dispute ✅ COMPLETED
 
-- WebSocket gateway (Socket.io)
-- Dispute handling APIs
-- Telegram Bot notifications
+- WebSocket gateway (Socket.io) with JWT handshake authentication
+- Order-specific escrow rooms (`order:<orderNumber>`) with typing indicators
+- Persistent message storage (`chat_messages`), unread tracking, and real-time broadcasting
+- Dispute engine: buyer/seller raising, escrow freeze, admin mediation (refund buyer / payout seller / dismiss)
+- Automated system notification messages in escrow chat room
 
-### Step 9: Testing & API Docs
+### Step 9: Testing & API Docs ✅ COMPLETED
 
-- Swagger UI at /api/docs
-- Integration & E2E tests
+- Interactive Swagger OpenAPI 3.0 documentation live at `/api/docs` and `/api/docs.json`
+- Comprehensive end-to-end integration tests on live Neon Serverless PostgreSQL
+- Production TypeScript build compiled cleanly to `./dist`
+

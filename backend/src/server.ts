@@ -1,41 +1,15 @@
 import http from 'http';
-import { Server as SocketIOServer } from 'socket.io';
 import { createApp } from './app';
 import { config } from './config';
 import { prisma } from './config/database';
+import { initSocketServer } from './common/socket/socketManager';
 
 async function bootstrap() {
   const app = createApp();
   const server = http.createServer(app);
 
-  // Setup Socket.io
-  const io = new SocketIOServer(server, {
-    cors: {
-      origin: [config.frontendUrl, 'http://localhost:3000', 'http://localhost:5173'],
-      credentials: true,
-      methods: ['GET', 'POST'],
-    },
-  });
-
-  io.on('connection', (socket) => {
-    console.log(`⚡ WebSocket client connected: ${socket.id}`);
-
-    // Join order room for escrow chat & live status updates
-    socket.on('join_order_room', (orderId: string) => {
-      socket.join(`order:${orderId}`);
-      console.log(`Socket ${socket.id} joined order room: order:${orderId}`);
-    });
-
-    // Leave order room
-    socket.on('leave_order_room', (orderId: string) => {
-      socket.leave(`order:${orderId}`);
-      console.log(`Socket ${socket.id} left order room: order:${orderId}`);
-    });
-
-    socket.on('disconnect', () => {
-      console.log(`🔌 WebSocket client disconnected: ${socket.id}`);
-    });
-  });
+  // Initialize Socket.IO with JWT Authentication & Order Rooms
+  initSocketServer(server);
 
   // Start HTTP Server
   server.listen(config.port, () => {

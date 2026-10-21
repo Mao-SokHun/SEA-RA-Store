@@ -23,7 +23,7 @@ export class OrderController {
 
   getOrderDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { orderNumber } = req.params;
+      const orderNumber = req.params.orderNumber as string;
       const userId = req.user!.id;
       const userRole = req.user!.role;
 
@@ -36,7 +36,7 @@ export class OrderController {
 
   cancelOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { orderNumber } = req.params;
+      const orderNumber = req.params.orderNumber as string;
       const userId = req.user!.id;
       const userRole = req.user!.role;
 
@@ -49,7 +49,7 @@ export class OrderController {
 
   confirmReceived = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { orderNumber } = req.params;
+      const orderNumber = req.params.orderNumber as string;
       const buyerId = req.user!.id;
 
       const result = await orderService.confirmReceived(orderNumber, buyerId);

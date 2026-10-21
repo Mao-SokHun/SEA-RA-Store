@@ -33,7 +33,7 @@ export class AccountController {
 
   getListingDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const viewerUserId = req.user?.id;
       const account = await accountService.getListingById(id, viewerUserId);
       sendSuccess(res, account, 'Listing details retrieved successfully');
@@ -58,7 +58,7 @@ export class AccountController {
 
   updateListing = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const sellerId = req.user!.id;
       const userRole = req.user!.role;
 
@@ -71,7 +71,7 @@ export class AccountController {
 
   deleteListing = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const sellerId = req.user!.id;
       const userRole = req.user!.role;
 

@@ -3,6 +3,7 @@ import {
   BadRequestError,
   NotFoundError,
 } from '../../../common/errors/AppError';
+import { telegramService } from '../../notifications/services/telegram.service';
 import { Prisma } from '@prisma/client';
 
 export interface RequestWithdrawalDTO {
@@ -372,13 +373,20 @@ export class WalletService {
       throw new BadRequestError(`Cannot approve request with status "${request.status}"`);
     }
 
-    const updated = await prisma.withdrawalRequest.update({
-      where: { id: requestId },
+    const updateCount = await prisma.withdrawalRequest.updateMany({
+      where: {
+        id: requestId,
+        status: 'pending',
+      },
       data: {
         status: 'approved',
         adminNotes: adminNotes || 'Approved and bank transfer executed',
       },
     });
+
+    if (updateCount.count === 0) {
+      throw new BadRequestError('Withdrawal request was already processed or is no longer pending.');
+    }
 
     if (adminId) {
       await prisma.securityAuditLog.create({
@@ -390,9 +398,16 @@ export class WalletService {
       });
     }
 
+    // Telegram Notification to user
+    telegramService.notifyUser(
+      request.userId,
+      'payout',
+      `💸 <b>Withdrawal Approved!</b>\nYour withdrawal request of $${Number(request.amount).toFixed(2)} to ${request.bankName} (${request.accountNumber}) has been approved and processed.`
+    );
+
     return {
       message: `Withdrawal request #${id} has been approved.`,
-      status: updated.status,
+      status: 'approved',
     };
   }
 
@@ -425,14 +440,21 @@ export class WalletService {
     const refundAmount = Number(request.amount);
 
     await prisma.$transaction(async (tx) => {
-      // 1. Mark request rejected
-      await tx.withdrawalRequest.update({
-        where: { id: requestId },
+      // 1. Mark request rejected (Atomic CAS guard: only if status is still 'pending')
+      const rejectCount = await tx.withdrawalRequest.updateMany({
+        where: {
+          id: requestId,
+          status: 'pending',
+        },
         data: {
           status: 'rejected',
           adminNotes: reason,
         },
       });
+
+      if (rejectCount.count === 0) {
+        throw new BadRequestError('Withdrawal request was already processed or is no longer pending.');
+      }
 
       // 2. Refund held balance back to user wallet
       const updatedWallet = await tx.wallet.update({
@@ -468,6 +490,13 @@ export class WalletService {
         });
       }
     });
+
+    // Telegram Notification to user
+    telegramService.notifyUser(
+      request.userId,
+      'payout',
+      `❌ <b>Withdrawal Request Rejected</b>\nYour withdrawal of $${refundAmount.toFixed(2)} was rejected. Reason: "${reason}". $${refundAmount.toFixed(2)} has been refunded back to your wallet.`
+    );
 
     return {
       message: `Withdrawal #${id} rejected and $${refundAmount} refunded back to user's wallet.`,

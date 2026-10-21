@@ -8,6 +8,7 @@ import {
   NotFoundError,
 } from '../../../common/errors/AppError';
 import { decryptAES, decryptVaultField } from '../../../common/utils/crypto';
+import { telegramService } from '../../notifications/services/telegram.service';
 import { Prisma } from '@prisma/client';
 
 export interface CheckoutDTO {
@@ -548,7 +549,59 @@ export class OrderService {
         },
       });
 
-      // 5. Audit Log
+      // 5. Automatic Referral Reward on referee's first completed trade
+      const pendingReferral = await tx.userReferral.findFirst({
+        where: {
+          refereeId: buyerIdBigInt,
+          status: 'pending',
+        },
+        include: {
+          referrer: { include: { wallet: true } },
+        },
+      });
+
+      if (pendingReferral && pendingReferral.referrer.wallet) {
+        // Platform referral reward: 2% of order total (minimum $0.50)
+        const rewardAmount = Math.max(0.5, Number((Number(order.totalAmount) * 0.02).toFixed(2)));
+
+        // Update referral status to completed
+        await tx.userReferral.update({
+          where: { id: pendingReferral.id },
+          data: { status: 'completed' },
+        });
+
+        // Record reward
+        await tx.referralReward.create({
+          data: {
+            referralId: pendingReferral.id,
+            referrerId: pendingReferral.referrerId,
+            orderId: order.id,
+            rewardAmount: new Prisma.Decimal(rewardAmount),
+            status: 'credited',
+          },
+        });
+
+        // Credit referrer wallet
+        const updatedReferrerWallet = await tx.wallet.update({
+          where: { id: pendingReferral.referrer.wallet.id },
+          data: {
+            balance: { increment: new Prisma.Decimal(rewardAmount) },
+          },
+        });
+
+        // Ledger record for referrer
+        await tx.walletTransaction.create({
+          data: {
+            walletId: pendingReferral.referrer.wallet.id,
+            orderId: order.id,
+            transactionType: 'referral_reward',
+            amount: new Prisma.Decimal(rewardAmount),
+            balanceAfter: updatedReferrerWallet.balance,
+          },
+        });
+      }
+
+      // 6. Audit Log
       await tx.securityAuditLog.create({
         data: {
           userId: buyerIdBigInt,
@@ -561,6 +614,13 @@ export class OrderService {
         },
       });
     });
+
+    // Notify seller via Telegram asynchronously
+    telegramService.notifyUser(
+      order.sellerId,
+      'payout',
+      `🎉 <b>Account Handover Confirmed!</b>\nOrder <code>#${orderNumber}</code> is completed. $${netAmount.toFixed(2)} has been credited to your wallet balance.`
+    );
 
     return {
       message: 'Account handover confirmed successfully. Escrow funds released to seller wallet.',

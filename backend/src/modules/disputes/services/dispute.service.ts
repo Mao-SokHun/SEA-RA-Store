@@ -8,6 +8,7 @@ import {
 import { Prisma } from '@prisma/client';
 import { chatService } from '../../chat/services/chat.service';
 import { emitToOrderRoom } from '../../../common/socket/socketManager';
+import { telegramService } from '../../notifications/services/telegram.service';
 
 export interface CreateDisputeDTO {
   reason: string;
@@ -119,6 +120,14 @@ export class DisputeService {
       raisedBy: raiserName,
       reason: data.reason,
     });
+
+    // Notify the opposing party via Telegram
+    const opponentId = isBuyer ? order.sellerId : order.buyerId;
+    telegramService.notifyUser(
+      opponentId,
+      'dispute',
+      `⚠️ <b>Dispute Opened on Order #${orderNumber}!</b>\nReason: "${data.reason}". Escrow is held while admin review is in progress.`
+    );
 
     return {
       message: 'Dispute opened successfully. Support will investigate within 24 hours.',

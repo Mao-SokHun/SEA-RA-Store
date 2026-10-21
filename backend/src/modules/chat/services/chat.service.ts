@@ -1,6 +1,7 @@
 import { prisma } from '../../../config/database';
 import { NotFoundError, ForbiddenError } from '../../../common/errors/AppError';
 import { emitToOrderRoom } from '../../../common/socket/socketManager';
+import { telegramService } from '../../notifications/services/telegram.service';
 
 export interface SendMessageDTO {
   content: string;
@@ -75,6 +76,14 @@ export class ChatService {
 
     // Emit live to Socket.io room
     emitToOrderRoom(orderNumber, 'new_message', formattedMessage);
+
+    // Notify recipient via Telegram if message is from human
+    const recipientId = order.buyerId === senderIdBigInt ? order.sellerId : order.buyerId;
+    telegramService.notifyUser(
+      recipientId,
+      'chat',
+      `💬 <b>New Escrow Chat Message!</b>\nOrder <code>#${orderNumber}</code> from @${message.sender.username}: "${data.content.slice(0, 100)}"`
+    );
 
     return formattedMessage;
   }

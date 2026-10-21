@@ -8,6 +8,7 @@ import {
   UnauthorizedError,
 } from '../../../common/errors/AppError';
 import { generateBakongKHQRString, generateQRCodeImage } from '../../../common/utils/khqr';
+import { telegramService } from '../../notifications/services/telegram.service';
 import { Prisma } from '@prisma/client';
 
 export interface GenerateKHQRDTO {
@@ -228,6 +229,18 @@ export class PaymentService {
       };
     });
 
+    // Notify buyer and seller via Telegram asynchronously
+    telegramService.notifyUser(
+      order.buyerId,
+      'payment',
+      `✅ <b>Payment Successful!</b>\nYour payment of $${orderTotal.toFixed(2)} for order <code>#${orderNumber}</code> has been confirmed. You can now access your game account credentials.`
+    );
+    telegramService.notifyUser(
+      order.sellerId,
+      'order',
+      `🔔 <b>Order Paid!</b>\nBuyer has paid $${orderTotal.toFixed(2)} for order <code>#${orderNumber}</code>. Funds are safely held in escrow.`
+    );
+
     return {
       message: 'Payment completed successfully with Wallet balance. Order is now in escrow.',
       orderNumber,
@@ -317,6 +330,18 @@ export class PaymentService {
         },
       });
     });
+
+    // Notify buyer and seller via Telegram asynchronously
+    telegramService.notifyUser(
+      order.buyerId,
+      'payment',
+      `✅ <b>KHQR Payment Received!</b>\nOrder <code>#${orderNumber}</code> is confirmed and placed in escrow. You can now access your game credentials.`
+    );
+    telegramService.notifyUser(
+      order.sellerId,
+      'order',
+      `🔔 <b>KHQR Payment Confirmed!</b>\nBuyer has paid for order <code>#${orderNumber}</code>. Escrow funds are held securely.`
+    );
 
     return { message: 'Payment confirmed and order moved to escrow' };
   }

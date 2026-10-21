@@ -17,6 +17,10 @@ import paymentRoutes from './modules/payments/routes/payment.routes';
 import walletRoutes from './modules/wallet/routes/wallet.routes';
 import chatRoutes from './modules/chat/routes/chat.routes';
 import disputeRoutes from './modules/disputes/routes/dispute.routes';
+import couponRoutes from './modules/coupons/routes/coupon.routes';
+import referralRoutes from './modules/referrals/routes/referral.routes';
+import userRoutes from './modules/users/routes/user.routes';
+import adminRoutes from './modules/admin/routes/admin.routes';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import { generalLimiter } from './common/middleware/rateLimiter';
@@ -95,6 +99,10 @@ export function createApp(): Application {
         chat: `${config.apiPrefix}/chat`,
         disputes: `${config.apiPrefix}/disputes`,
         games: `${config.apiPrefix}/games`,
+        coupons: `${config.apiPrefix}/coupons`,
+        referrals: `${config.apiPrefix}/referrals`,
+        users: `${config.apiPrefix}/users`,
+        admin: `${config.apiPrefix}/admin`,
       },
     }, 'Welcome to Game Account Marketplace API');
   });
@@ -122,6 +130,10 @@ export function createApp(): Application {
   app.use(`${config.apiPrefix}/wallet`, walletRoutes);
   app.use(`${config.apiPrefix}/chat`, chatRoutes);
   app.use(`${config.apiPrefix}/disputes`, disputeRoutes);
+  app.use(`${config.apiPrefix}/coupons`, couponRoutes);
+  app.use(`${config.apiPrefix}/referrals`, referralRoutes);
+  app.use(`${config.apiPrefix}/users`, userRoutes);
+  app.use(`${config.apiPrefix}/admin`, adminRoutes);
 
   // 404 Handler
   app.use(notFoundHandler);

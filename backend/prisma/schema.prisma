@@ -1,0 +1,458 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// -------------------------------------------------------------
+// 1. USERS & AUTHENTICATION
+// -------------------------------------------------------------
+model User {
+  id                  BigInt    @id @default(autoincrement())
+  username            String    @unique @db.VarChar(50)
+  email               String    @unique @db.VarChar(100)
+  passwordHash        String?   @map("password_hash") @db.VarChar(255)
+  phone               String?   @unique @db.VarChar(20)
+  referralCode        String    @unique @map("referral_code") @db.VarChar(50)
+  isEmailVerified     Boolean   @default(false) @map("is_email_verified")
+  isPhoneVerified     Boolean   @default(false) @map("is_phone_verified")
+  twoFactorSecret     String?   @map("two_factor_secret") @db.Text
+  twoFactorEnabled    Boolean   @default(false) @map("two_factor_enabled")
+  failedLoginAttempts Int       @default(0) @map("failed_login_attempts")
+  lockoutUntil        DateTime? @map("lockout_until")
+  passwordChangedAt   DateTime? @map("password_changed_at")
+  lastLoginAt         DateTime? @map("last_login_at")
+  lastLoginIp         String?   @map("last_login_ip") @db.VarChar(45)
+  role                String    @default("buyer") @db.VarChar(20) // buyer, seller, admin
+  status              String    @default("active") @db.VarChar(20) // active, suspended, banned
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  socialAccounts      UserSocialAccount[]
+  refreshTokens       UserRefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  securityAuditLogs   SecurityAuditLog[]
+  telegramSettings    TelegramNotificationSettings?
+  wallet              Wallet?
+  sellingAccounts     GameAccount[]                 @relation("SellerAccounts")
+  buyerOrders         Order[]                       @relation("BuyerOrders")
+  sellerOrders        Order[]                       @relation("SellerOrders")
+  withdrawalRequests  WithdrawalRequest[]
+  disputes            Dispute[]
+  couponRedemptions   CouponRedemption[]
+  referralsMade       UserReferral[]                @relation("Referrer")
+  referralReceived    UserReferral?                 @relation("Referee")
+  referralRewards     ReferralReward[]
+  kycVerification     SellerKYCVerification?
+  securityDeposits    SellerSecurityDeposit[]
+  chatMessages        ChatMessage[]
+
+  @@map("users")
+}
+
+model UserSocialAccount {
+  id             BigInt   @id @default(autoincrement())
+  userId         BigInt   @map("user_id")
+  provider       String   @db.VarChar(20)
+  providerUserId String   @map("provider_user_id") @db.VarChar(100)
+  phoneNumber    String?  @map("phone_number") @db.VarChar(20)
+  providerEmail  String?  @map("provider_email") @db.VarChar(100)
+  rawData        String?  @map("raw_data") @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@unique([provider, phoneNumber])
+  @@map("user_social_accounts")
+}
+
+model UserRefreshToken {
+  id         BigInt   @id @default(autoincrement())
+  userId     BigInt   @map("user_id")
+  tokenHash  String   @map("token_hash") @db.VarChar(255)
+  deviceInfo String?  @map("device_info") @db.VarChar(255)
+  ipAddress  String?  @map("ip_address") @db.VarChar(45)
+  isRevoked  Boolean  @default(false) @map("is_revoked")
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        BigInt   @id @default(autoincrement())
+  userId    BigInt   @map("user_id")
+  tokenHash String   @map("token_hash") @db.VarChar(255)
+  expiresAt DateTime @map("expires_at")
+  isUsed    Boolean  @default(false) @map("is_used")
+  ipAddress String?  @map("ip_address") @db.VarChar(45)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model SecurityAuditLog {
+  id        BigInt   @id @default(autoincrement())
+  userId    BigInt?  @map("user_id")
+  action    String   @db.VarChar(100)
+  ipAddress String?  @map("ip_address") @db.VarChar(45)
+  userAgent String?  @map("user_agent") @db.Text
+  metadata  String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("security_audit_logs")
+}
+
+model TelegramNotificationSettings {
+  id               BigInt  @id @default(autoincrement())
+  userId           BigInt  @unique @map("user_id")
+  telegramChatId   String? @unique @map("telegram_chat_id") @db.VarChar(50)
+  notifyOnOrder    Boolean @default(true) @map("notify_on_order")
+  notifyOnPayment  Boolean @default(true) @map("notify_on_payment")
+  notifyOnChat     Boolean @default(true) @map("notify_on_chat")
+  notifyOnDispute  Boolean @default(true) @map("notify_on_dispute")
+  notifyOnPayout   Boolean @default(true) @map("notify_on_payout")
+  isActive         Boolean @default(true) @map("is_active")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("telegram_notification_settings")
+}
+
+// -------------------------------------------------------------
+// 2. GAMES & GAME ACCOUNTS CATALOG
+// -------------------------------------------------------------
+model Game {
+  id       BigInt   @id @default(autoincrement())
+  title    String   @db.VarChar(100)
+  platform String   @db.VarChar(50)
+  iconUrl  String?  @map("icon_url") @db.VarChar(255)
+  isActive Boolean  @default(true) @map("is_active")
+
+  accounts GameAccount[]
+
+  @@map("games")
+}
+
+model GameAccount {
+  id              BigInt    @id @default(autoincrement())
+  sellerId        BigInt    @map("seller_id")
+  gameId          BigInt    @map("game_id")
+  title           String    @db.VarChar(150)
+  description     String?   @db.Text
+  price           Decimal   @db.Decimal(10, 2)
+  serverRegion    String    @map("server_region") @db.VarChar(50)
+  rankLevel       String?   @map("rank_level") @db.VarChar(50)
+  deliveryType    String    @default("instant") @map("delivery_type") @db.VarChar(20)
+  isPlatformOwned Boolean   @default(false) @map("is_platform_owned")
+  status          String    @default("available") @db.VarChar(20)
+  reservedUntil   DateTime? @map("reserved_until")
+  viewCount       Int       @default(0) @map("view_count")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  seller      User                 @relation("SellerAccounts", fields: [sellerId], references: [id], onDelete: Restrict)
+  game        Game                 @relation(fields: [gameId], references: [id], onDelete: Restrict)
+  binds       GameAccountBind[]
+  credentials AccountCredential?
+  images      AccountImage[]
+  order       Order?
+
+  @@map("game_accounts")
+}
+
+model GameAccountBind {
+  id            BigInt  @id @default(autoincrement())
+  gameAccountId BigInt  @map("game_account_id")
+  bindProvider  String  @map("bind_provider") @db.VarChar(50)
+  bindStatus    String  @map("bind_status") @db.VarChar(30)
+  note          String? @db.VarChar(255)
+
+  gameAccount GameAccount @relation(fields: [gameAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([gameAccountId, bindProvider])
+  @@map("game_account_binds")
+}
+
+model AccountCredential {
+  id                         BigInt    @id @default(autoincrement())
+  gameAccountId              BigInt    @unique @map("game_account_id")
+  keyVersion                 Int       @default(1) @map("key_version")
+  initializationVector       String    @map("initialization_vector") @db.VarChar(64)
+  authTag                    String    @map("auth_tag") @db.VarChar(64)
+  encryptedLoginIdentifier   String    @map("encrypted_login_identifier") @db.Text
+  encryptedLoginPassword     String    @map("encrypted_login_password") @db.Text
+  encryptedBackupCodes       String?   @map("encrypted_backup_codes") @db.Text
+  extraInstructions          String?   @map("extra_instructions") @db.Text
+  revealedAt                 DateTime? @map("revealed_at")
+
+  gameAccount GameAccount @relation(fields: [gameAccountId], references: [id], onDelete: Cascade)
+
+  @@map("account_credentials")
+}
+
+model AccountImage {
+  id            BigInt   @id @default(autoincrement())
+  gameAccountId BigInt   @map("game_account_id")
+  imageUrl      String   @map("image_url") @db.VarChar(255)
+  isPrimary     Boolean  @default(false) @map("is_primary")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  gameAccount GameAccount @relation(fields: [gameAccountId], references: [id], onDelete: Cascade)
+
+  @@map("account_images")
+}
+
+// -------------------------------------------------------------
+// 3. ORDERS, PAYMENTS & ESCROW
+// -------------------------------------------------------------
+model Order {
+  id              BigInt   @id @default(autoincrement())
+  orderNumber     String   @unique @map("order_number") @db.VarChar(50)
+  buyerId         BigInt   @map("buyer_id")
+  sellerId        BigInt   @map("seller_id")
+  gameAccountId   BigInt   @unique @map("game_account_id")
+  subtotalAmount  Decimal  @map("subtotal_amount") @db.Decimal(10, 2)
+  discountAmount  Decimal  @default(0) @map("discount_amount") @db.Decimal(10, 2)
+  totalAmount     Decimal  @map("total_amount") @db.Decimal(10, 2)
+  platformFee     Decimal  @default(0) @map("platform_fee") @db.Decimal(10, 2)
+  sellerNetAmount Decimal  @map("seller_net_amount") @db.Decimal(10, 2)
+  listingSnapshot String?  @map("listing_snapshot") @db.Text
+  status          String   @default("pending") @db.VarChar(20)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  buyer              User                @relation("BuyerOrders", fields: [buyerId], references: [id], onDelete: Restrict)
+  seller             User                @relation("SellerOrders", fields: [sellerId], references: [id], onDelete: Restrict)
+  gameAccount        GameAccount         @relation(fields: [gameAccountId], references: [id], onDelete: Restrict)
+  warranty           AccountWarranty?
+  payment            Payment?
+  dispute            Dispute?
+  couponRedemption   CouponRedemption?
+  walletTransactions WalletTransaction[]
+  referralRewards    ReferralReward[]
+  chatMessages       ChatMessage[]
+
+  @@map("orders")
+}
+
+model AccountWarranty {
+  id              BigInt    @id @default(autoincrement())
+  orderId         BigInt    @unique @map("order_id")
+  warrantyType    String    @map("warranty_type") @db.VarChar(50)
+  warrantyFee     Decimal   @default(0) @map("warranty_fee") @db.Decimal(10, 2)
+  status          String    @default("active") @db.VarChar(20)
+  startDate       DateTime  @default(now()) @map("start_date")
+  endDate         DateTime? @map("end_date")
+  claimReason     String?   @map("claim_reason") @db.Text
+  claimResolvedAt DateTime? @map("claim_resolved_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("account_warranties")
+}
+
+model Payment {
+  id            BigInt    @id @default(autoincrement())
+  orderId       BigInt    @unique @map("order_id")
+  transactionId String    @unique @map("transaction_id") @db.VarChar(100)
+  paymentMethod String    @map("payment_method") @db.VarChar(50)
+  amount        Decimal   @db.Decimal(10, 2)
+  status        String    @default("pending") @db.VarChar(20)
+  paidAt        DateTime? @map("paid_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+// -------------------------------------------------------------
+// 4. WALLETS & TRANSACTIONS
+// -------------------------------------------------------------
+model Wallet {
+  id        BigInt   @id @default(autoincrement())
+  userId    BigInt   @unique @map("user_id")
+  balance   Decimal  @default(0) @db.Decimal(10, 2)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions WalletTransaction[]
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id                  BigInt   @id @default(autoincrement())
+  walletId            BigInt   @map("wallet_id")
+  orderId             BigInt?  @map("order_id")
+  withdrawalRequestId BigInt?  @map("withdrawal_request_id")
+  transactionType     String   @map("transaction_type") @db.VarChar(20)
+  amount              Decimal  @db.Decimal(10, 2)
+  balanceAfter        Decimal  @map("balance_after") @db.Decimal(10, 2)
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  wallet            Wallet             @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  order             Order?             @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  withdrawalRequest WithdrawalRequest? @relation(fields: [withdrawalRequestId], references: [id], onDelete: SetNull)
+
+  @@map("wallet_transactions")
+}
+
+model WithdrawalRequest {
+  id            BigInt   @id @default(autoincrement())
+  userId        BigInt   @map("user_id")
+  amount        Decimal  @db.Decimal(10, 2)
+  bankName      String   @map("bank_name") @db.VarChar(50)
+  accountNumber String   @map("account_number") @db.VarChar(50)
+  accountName   String   @map("account_name") @db.VarChar(100)
+  status        String   @default("pending") @db.VarChar(20)
+  adminNotes    String?  @map("admin_notes") @db.Text
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  user         User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+  transactions WalletTransaction[]
+
+  @@map("withdrawal_requests")
+}
+
+model Dispute {
+  id          BigInt   @id @default(autoincrement())
+  orderId     BigInt   @unique @map("order_id")
+  raisedBy    BigInt   @map("raised_by")
+  reason      String   @db.VarChar(150)
+  description String   @db.Text
+  status      String   @default("open") @db.VarChar(20)
+  adminNotes  String?  @map("admin_notes") @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  order  Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  raiser User  @relation(fields: [raisedBy], references: [id], onDelete: Restrict)
+
+  @@map("disputes")
+}
+
+// -------------------------------------------------------------
+// 5. MARKETING & REFERRALS
+// -------------------------------------------------------------
+model Coupon {
+  id                BigInt   @id @default(autoincrement())
+  code              String   @unique @db.VarChar(50)
+  discountType      String   @map("discount_type") @db.VarChar(20)
+  discountValue     Decimal  @map("discount_value") @db.Decimal(10, 2)
+  minOrderAmount    Decimal? @default(0) @map("min_order_amount") @db.Decimal(10, 2)
+  maxDiscountAmount Decimal? @map("max_discount_amount") @db.Decimal(10, 2)
+  usageLimit        Int?     @map("usage_limit")
+  usedCount         Int      @default(0) @map("used_count")
+  perUserLimit      Int      @default(1) @map("per_user_limit")
+  validFrom         DateTime @default(now()) @map("valid_from")
+  validUntil        DateTime @map("valid_until")
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  redemptions CouponRedemption[]
+
+  @@map("coupons")
+}
+
+model CouponRedemption {
+  id             BigInt   @id @default(autoincrement())
+  couponId       BigInt   @map("coupon_id")
+  orderId        BigInt   @unique @map("order_id")
+  userId         BigInt   @map("user_id")
+  discountAmount Decimal  @map("discount_amount") @db.Decimal(10, 2)
+  redeemedAt     DateTime @default(now()) @map("redeemed_at")
+
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Restrict)
+  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("coupon_redemptions")
+}
+
+model UserReferral {
+  id         BigInt   @id @default(autoincrement())
+  referrerId BigInt   @map("referrer_id")
+  refereeId  BigInt   @unique @map("referee_id")
+  status     String   @default("pending") @db.VarChar(20)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  referrer User             @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referee  User             @relation("Referee", fields: [refereeId], references: [id], onDelete: Cascade)
+  rewards  ReferralReward[]
+
+  @@map("user_referrals")
+}
+
+model ReferralReward {
+  id           BigInt   @id @default(autoincrement())
+  referralId   BigInt   @map("referral_id")
+  referrerId   BigInt   @map("referrer_id")
+  orderId      BigInt   @map("order_id")
+  rewardAmount Decimal  @map("reward_amount") @db.Decimal(10, 2)
+  status       String   @default("credited") @db.VarChar(20)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  referral UserReferral @relation(fields: [referralId], references: [id], onDelete: Cascade)
+  referrer User         @relation(fields: [referrerId], references: [id], onDelete: Cascade)
+  order    Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("referral_rewards")
+}
+
+// -------------------------------------------------------------
+// 6. SELLER VERIFICATION & ESCROW ENHANCEMENTS (From Specification)
+// -------------------------------------------------------------
+model SellerKYCVerification {
+  id              BigInt    @id @default(autoincrement())
+  userId          BigInt    @unique @map("user_id")
+  idCardNumber    String?   @map("id_card_number") @db.VarChar(50)
+  idCardFrontUrl  String?   @map("id_card_front_url") @db.VarChar(255)
+  idCardBackUrl   String?   @map("id_card_back_url") @db.VarChar(255)
+  selfieUrl       String?   @map("selfie_url") @db.VarChar(255)
+  status          String    @default("pending") @db.VarChar(20) // pending, approved, rejected
+  rejectionReason String?   @map("rejection_reason") @db.Text
+  verifiedAt      DateTime? @map("verified_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("seller_kyc_verifications")
+}
+
+model SellerSecurityDeposit {
+  id         BigInt    @id @default(autoincrement())
+  userId     BigInt    @map("user_id")
+  amount     Decimal   @db.Decimal(10, 2)
+  status     String    @default("held") @db.VarChar(20) // held, released, forfeited
+  heldUntil  DateTime? @map("held_until")
+  releasedAt DateTime? @map("released_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("seller_security_deposits")
+}
+
+model ChatMessage {
+  id          BigInt   @id @default(autoincrement())
+  orderId     BigInt   @map("order_id")
+  senderId    BigInt   @map("sender_id")
+  messageType String   @default("text") @map("message_type") @db.VarChar(20) // text, image, system
+  content     String   @db.Text
+  isRead      Boolean  @default(false) @map("is_read")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  order  Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sender User  @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
+}

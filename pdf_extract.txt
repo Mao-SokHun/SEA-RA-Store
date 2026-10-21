@@ -1,0 +1,2374 @@
+================================================================================
+FILE: Backend Development Flow & Architecture Roadmap-Game Account Marketplace.pdf
+================================================================================
+--- Page 1 ---
+ផែនទីបង្ហាញផ្លូវ និងលំហូរនៃការអភិវឌ្ឍ 
+Backend (Backend Architecture & 
+Implementation Roadmap) 
+ឯកសារនេះរៀបចំឡើងជាជំហានៗ (Step-by-Step Backend Build Flow) សម្រាាប់ក្រុមការងារវិស្វកម្ម Backend 
+ក្នុងការសរសេរ និងបង្កើត APIs, Business Logics, Security Measures និង Database Services ឱ្យរួចរាល់ 
+មុនពេលចាប់ផ្តើមតភ្ជាប់ជាមួយ Frontend។ 
+១. ស្ថាបត្យកម្មបច្ចេកវិទ្យា (Recommended Tech Stack & 
+Architecture) 
+សមាសភាគ (Component) 
+បច្ចេកវិទ្យាដែលជ្រើសរើស (Selected 
+Tech Stack) 
+គោលបំណង និងមុខងារ (Purpose & 
+Description) 
+Runtime & Language 
+Node.js (TypeScript) ជាមួយ 
+NestJS / Go 
+Enterprise Modular 
+Architecture 
+ធានារចនាសម្ព័ន្ធកូដស្អាតស្អំ 
+និងងាយស្រួល Scale 
+Database 
+PostgreSQL 16+ 
+Relational Database កម្រិត ACID 
+Compliant 
+សម្រាាប់រក្សាទិន្ន័យហិរញ្ញវត្ថុ 
+ORM / Query Builder 
+Prisma ORM / Drizzle ORM 
+គ្រប់គ្រង Schema Migration និង 
+Type-safe Database Queries 
+Cache & Locking 
+Redis 
+ប្រើប្រាាស់សម្រាាប់ Distributed Lock 
+(Redlock) និង Caching ទិន្ន័យ 
+Object Storage 
+Cloudflare R2 / AWS S3 
+រក្សាសុវត្ថិភាពរូបភាពស្គ្រីនសត 
+Account ក្នុងតម្លៃសមរម្យ 
+
+--- Page 2 ---
+សមាសភាគ (Component) 
+បច្ចេកវិទ្យាដែលជ្រើសរើស (Selected 
+Tech Stack) 
+គោលបំណង និងមុខងារ (Purpose & 
+Description) 
+Real-Time Engine 
+Socket.io 
+គាំទ្រប្រព័ន្ធ In-App Chat និង Live 
+Order Status Updates 
+Documentation 
+Swagger / OpenAPI 3.0 
+បង្កើត API Documentation UI 
+ស្វ័យប្រវត្តិសម្រាាប់ Frontend 
+Integration 
+២. ដំណាក់កាលអនុវត្តទាំង ៩ ជំហាន (Step-by-Step Backend 
+Implementation Flow) 
+ជំហានទី ១៖ ការរៀបចំគម្រោង និងហេដ្ឋារចនាសម្ព័ន្ធ (Project Setup & 
+Infrastructure) 
+1.​ Initialize Project: បង្កើត NestJS / Express TypeScript Project ជាមួយ Folder Structure 
+បែប Clean Architecture / Modular Structure (/modules, /common, /config, 
+/database)។ 
+2.​ Docker Compose Setup: បង្កើត docker-compose.yml រួមមានសេវា PostgreSQL និង 
+Redis សម្រាាប់ដំណើរការលើ Local Development Environment។ 
+3.​ Environment Management: រៀបចំ .env និង Validation Module (JWT Secret, Database 
+URL, Redis Port, AES Encryption Key, Bakong/Payment API Keys)។ 
+ជំហានទី ២៖ Database Migration & Seeding (ការបង្កើតតារាងមូលដ្ឋានទិន្ន័យ) 
+1.​ Prisma/Drizzle Schema Setup: ចម្លងរចនាសម្ព័ន្ធ 3NF ទាំង ១១ តារាងចូលក្នុង Schema File: 
+○​ users, user_social_accounts, user_refresh_tokens, 
+password_reset_tokens, security_audit_logs, 
+telegram_notification_settings, games, game_accounts, 
+game_account_binds, account_credentials, account_images, 
+account_warranties 
+○​ orders, coupons, coupon_redemptions, payments, wallets, 
+wallet_transactions, user_referrals, referral_rewards, 
+withdrawal_requests, disputes 
+
+--- Page 3 ---
+2.​ Execute Migrations: រត់បញ្ជា prisma migrate dev --name 
+init_marketplace_schema ដើម្បីបង្កើត Physical Tables ក្នុង Postgres Database។ 
+3.​ Database Seeding: សរសេរ Script seed.ts ដើម្បីបង្កើតទិន្ន័យគំរូដើម៖ 
+○​ បញ្ជីហ្គេមពេញនិយម (MLBB, PUBG Mobile, Genshin Impact, Valorant) 
+○​ គណនី Admin និងគណនី Platform Treasury 
+ជំហានទី ៣៖ សេវាផ្ទៀងផ្ទាត់អត្តសញ្ញាណ (Authentication & Authorization 
+Module) 
+1.​ User Registration & Login: អភិវឌ្ឍ API ចុះឈ្មោះ និងចូលប្រើប្រាាស់ ដោយប្រើ bcrypt (Salt 
+rounds = 12) សម្រាាប់ Hash លេខសម្ងាត់។ 
+2.​ OAuth & Social Authentication: Integrates Google OAuth និង Telegram Login 
+ដោយប្រើ HMAC-SHA256 signature verification សម្រាាប់ការផ្ទៀងផ្ទាត់សុវត្ថិភាព ព្រមទាំងអនុវត្ត 
+strict constraint ការពារមិនឱ្យមានលេខទូរស័ព្ទស្ទួនគ្នា (no-duplicate phone number 
+constraint)។ 
+3.​ Password Reset Flow: អភិវឌ្ឍប្រព័ន្ធផ្លាស់ប្តូរលេខសម្ងាត់តាមរយៈ single-use hashed token 
+ដែលមានសុពលភាព 15 នាទី និងធ្វើការលុបចោលរាល់ active refresh tokens (auto-revocation) 
+ដោយស្វ័យប្រវត្តិពេលផ្លាស់ប្តូរជោគជ័យ។ 
+4.​ JWT Dual-Token Strategy: 
+○​ Access Token: មានសុពលភាពខ្លី (15 នាទី) សម្រាាប់ផ្ញើជាមួយ Header ពេលហៅ APIs។ 
+○​ Refresh Token: មានសុពលភាពវែង (7 ថ្ងៃ) រក្សាទុកក្នុង HttpOnly Cookie ឬ Redis 
+Session Store Store។ 
+5.​ Role-Based Access Control (RBAC): បង្កើត Middleware/Guards ដើម្បីការពារ Route តាម 
+Role នីមួយៗ (buyer, seller, admin)។ 
+ជំហានទី ៤៖ សេវាគ្រប់គ្រងទំនិញ និងព័ត៌មានសម្ងាត់ (Listing & Credential Vault 
+Module) 
+1.​ Game & Category API: API ទាញយកបញ្ជីហ្គេម និង Rank/Categories បម្រើឱ្យ Dropdown 
+Filter លើប្រព័ន្ធ។ 
+2.​ Account Listing API: 
+○​ CRUD Listing សម្រាាប់ User និង Admin (សម្គាល់ is_platform_owned = 
+true/false)។ 
+○​ Dynamic Filtering, Full-text search និង Pagination (page, limit, sort, rank, 
+priceRange)។ 
+
+--- Page 4 ---
+3.​ Cryptographic Credential Service (AES-256-GCM): 
+○​ បង្កើត CryptoService សម្រាាប់ Encrypt login_identifier, 
+login_password, និង backup_codes មុននឹង Save ចូល Database Vault Table។ 
+○​ Method Decrypt ត្រូវបានអនុញ្ញាតឱ្យហៅបាន តែពេល Order 
+ត្រូវបានបង់ប្រាាក់ជោគជ័យប៉ុណ្ណោះ។ 
+○​ Game Binds Verification & Snapshot: បន្ថែមការផ្ទៀងផ្ទាត់ប្រភេទ Binds 
+(clean_unbound, changeable_email, dead_bind) ព្រមទាំងរក្សាទុក listing 
+snapshot នៃព័ត៌មានគណនីពេលរៀបចំលក់។ 
+4.​ Media Upload Service: API បង្កើត Presigned URL ដើម្បីឱ្យ Client អាច Upload 
+រូបភាពស្គ្រីនសតផ្ទាល់ទៅ Cloudflare R2 / S3 Storage។ 
+ជំហានទី ៥៖ សេវាបញ្ជាទិញ និងការពារទិញជាន់គ្នា (Order & Concurrency Lock 
+Module) 
+1.​ Checkout Endpoint (POST /api/v1/orders/checkout): 
+○​ ទទួលសំណើបញ្ជាទិញ និងពិនិត្យមើលភាពទំនេរនៃ Account មុនបង្កើតការកុម្ម៉ង់។ 
+2.​ Distributed Locking (Redis Redlock): 
+○​ ពេល Buyer ចុច Checkout ត្រូវ Acquire Lock លើ Key: 
+lock:account:{account_id} រយៈពេល 15 នាទី (900s)។ 
+○​ ប្រសិនបើ Account កំពុង Lock ត្រូវបដិសេធសំណើដោយផ្ញើ 409 Conflict (ការពារ Race 
+Condition / Double-spending)។ 
+3.​ Order State Machine: 
+○​ ផ្លាស់ប្តូរ Status គណនីទៅជា reserved និងកំណត់ reserved_until = NOW() + 
+15mins។ 
+○​ កំណត់ Cron Job / Redis Keyspace Notification auto-release worker ដើម្បីដោះលែង 
+Account (available) វិញភ្លាមៗ ពេលហួសពេលវេលាកំណត់ reserved_until បើ 
+Buyer មិនបង់ប្រាាក់។ 
+ជំហានទី ៦៖ សេវាទូទាត់ប្រាក់ (Payment & Webhook Module - Bakong KHQR) 
+1.​ Dynamic KHQR Generator: ហៅ Bakong API ឬ generate KHQR string បញ្ចូល Amount 
+និង Order ID ក្នុង Deep Link / EMVCo Format។ 
+2.​ Webhook Verification Endpoint (POST /api/v1/payments/webhook): 
+○​ ផ្ទៀងផ្ទាត់ HMAC-SHA256 Signature ពី Payment Gateway។ 
+○​ ពិនិត្យភាពត្រឹមត្រូវនៃចំនួនទឹកប្រាាក់ (Amount Comparison)។ 
+
+--- Page 5 ---
+○​ ធានា Idempotency (ការពារ Webhook ផ្ញើមក ២ ដងមិនឱ្យកត់ត្រាាជាន់គ្នា)។ 
+3.​ Fulfillment Transition: ផ្លាស់ប្តូរ Order status ទៅជា processing ឬ completed 
+រួចបញ្ជូនទិន្ន័យ Decrypted Credentials ទៅឱ្យ Buyer។ 
+4.​ Coupon Engine & Warranty Fee: គណនា subtotal - discount 
+(ដោយផ្នែកបញ្ចុះតម្លៃត្រូវបានរ៉ាប់រងដោយ Platform) និងរួមបញ្ចូលការគណនាថ្លៃសេវាធានា (warranty fee 
+attachment) ពេលទូទាត់ប្រាាក់។ 
+ជំហានទី ៧៖ សេវាកាបូបលុយ និងប្រព័ន្ធ Escrow (Wallet & Escrow Engine) 
+1.​ Ledger Accounting Service: 
+○​ ករណី B2C (Platform Owned): ចំណូលកត់ត្រាាចូល Platform Treasury ផ្ទាល់។ 
+○​ ករណី C2C (User Marketplace): លុយត្រូវបាន Hold ក្នុង 
+wallets.locked_balance របស់អ្នកលក់ រង់ចាំការត្រួតពិនិត្យ 24 ម៉ោង។ 
+2.​ Commission Deductor: កាត់ Platform Fee ស្វ័យប្រវត្តិ (ឧ. 10%) និងបញ្ចូលប្រាាក់សុទ្ធ (90%) ទៅ 
+wallets.balance ក្រោយចប់ពេល Dispute Window។ 
+3.​ Withdrawal Management: API សម្រាាប់ Seller ស្នើសុំដកប្រាាក់ និង API សម្រាាប់ Admin ចុច 
+Approve/Reject Payouts ទៅកាន់ធនាគារ ABA, Wing, ACLEDA។ 
+4.​ Double-Entry Rollback & Referral Distribution: អនុវត្តប្រព័ន្ធ rollback 
+ពេលការដកប្រាាក់បរាជ័យ (credit reversal ជាមួយ balance_after checkpoint) និងផ្តល់រង្វាន់ 
+referral reward ដោយស្វ័យប្រវត្តិនៅពេលអ្នកជោគជ័យក្នុងការជួញដូរលើកដំបូង។ 
+ជំហានទី ៨៖ សេវា Real-time Chat និងដោះស្រាាយវិវាទ (Chat & Dispute Module) 
+1.​ WebSocket Gateway: បង្កើត Private Rooms សម្រាាប់ Order នីមួយៗរវាង Buyer និង Seller 
+សម្រាាប់ទាក់ទងផ្ទេរ OTP/Email។ 
+2.​ Dispute Handling: 
+○​ API សម្រាាប់ Buyer ប្តឹងតវ៉ា (open dispute) ដែលនឹងផ្អាកការ Release លុយក្នុង Escrow 
+ជាបណ្តោះអាសន្ន។ 
+○​ API សម្រាាប់ Admin ពិនិត្យមើល Chat Log, ភស្តុតាង និងធ្វើការសម្រេច (Refund ទៅ Buyer ឬ 
+Release ទៅ Seller)។ 
+3.​ Telegram Bot Notifications: ភ្ជាប់ Telegram Bot notification webhook service 
+សម្រាាប់ផ្ញើសារជូនដំណឹងភ្លាមៗលើរាល់សកម្មភាពសំខាន់ៗដូចជា Order, Payment, Chat, Dispute, 
+និងការប្រកាសអនុម័ត Withdrawal។ 
+
+--- Page 6 ---
+ជំហានទី ៩៖ សាកល្បង ប្រមូលឯកសារ និងប្រគល់ជូន Frontend (Testing & API 
+Docs) 
+1.​ Swagger / OpenAPI Documentation: បង្កើត Swagger UI នៅលើ Route /api/docs 
+ដោយមាន Sample Request/Response និង Authentication Header ច្បាស់លាស់។ 
+2.​ Postman Collection & Environment: Export បញ្ជី APIs រួមទាំង Automated Tests 
+សម្រាាប់ចែករំលែកដល់ Frontend Developer។ 
+3.​ Integration & E2E Testing: សរសេរ Test Cases សម្រាាប់៖ 
+○​ Checkout Concurrency (សាកល្បង Users 2 នាក់ទិញ Account តែមួយក្នុងពេលតែមួយ) 
+○​ Webhook Signature Forgery (តេស្តសុវត្ថិភាពទូទាត់ប្រាាក់) 
+○​ AES-256 Decryption Security Leak Tests 
+ 
+
+
+================================================================================
+FILE: Database Design & System Flow-Game Account Marketplace.pdf
+================================================================================
+--- Page 1 ---
+ឯកសាររចនាសម្ព័ន្ធ Database និង System 
+Architecture សម្រាប់ Web App លក់ Game 
+Account 
+១. សេចក្តីផ្តើម និងគំរូអាជីវកម្ម (Business Model Overview) 
+ប្រព័ន្ធនេះគាំទ្រ ២ ករណីអាជីវកម្មរួមគ្នា (Hybrid Model)៖ 
+ 
+1.​ ករណីទី១ (B2C / Platform-Owned Accounts): ម្ចាស់ Platform ទិញ Account ពីគេ 
+ឬបង្កើតផ្ទាល់ខ្លួនយកមកលក់លើវេបសាយ។ ប្រាាក់ចំណូលបានពីការលក់គឺរត់ចូល Bank របស់ Platform 
+100%។ 
+2.​ ករណីទី២ (C2C / Marketplace with Commission): អ្នកប្រើប្រាាស់ទូទៅដាក់លក់ Account 
+ផ្ទាល់ខ្លួនលើ Platform។ ប្រព័ន្ធប្រើ Escrow Model ដោយប្រាាក់ពី Buyer ចូលមក Platform សិន។ 
+ក្រោយពេល Buyer ផ្ទៀងផ្ទាត់ជោគជ័យ ប្រព័ន្ធកាត់កម្រៃជើងសារ (Platform Commission Fee ឧ. 
+10%) ហើយបញ្ចូលលុយសុទ្ធ (90%) ទៅកាន់ Digital Wallet 
+របស់អ្នកលក់ដើម្បីរង់ចាំការស្នើសុំដកប្រាាក់ (Withdrawal)។ 
+២. គំនូសតាងលំហូរដំណើរការប្រព័ន្ធ (System Flowchart & 
+Lifecycle) 
+២.១ លំហូរទូទៅនៃការទិញលក់ និងការទូទាត់ (End-to-End Escrow Flow) 
+1.​ Listing Stage: 
+○​ Seller បង្កើត Listing គណនីហ្គេម ដាក់តម្លៃ រូបភាព និងបញ្ចូលព័ត៌មានសម្ងាត់ 
+(Credentials) ដែលត្រូវ Encrypt ដោយស្វ័យប្រវត្តិ។ 
+○​ សម្រាាប់ Platform-Owned Account ប្រព័ន្ធកំណត់ Flag is_platform_owned = 
+true។ 
+2.​ Order & Checkout Stage: 
+○​ Buyer ជ្រើសរើសគណនី រួចចុច "ទិញឥឡូវនេះ"។ 
+○​ ប្រព័ន្ធផ្លាស់ប្តូរ Status នៃ Account ទៅជា reserved រយៈពេល 15 នាទី ដើម្បីការពារ 
+Race Condition (អ្នកទិញជាន់គ្នា)។ 
+○​ ប្រព័ន្ធបង្កើត Order និងទាញយក KHQR / Payment Gateway។ 
+3.​ Payment Verification: 
+
+--- Page 2 ---
+○​ Buyer ស្កេនបង់ប្រាាក់ ថវិកាចូលគណនី Bank របស់ Platform។ 
+○​ Payment Gateway ផ្ញើ Webhook មកបញ្ជាក់ការទូទាត់។ Order status ប្រែជា 
+completed (ឬ processing)។ 
+4.​ Account Delivery: 
+○​ ប្រសិនបើជា instant: ប្រព័ន្ធបង្ហាញ Credential (Decrypt) ជូន Buyer ភ្លាមៗក្នុងផ្ទាំង 
+Order Detail។ 
+○​ ប្រសិនបើជា manual: Buyer និង Seller ធ្វើការទាក់ទងគ្នាតាម Chat System 
+ក្នុងវេបសាយ ដើម្បីផ្ទេរ Email/Password និងផ្ទៀងផ្ទាត់ OTP។ 
+5.​ Settlement & Fund Allocation: 
+○​ ប្រសិនបើ B2C: ចំណូលរត់ចូល Platform ទាំងស្រុង។ Order បញ្ចប់ដោយជោគជ័យ។ 
+○​ ប្រសិនបើ C2C: 
+■​ ប្រាាក់ត្រូវបានកាត់ Platform Commission (ឧ. 10%)។ 
+■​ ប្រាាក់នៅសល់ 90% ត្រូវបញ្ចូលទៅក្នុង wallets របស់អ្នកលក់ និងកត់ត្រាាក្នុង 
+wallet_transactions។ 
+6.​ Withdrawal (ការដកប្រាក់របស់អ្នកលក់): 
+○​ Seller ស្នើសុំដកប្រាាក់តាម withdrawal_requests (ABA, Wing, ACLEDA)។ 
+○​ Admin ពិនិត្យ និងអនុម័ត (Approved) រួចផ្ទេរប្រាាក់ជូន Seller។ 
+៣. ការរចនាតារាងមូលដ្ឋានទិន្ន័យ (Database Schema - 3NF 
+Normalized) 
+៣.១ តារាង Users (អ្នកប្រើប្រាស់) 
+ 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+ 
+BIGINT
+ 
+PK, Auto Increment
+លេខសម្គាល់អ្នកប្រើប្រាាស់ 
+username 
+ 
+VARCHAR(50)
+ 
+UNIQUE, NOT NULL
+ឈ្មោះគណនី 
+email 
+ 
+VARCHAR(100)
+ 
+UNIQUE, NOT NULL
+អ៊ីមែល 
+password_hash 
+ 
+VARCHAR(255)
+ 
+NOT NULL
+លេខសម្ងាត់ដែលបាន Hash 
+phone 
+ 
+VARCHAR(20)
+ 
+NULLABLE
+លេខទូរស័ព្ទ 
+
+--- Page 3 ---
+Column Name 
+Data Type 
+Constraints 
+Description 
+two_factor_secret 
+TEXT 
+ 
+NULLABLE
+Encrypted TOTP secret សម្រាាប់ 
+2FA 
+two_factor_enabled 
+BOOLEAN 
+DEFAULT FALSE 
+ស្ថានភាពបើកប្រើ 2FA 
+failed_login_attempts 
+INT 
+DEFAULT 0 
+ចំនួនដងដែលចូលប្រើប្រព័ន្ធបរាជ័យ 
+lockout_until 
+ 
+TIMESTAMP
+ 
+NULLABLE
+ពេលវេលាបិទខ្ទប់គណនីបណ្តោះអាសន្ន 
+password_changed_at 
+ 
+TIMESTAMP
+ 
+NULLABLE
+កាលបរិច្ឆេទផ្លាស់ប្តូរលេខសម្ងាត់ចុងក្រោ
+យ 
+last_login_at 
+ 
+TIMESTAMP
+ 
+NULLABLE
+ពេលវេលាចូលប្រើប្រព័ន្ធចុងក្រោយ 
+last_login_ip 
+VARCHAR(45) 
+ 
+NULLABLE
+អាសយដ្ឋាន IP 
+ចូលប្រើប្រព័ន្ធចុងក្រោយ 
+role 
+ 
+VARCHAR(20)
+ 
+DEFAULT 'buyer'
+តួនាទី (buyer, seller, admin) 
+status 
+ 
+VARCHAR(20)
+ 
+DEFAULT 'active'
+ស្ថានភាព (active, banned) 
+created_at 
+ 
+TIMESTAMP
+ 
+DEFAULT CURRENT_TIME…
+ថ្ងៃបង្កើត 
+៣.២ តារាង Games (កាតាឡុកហ្គេម) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+ 
+PK, Auto Increment
+លេខសម្គាល់ហ្គេម 
+title 
+VARCHAR(100) 
+ 
+NOT NULL
+ឈ្មោះហ្គេម (MLBB, PUBG Mobile, 
+Genshin Impact) 
+platform 
+VARCHAR(50) 
+ 
+NOT NULL
+ប្រភេទឧបករណ៍ (mobile, pc, 
+console) 
+icon_url 
+VARCHAR(255) 
+ 
+NULLABLE
+រូប Logo ហ្គេម 
+
+--- Page 4 ---
+Column Name 
+Data Type 
+Constraints 
+Description 
+is_active 
+BOOLEAN 
+ 
+DEFAULT TRUE
+បង្ហាញលើវេបសាយឬអត់ 
+៣.៣ តារាង Game_Accounts (គណនីហ្គេមដាក់លក់) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+ 
+BIGINT
+ 
+PK, Auto Increment
+លេខសម្គាល់ Account 
+seller_id 
+ 
+BIGINT
+ 
+FK -> users.id
+ID អ្នកលក់ (បើ Platform លក់ផ្ទាល់ 
+គឺ ID របស់ Admin) 
+game_id 
+ 
+BIGINT
+ 
+FK -> games.id
+ID ហ្គេម 
+title 
+ 
+VARCHAR(150)
+ 
+NOT NULL
+ចំណងជើងដាក់លក់ 
+description 
+ 
+TEXT
+ 
+NULLABLE
+ការពិពណ៌នាលម្អិត 
+price 
+ 
+DECIMAL(10,2)
+ 
+NOT NULL
+តម្លៃលក់ 
+server_region 
+ 
+VARCHAR(50)
+ 
+NOT NULL
+Server (Asia, Global, etc.) 
+rank_level 
+ 
+VARCHAR(50)
+ 
+NULLABLE
+Rank ក្នុងហ្គេម 
+delivery_type 
+ 
+VARCHAR(20)
+ 
+DEFAULT 'instant'
+ការប្រគល់ (instant, manual) 
+is_platform_owned 
+ 
+BOOLEAN
+ 
+DEFAULT FALSE
+កំណត់ថាជាគណនីរបស់ Platform 
+(B2C) ឬ User ដាក់លក់ (C2C) 
+status 
+ 
+VARCHAR(20)
+ 
+DEFAULT 'available'
+ស្ថានភាព (available, 
+reserved, sold) 
+created_at 
+ 
+TIMESTAMP
+ 
+DEFAULT CURRENT_TIME…
+ថ្ងៃបង្កើត 
+៣.៤ តារាង Account_Credentials (ព័ត៌មានសម្ងាត់គណនីហ្គេម) 
+ 
+
+--- Page 5 ---
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+ 
+BIGINT
+ 
+PK, Auto Increment
+លេខសម្គាល់ Credential 
+game_account_id 
+ 
+BIGINT
+ 
+FK -> game_accounts.id, …
+ID គណនីហ្គេម 
+key_version 
+INT 
+DEFAULT 1 
+កម្រិត Key Version សម្រាាប់ Key 
+Rotation 
+initialization_vector 
+VARCHAR(64) 
+ 
+NOT NULL
+IV / Nonce សម្រាាប់ការ Encrypt 
+auth_tag 
+VARCHAR(64) 
+ 
+NOT NULL
+GCM Authentication Tag 
+ការពារការកែបន្លំ 
+encrypted_login_identif
+ier 
+ 
+TEXT
+ 
+NOT NULL
+Username ឬ Email ចូលហ្គេម 
+(Encrypted via AES-256-GCM) 
+encrypted_login_passwor
+d 
+ 
+TEXT
+ 
+NOT NULL
+Password ចូលហ្គេម (Encrypted 
+via AES-256-GCM) 
+encrypted_backup_codes 
+ 
+TEXT
+ 
+NULLABLE
+លេខកូដបម្រុង 2FA (Encrypted via 
+AES-256-GCM) 
+extra_instructions 
+ 
+TEXT
+ 
+NULLABLE
+ការណែនាំបន្ថែមពេលចូលលេង 
+revealed_at 
+TIMESTAMP 
+ 
+NULLABLE
+ពេលវេលាដែលព័ត៌មានសម្ងាត់ត្រូវបាន
+បើកមើលដំបូង 
+៣.៥ តារាង Account_Images (រូបភាពគណនីហ្គេម) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+ 
+BIGINT
+PK, Auto Increment 
+លេខសម្គាល់រូបភាព 
+game_account_id 
+ 
+BIGINT
+FK -> game_accounts.id 
+ID គណនីហ្គេម 
+image_url 
+ 
+VARCHAR(255)
+NOT NULL 
+URL រូបភាព 
+is_primary 
+ 
+BOOLEAN
+DEFAULT FALSE 
+រូបភាពចម្បង 
+
+--- Page 6 ---
+៣.៦ តារាង Orders (ការបញ្ជាទិញ) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+ 
+BIGINT
+ 
+PK, Auto Increment
+លេខសម្គាល់ Order 
+order_number 
+ 
+VARCHAR(50)
+ 
+UNIQUE, NOT NULL
+លេខវិក្កយបត្រ (ឧ. 
+ORD-20261021-001) 
+buyer_id 
+ 
+BIGINT
+ 
+FK -> users.id
+អ្នកទិញ 
+seller_id 
+ 
+BIGINT
+ 
+FK -> users.id
+អ្នកលក់ 
+game_account_id 
+ 
+BIGINT
+ 
+FK -> game_accounts.id, …
+Account ដែលបានទិញ 
+total_amount 
+ 
+DECIMAL(10,2)
+ 
+NOT NULL
+តម្លៃសរុបដែល Buyer បង់ 
+platform_fee 
+ 
+DECIMAL(10,2)
+ 
+DEFAULT 0.00
+កម្រៃជើងសារដែល Platform កាត់ 
+seller_net_amount 
+ 
+DECIMAL(10,2)
+ 
+NOT NULL
+ប្រាាក់ចំណូលសុទ្ធដែល Seller 
+ទទួលបាន 
+status 
+ 
+VARCHAR(20)
+ 
+DEFAULT 'pending'
+(pending, completed, 
+disputed, refunded) 
+created_at 
+ 
+TIMESTAMP
+ 
+DEFAULT CURRENT_TIME…
+ថ្ងៃបង្កើត 
+៣.៧ តារាង Payments (ការទូទាត់ប្រាក់) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+ 
+BIGINT
+ 
+PK, Auto Increment
+លេខសម្គាល់ Payment 
+order_id 
+ 
+BIGINT
+ 
+FK -> orders.id, UNIQUE
+ID ការបញ្ជាទិញ 
+transaction_id 
+ 
+VARCHAR(100)
+ 
+UNIQUE, NOT NULL
+លេខ Transaction ពី 
+Bank/Gateway 
+
+--- Page 7 ---
+Column Name 
+Data Type 
+Constraints 
+Description 
+payment_method 
+ 
+VARCHAR(50)
+ 
+NOT NULL
+វិធីសាស្ត្របង់ប្រាាក់ (KHQR, ABA, 
+Bakong, Wing) 
+amount 
+ 
+DECIMAL(10,2)
+ 
+NOT NULL
+ចំនួនទឹកប្រាាក់បង់ 
+status 
+ 
+VARCHAR(20)
+ 
+DEFAULT 'pending'
+(pending, success, failed) 
+paid_at 
+ 
+TIMESTAMP
+ 
+NULLABLE
+ពេលវេលាបង់ប្រាាក់ 
+៣.៨ តារាង Wallets (កាបូបលុយអ្នកលក់) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+ 
+BIGINT
+PK, Auto Increment 
+លេខសម្គាល់ Wallet 
+user_id 
+ 
+BIGINT
+FK -> users.id, UNIQUE 
+ID អ្នកប្រើប្រាាស់ 
+balance 
+ 
+DECIMAL(10,2)
+DEFAULT 0.00 
+សមតុល្យលុយដែលអាចដកបាន 
+updated_at 
+ 
+TIMESTAMP
+DEFAULT 
+CURRENT_TIMESTAMP 
+ពេលវេលាធ្វើបច្ចុប្បន្នភាព 
+៣.៩ តារាង Wallet_Transactions (ប្រតិបត្តិការកាបូបលុយ) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+ 
+BIGINT
+ 
+PK, Auto Increment
+លេខសម្គាល់ Transaction 
+wallet_id 
+ 
+BIGINT
+ 
+FK -> wallets.id
+ID កាបូបលុយ 
+order_id 
+ 
+BIGINT
+ 
+FK -> orders.id, NULLABLE
+ភ្ជាប់ទៅ Order 
+ប្រសិនបើជាលុយចំណេញពីការលក់ 
+transaction_type 
+ 
+VARCHAR(20)
+ 
+NOT NULL
+ប្រភេទ (earning, withdrawal, 
+refund) 
+amount 
+ 
+DECIMAL(10,2)
+ 
+NOT NULL
+ចំនួនទឹកប្រាាក់ 
+
+--- Page 8 ---
+Column Name 
+Data Type 
+Constraints 
+Description 
+created_at 
+ 
+TIMESTAMP
+ 
+DEFAULT CURRENT_TIME…
+ថ្ងៃបង្កើត 
+៣.១០ តារាង Withdrawal_Requests (ការស្នើសុំដកប្រាក់) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+ 
+BIGINT
+ 
+PK, Auto Increment
+លេខសម្គាល់ការដកប្រាាក់ 
+user_id 
+ 
+BIGINT
+ 
+FK -> users.id
+ID អ្នកប្រើប្រាាស់ 
+amount 
+ 
+DECIMAL(10,2)
+ 
+NOT NULL
+ចំនួនលុយដែលស្នើសុំដក 
+bank_name 
+ 
+VARCHAR(50)
+ 
+NOT NULL
+ឈ្មោះធនាគារ (ABA, ACLEDA, 
+Wing) 
+account_number 
+ 
+VARCHAR(50)
+ 
+NOT NULL
+លេខគណនីធនាគារ 
+account_name 
+ 
+VARCHAR(100)
+ 
+NOT NULL
+ឈ្មោះម្ចាស់គណនី 
+status 
+ 
+VARCHAR(20)
+ 
+DEFAULT 'pending'
+(pending, approved, 
+rejected) 
+created_at 
+ 
+TIMESTAMP
+ 
+DEFAULT CURRENT_TIME…
+ថ្ងៃបង្កើត 
+៣.១១ តារាង Disputes (ការដោះស្រាយវិវាទ/ប្តឹងតវ៉ា) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+ 
+BIGINT
+ 
+PK, Auto Increment
+លេខសម្គាល់ Dispute 
+order_id 
+ 
+BIGINT
+ 
+FK -> orders.id, UNIQUE
+ID ការបញ្ជាទិញ 
+raised_by 
+ 
+BIGINT
+ 
+FK -> users.id
+អ្នកបង្កើត Dispute 
+reason 
+ 
+VARCHAR(150)
+ 
+NOT NULL
+មូលហេតុ 
+description 
+ 
+TEXT
+ 
+NOT NULL
+ការពិពណ៌នាលម្អិត 
+
+--- Page 9 ---
+Column Name 
+Data Type 
+Constraints 
+Description 
+status 
+ 
+VARCHAR(20)
+ 
+DEFAULT 'open'
+(open, under_review, 
+resolved_buyer, 
+resolved_seller) 
+admin_notes 
+ 
+TEXT
+ 
+NULLABLE
+កំណត់សម្គាល់របស់ Admin 
+created_at 
+ 
+TIMESTAMP
+ 
+DEFAULT CURRENT_TIME…
+ថ្ងៃបង្កើត 
+៣.១២ តារាង User_Refresh_Tokens (ការគ្រប់គ្រង JWT Refresh Token & 
+Sessions) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ Session / Refresh 
+Token 
+user_id 
+BIGINT 
+FK -> users.id 
+ID អ្នកប្រើប្រាាស់ 
+token_hash 
+VARCHAR(255) 
+NOT NULL 
+Hashed Refresh Token សម្រាាប់ 
+dual-token strategy 
+device_info 
+VARCHAR(255) 
+NULLABLE 
+ព័ត៌មាន Browser, OS, និង Device 
+ip_address 
+VARCHAR(45) 
+NULLABLE 
+អាសយដ្ឋាន IP របស់អ្នកប្រើប្រាាស់ 
+is_revoked 
+BOOLEAN 
+DEFAULT FALSE 
+ស្ថានភាពលុបចោល Token (Instant 
+Logout / Invalidation) 
+expires_at 
+TIMESTAMP 
+NOT NULL 
+កាលបរិច្ឆេទផុតកំណត់ Token 
+created_at 
+TIMESTAMP 
+DEFAULT 
+CURRENT_TIMESTAMP 
+ថ្ងៃបង្កើត 
+
+--- Page 10 ---
+៣.១៣ តារាង Security_Audit_Logs (កំណត់ហេតុសន្តិសុខ និងសកម្មភាពសំខាន់ៗ) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ Log 
+user_id 
+BIGINT 
+FK -> users.id, NULLABLE 
+ID អ្នកប្រើប្រាាស់ដែលធ្វើសកម្មភាព 
+action 
+VARCHAR(100) 
+NOT NULL 
+ប្រភេទសកម្មភាព 
+(LOGIN_SUCCESS, 
+FAILED_LOGIN, 
+REVEAL_CREDENTIALS, 
+WITHDRAW_REQUEST, 
+PASSWORD_CHANGE) 
+ip_address 
+VARCHAR(45) 
+NULLABLE 
+អាសយដ្ឋាន IP 
+user_agent 
+TEXT 
+NULLABLE 
+ព័ត៌មាន Browser / Client 
+User-Agent 
+metadata 
+TEXT 
+NULLABLE 
+ទិន្ន័យបន្ថែមជាទម្រង់ JSON 
+created_at 
+TIMESTAMP 
+DEFAULT 
+CURRENT_TIMESTAMP 
+ថ្ងៃបង្កើត 
+៤. យុទ្ធសាស្ត្រសុវត្ថិភាព និងអនុសាសន៍បច្ចេកទេស (Security & 
+Implementation Notes) 
+1.​ JWT Session Security & Refresh Token Rotation: ប្រព័ន្ធប្រើ dual-token 
+architecture ដោយ Access Token (short-lived, ឧ. 15 នាទី) និង Refresh Token 
+(long-lived, ឧ. 7 ថ្ងៃ)។ រាល់ពេល Refresh Token ត្រូវ បាន ប្រើ ត្រូវ តែ ធ្វើ Rotation ដោយ បង្កើត 
+Refresh Token ថ្មី និង បោះបង់ Token ចាស់។ តារាង user_refresh_tokens រក្សាទុក 
+Hashed Refresh Token រួមជាមួយ flag is_revoked ដើម្បីគាំទ្រ Instant Logout និង 
+Session Invalidation។ 
+2.​ Rate Limiting & Account Lockout: ដើម្បីការពារ Brute-force attacks លើ Endpoint 
+ចូលប្រើប្រាាស់ ប្រព័ន្ធប្រើ Rate Limiting រួមជាមួយតារាង users (អត្ថបទ 
+failed_login_attempts និង lockout_until)។ ប្រសិនបើចូលប្រើប្រាាស់បរាជ័យលើសពី 
+
+--- Page 11 ---
+5 ដង គណនីត្រូវបិទខ្ទប់បណ្តោះអាសន្ន (ឧ. 15 នាទី) ហើយរាល់សកម្មភាពបរាជ័យ 
+ឬសង្ស័យត្រូវកត់ត្រាាក្នុង security_audit_logs។ 
+3.​ Field-Level Authenticated Encryption (AES-256-GCM): សម្រាាប់តារាង 
+account_credentials ត្រូវ Encrypt ដោយប្រើ AES-256-GCM mode។ រាល់ Row 
+នីមួយៗត្រូវមាន unique Initialization Vector (IV) និង Authentication Tag (auth_tag) 
+ដើម្បីការពារ Tampering និង Replay Attacks។ ព្រមទាំងមាន key_version សម្រាាប់គាំទ្រ Key 
+Rotation ដោយមិនប៉ះពាល់ដល់ទិន្ន័យចាស់ៗ។ 
+ 
+៣.១៤ តារាង User_Social_Accounts (OAuth Google & Telegram Login) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ Social Link 
+user_id 
+BIGINT 
+FK -> users.id 
+ID អ្នកប្រើប្រាាស់ 
+provider 
+VARCHAR(20) 
+NOT NULL 
+ប្រភព ('google', 'telegram') 
+provider_user_id 
+VARCHAR(100) 
+NOT NULL 
+ID ពី Google Sub ឬ Telegram 
+User ID 
+phone_number 
+VARCHAR(20) 
+NULLABLE 
+លេខទូរស័ព្ទពី Telegram 
+(ដាច់ខាតមិនអាច Duplicate 
+ក្នុងប្រព័ន្ធ) 
+provider_email 
+VARCHAR(100) 
+NULLABLE 
+Email ពី Google Profile 
+raw_data 
+TEXT 
+NULLABLE 
+JSON Payload ពី OAuth 
+Callback 
+created_at 
+TIMESTAMP 
+DEFAULT 
+CURRENT_TIMESTAMP 
+ថ្ងៃភ្ជាប់គណនី 
+ចំណាំច្បាប់ទិន្ន័យ (Constraints)៖ 
+.​
+UNIQUE(provider, provider_user_id): ការពារការភ្ជាប់គណនី Social 
+ដដែលច្រើនដង។ 
+.​
+UNIQUE(provider, phone_number): ការពារដាច់ខាតមិនឱ្យមានលេខទូរស័ព្ទដូចគ្នា 
+(Duplicate) ពេល Login ជាមួយ Telegram។ 
+
+--- Page 12 ---
+៣.១៥ តារាង Password_Reset_Tokens (ប្រព័ន្ធ Forget Password) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ Token 
+user_id 
+BIGINT 
+FK -> users.id 
+ID អ្នកប្រើប្រាាស់ដែលភ្លេចលេខសម្ងាត់ 
+token_hash 
+VARCHAR(255) 
+NOT NULL 
+Hashed Token (HMAC-SHA256) 
+ការពារការបែកធ្លាយក្នុង DB 
+expires_at 
+TIMESTAMP 
+NOT NULL 
+កាលបរិច្ឆេទផុតកំណត់ (សុពលភាព ១៥ 
+នាទី) 
+is_used 
+BOOLEAN 
+DEFAULT FALSE 
+ស្ថានភាពប្រើប្រាាស់ (ការពារ 
+Single-use Token) 
+ip_address 
+VARCHAR(45) 
+NULLABLE 
+IP Address របស់អ្នកស្នើសុំ 
+created_at 
+TIMESTAMP 
+DEFAULT 
+CURRENT_TIMESTAMP 
+ថ្ងៃបង្កើត Token 
+៤.១ យន្តការសុវត្ថិភាពទិន្ន័យ និងការការពារអ្នកប្រើប្រាស់ (Security & User 
+Protection Protocols) 
+1.​ Google & Telegram OAuth 2.0 Security: 
+○​ សម្រាាប់ Telegram Login: Backend ត្រូវធ្វើ Cryptographic Signature 
+Verification ដោយប្រើ Bot Token និង HMAC-SHA256 លើ Hash ដែល Telegram 
+ផ្ញើមក។ 
+○​ ច្បាប់លេខទូរស័ព្ទ (No Duplicate Phone): តារាង users និង 
+user_social_accounts ត្រូវកំណត់ UNIQUE លើ phone។ ប្រសិនបើ User 
+ព្យាយាម Login ជាមួយ Telegram ដែលមានលេខទូរស័ព្ទជាន់នឹងគណនីចាស់ 
+ប្រព័ន្ធនឹងបដិសេធ (Block) ឬទាមទារ Password Verification ដើម្បី Link Account។ 
+2.​ Forget Password Security Protocol: 
+○​ Token ផ្ញើទៅ Email ត្រូវតែជា Plain Random String (Crypto-secure 64 chars) 
+ប៉ុន្តែរក្សាទុកក្នុង DB ជា token_hash។ 
+○​ Token មានសុពលភាពត្រឹមតែ ១៥ នាទី និងអាចប្រើបានតែម្តងគត់ (is_used = true)។ 
+
+--- Page 13 ---
+○​ ពេលផ្លាស់ប្តូរលេខសម្ងាត់ជោគជ័យ ប្រព័ន្ធនឹង Revoke រាល់ JWT Refresh Tokens 
+ទាំងអស់ក្នុងតារាង user_refresh_tokens ដោយស្វ័យប្រវត្តិ (Force Logout គ្រប់ 
+Devices)។ 
+3.​ JWT Rotation & Refresh Token Invalidation: 
+○​ Access Token (Short-lived 15m) + Refresh Token (Long-lived 7d)។ 
+○​ Refresh Token ត្រូវ Hash មុននឹង Save ក្នុង user_refresh_tokens។ រាល់ពេល 
+Refresh ត្រូវចេញ Token ថ្មី (Rotation) និងលុប Token ចាស់។ បើមានការ Hack យក 
+Token ចាស់មកប្រើ ប្រព័ន្ធនឹង Flag សង្ស័យ ហើយ Revoke Sessions ទាំងអស់ភ្លាមៗ។ 
+4.​ Field-Level Encryption សម្រាាប់ Credentials (AES-256-GCM): 
+៣.១៦ តារាង Account_Warranties (ប្រព័ន្ធ
+ានារ៉ាប់រង និងការពារ Account Recall) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ Warranty 
+order_id 
+BIGINT 
+FK -> orders.id, UNIQUE 
+ID ការបញ្ជាទិញ 
+warranty_type 
+VARCHAR(50) 
+NOT NULL 
+ប្រភេទធានា ('7_days', '30_days', 
+'lifetime') 
+warranty_fee 
+DECIMAL(10,2) 
+NOT NULL, DEFAULT 0.00 
+តម្លៃសេវាធានារ៉ាប់រង 
+status 
+VARCHAR(20) 
+DEFAULT 'active' 
+('active', 'expired', 'claimed', 
+'void') 
+start_date 
+TIMESTAMP 
+DEFAULT 
+CURRENT_TIMESTAMP 
+ថ្ងៃចាប់ផ្តើមធានា 
+end_date 
+TIMESTAMP 
+NULLABLE 
+ថ្ងៃផុតកំណត់ធានា (NULL បើជា 
+Lifetime) 
+claim_reason 
+TEXT 
+NULLABLE 
+មូលហេតុនៃការទាមទារសំណង 
+claim_resolved_at 
+TIMESTAMP 
+NULLABLE 
+ថ្ងៃដោះស្រាាយសំណងរួចរាល់ 
+
+--- Page 14 ---
+៣.១៧ តារាង Game_Account_Binds (ព័ត៌មានលម្អិតអំពីការភ្ជាប់គណនីហ្គេម) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ Bind 
+game_account_id 
+BIGINT 
+FK -> game_accounts.id 
+ID គណនីហ្គេម 
+bind_provider 
+VARCHAR(50) 
+NOT NULL 
+ប្រភពភ្ជាប់ ('moonton', 
+'google_play', 'facebook', 
+'apple_id', 'tiktok', 'email', 'psn', 
+'twitter') 
+bind_status 
+VARCHAR(30) 
+NOT NULL 
+ស្ថានភាព ('clean_unbound', 
+'changeable_email', 
+'dead_bind_cannot_change') 
+note 
+VARCHAR(255) 
+NULLABLE 
+កំណត់សម្គាល់បន្ថែមសម្រាាប់អ្នកទិញ 
+ចំណាំច្បាប់ទិន្ន័យ (Constraints)៖ 
+.​
+UNIQUE(game_account_id, bind_provider): គណនីមួយមិនអាចមាន Bind 
+Provider ដដែល ២ ដងបានទេ។ 
+៣.១៨ តារាង Telegram_Notification_Settings (ការកំណត់ការជូនដំណឹងតាម 
+Telegram Bot) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ការកំណត់ 
+user_id 
+BIGINT 
+FK -> users.id, UNIQUE 
+ID អ្នកប្រើប្រាាស់ 
+telegram_chat_id 
+VARCHAR(50) 
+UNIQUE, NULLABLE 
+Chat ID ផ្ទាល់ខ្លួនរបស់ User ជាមួយ 
+Telegram Bot 
+notify_on_order 
+BOOLEAN 
+DEFAULT TRUE 
+ជូនដំណឹងពេលមានគេបញ្ជាទិញ 
+notify_on_payment 
+BOOLEAN 
+DEFAULT TRUE 
+ជូនដំណឹងពេលបង់ប្រាាក់ជោគជ័យ 
+
+--- Page 15 ---
+Column Name 
+Data Type 
+Constraints 
+Description 
+notify_on_chat 
+BOOLEAN 
+DEFAULT TRUE 
+ជូនដំណឹងពេលមានសារថ្មីក្នុង In-App 
+Chat 
+notify_on_dispute 
+BOOLEAN 
+DEFAULT TRUE 
+ជូនដំណឹងពេលមាន Dispute 
+កើតឡើង 
+notify_on_payout 
+BOOLEAN 
+DEFAULT TRUE 
+ជូនដំណឹងពេលស្នើដកប្រាាក់ត្រូវបានអនុ
+ម័ត 
+is_active 
+BOOLEAN 
+DEFAULT TRUE 
+ស្ថានភាពបើក/បិទការជូនដំណឹងតាម 
+Bot 
+៣.១៩ តារាង Seller_KYC_Verifications (ការផ្ទៀងផ្ទាត់អត្តសញ្ញាណអ្នកលក់) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ KYC 
+user_id 
+BIGINT 
+FK -> users.id, UNIQUE 
+ID អ្នកលក់ 
+id_card_type 
+VARCHAR(50) 
+NOT NULL 
+ប្រភេទឯកសារ ('national_id', 
+'passport') 
+id_card_number 
+VARCHAR(100) 
+NOT NULL 
+លេខអត្តសញ្ញាណប័ណ្ណ ឬ 
+លិខិតឆ្លងដែន 
+front_image_url 
+VARCHAR(255) 
+NOT NULL 
+រូបថតផ្នែកខាងមុខ 
+back_image_url 
+VARCHAR(255) 
+NULLABLE 
+រូបថតផ្នែកខាងក្រោយ 
+selfie_with_id_url 
+VARCHAR(255) 
+NOT NULL 
+រូបថតកាន់ឯកសារផ្ទៀងផ្ទាត់ផ្ទាល់ 
+status 
+VARCHAR(20) 
+DEFAULT 'pending' 
+('pending', 'approved', 
+'rejected') 
+rejection_reason 
+TEXT 
+NULLABLE 
+មូលហេតុបដិសេធ 
+
+--- Page 16 ---
+Column Name 
+Data Type 
+Constraints 
+Description 
+verified_at 
+TIMESTAMP 
+NULLABLE 
+កាលបរិច្ឆេទអនុម័ត 
+reviewed_by 
+BIGINT 
+FK -> users.id, NULLABLE 
+Admin ID ដែលបានពិនិត្យ 
+៣.២០ តារាង Seller_Security_Deposits (ការតម្កល់ប្រាក់ធានារបស់អ្នកលក់ - VIP 
+Trust Badge) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ប្រាាក់តម្កល់ 
+user_id 
+BIGINT 
+FK -> users.id, UNIQUE 
+ID អ្នកលក់ 
+deposit_amount 
+DECIMAL(10,2) 
+NOT NULL, DEFAULT 0.00 
+ចំនួនទឹកប្រាាក់តម្កល់ធានា (USD) 
+badge_tier 
+VARCHAR(30) 
+DEFAULT 'bronze' 
+កម្រិត Badge ('bronze', 
+'silver_trusted', 
+'gold_vip_bonded') 
+is_locked 
+BOOLEAN 
+DEFAULT TRUE 
+ស្ថានភាពចាក់សោប្រាាក់តម្កល់ 
+lock_reason 
+VARCHAR(255) 
+NULLABLE 
+មូលហេតុនៃការចាក់សោ 
+created_at 
+TIMESTAMP 
+DEFAULT 
+CURRENT_TIMESTAMP 
+ថ្ងៃតម្កល់ប្រាាក់ 
+៤.២ យន្តការអនុវត្តជាក់ស្តែងសម្រាប់មុខងារទី ១ ដល់ ទី ៤ (Operational Logic) 
+5.​ យន្តការធានារ៉ាប់រង (Account Warranty Lifecycle): 
+○​ Buyer អាចជ្រើសរើសទិញ Insurance Option នៅពេល Checkout។ ទឹកប្រាាក់ 
+Insurance Fee ត្រូវបានកាត់ចូល Platform Reserve។ 
+○​ ប្រសិនបើ Account ត្រូវបាន Recall ក្នុងអំឡុងពេល Warranty ហើយ Seller 
+មិនទទួលខុសត្រូវ Platform នឹងប្រើប្រាាស់ Reserve Fund ឬកាត់ពី Security Deposit 
+របស់អ្នកលក់ដើម្បីសងជូន Buyer។ 
+6.​ យន្តការគ្រប់គ្រង Game Binds (Anti-Scam Transparency): 
+
+--- Page 17 ---
+○​ តម្រូវឱ្យ Seller បញ្ជាក់ Bind Status នីមួយៗឱ្យច្បាស់លាស់។ ប្រសិនបើ Seller ដាក់ថា 
+'clean_unbound' តែពេល Buyer ចូលពិនិត្យឃើញមាន 'dead_bind' Buyer 
+មានសិទ្ធិបើក Dispute និងទទួលបានការ Refund 100% ភ្លាមៗ។ 
+7.​ យន្តការជូនដំណឹងតាម Telegram Bot: 
+○​ ប្រើ Telegram Webhook និង Bot API (Node.js/NestJS)។ 
+○​ User ភ្ជាប់ Bot តាមរយៈ Telegram Deep Linking Auth Token។ Bot នឹងទទួលបាន 
+telegram_chat_id រួច Save ចូលតារាង telegram_notification_settings 
+ដោយស្វ័យប្រវត្តិ។ 
+8.​ យន្តការ KYC & Security Deposit: 
+○​ Seller ដែលមាន KYC Approved នឹងទទួលបានសញ្ញា Verified Checkmark (ខៀវ)។ 
+○​ Seller ដែលតម្កល់ប្រាាក់ចាប់ពី $100 ឡើង ទទួលបាន Badge "Bonded Seller" (មាស) 
+ដែលជួយបង្កើនទំនុកចិត្ត និងជំរុញការលក់បានលឿនជាងមុន។ 
+○​ ព័ត៌មានសម្ងាត់ហ្គេមក្នុង account_credentials ត្រូវ Encrypt ដោយ AES-256-GCM 
+រួមជាមួយ initialization_vector (IV), auth_tag និង key_version។ គ្មាន 
+Admin ឬអ្នកណាម្នាក់អាចមើលឃើញជា Plaintext បានទេ 
+លុះត្រាាតែប្រព័ន្ធទូទាត់ប្រាាក់ជោគជ័យ។ 
+ 
+៣.២១ តារាង Coupons (ប្រព័ន្ធគូប៉ុងបញ្ចុះតម្លៃ) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ Coupon 
+code 
+VARCHAR(50) 
+UNIQUE, NOT NULL 
+លេខកូដគូប៉ុង (ឧ. PROMO2026, 
+WELCOME5) 
+discount_type 
+VARCHAR(20) 
+NOT NULL 
+ប្រភេទបញ្ចុះតម្លៃ ('percentage', 
+'fixed_amount') 
+discount_value 
+DECIMAL(10,2) 
+NOT NULL 
+តម្លៃបញ្ចុះ (ឧ. 10% ឬ $5.00) 
+min_order_amount 
+DECIMAL(10,2) 
+DEFAULT 0.00 
+តម្លៃបញ្ជាទិញអប្បបរមាដើម្បីប្រើបាន 
+max_discount_amount 
+DECIMAL(10,2) 
+NULLABLE 
+កម្រិតបញ្ចុះតម្លៃអតិបរមា (សម្រាាប់ 
+percentage) 
+
+--- Page 18 ---
+Column Name 
+Data Type 
+Constraints 
+Description 
+usage_limit 
+INT 
+NULLABLE 
+ចំនួនដងសរុបដែលអាចប្រើបាន (NULL 
+= មិនកំណត់) 
+used_count 
+INT 
+DEFAULT 0 
+ចំនួនដងដែលបានប្រើប្រាាស់រួច 
+per_user_limit 
+INT 
+DEFAULT 1 
+ចំនួនដងអតិបរមាដែល User 
+ម្នាក់អាចប្រើបាន 
+valid_from 
+TIMESTAMP 
+DEFAULT 
+CURRENT_TIMESTAMP 
+ថ្ងៃចាប់ផ្តើមមានសុពលភាព 
+valid_until 
+TIMESTAMP 
+NOT NULL 
+ថ្ងៃផុតកំណត់ 
+is_active 
+BOOLEAN 
+DEFAULT TRUE 
+ស្ថានភាពបើក/បិទគូប៉ុង 
+created_at 
+TIMESTAMP 
+DEFAULT 
+CURRENT_TIMESTAMP 
+ថ្ងៃបង្កើត 
+៣.២២ តារាង Coupon_Redemptions (ប្រវត្តិប្រើប្រាស់គូប៉ុង) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ Redemption 
+coupon_id 
+BIGINT 
+FK -> coupons.id 
+ID គូប៉ុង 
+order_id 
+BIGINT 
+FK -> orders.id, UNIQUE 
+ID ការបញ្ជាទិញដែលបានប្រើគូប៉ុង 
+user_id 
+BIGINT 
+FK -> users.id 
+ID អ្នកប្រើប្រាាស់ 
+discount_amount 
+DECIMAL(10,2) 
+NOT NULL 
+ទឹកប្រាាក់ដែលបានបញ្ចុះជាក់ស្តែង 
+redeemed_at 
+TIMESTAMP 
+DEFAULT 
+CURRENT_TIMESTAMP 
+ពេលវេលាប្រើប្រាាស់ 
+
+--- Page 19 ---
+៣.២៣ តារាង User_Referrals (ប្រព័ន្ធណែនាំមិត្តភក្តិ - Referral System) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ Referral Link 
+referrer_id 
+BIGINT 
+FK -> users.id 
+ID អ្នកណែនាំ 
+referee_id 
+BIGINT 
+FK -> users.id, UNIQUE 
+ID អ្នកត្រូវបានណែនាំ 
+(ម្នាក់ចុះឈ្មោះបានតែម្តង) 
+status 
+VARCHAR(20) 
+DEFAULT 'pending' 
+('pending', 'completed') 
+created_at 
+TIMESTAMP 
+DEFAULT 
+CURRENT_TIMESTAMP 
+ថ្ងៃចុះឈ្មោះ 
+៣.២៤ តារាង Referral_Rewards (ប្រាក់រង្វាន់ និងកម្រៃជើងសារពីការណែនាំ) 
+Column Name 
+Data Type 
+Constraints 
+Description 
+id 
+BIGINT 
+PK, Auto Increment 
+លេខសម្គាល់ Reward 
+referral_id 
+BIGINT 
+FK -> user_referrals.id 
+ID ការណែនាំ 
+referrer_id 
+BIGINT 
+FK -> users.id 
+អ្នកទទួលបានរង្វាន់ 
+order_id 
+BIGINT 
+FK -> orders.id 
+Order ដំបូងដែលបង្កើតកម្រៃរង្វាន់ 
+reward_amount 
+DECIMAL(10,2) 
+NOT NULL 
+ចំនួនទឹកប្រាាក់រង្វាន់ (បាញ់ចូល Wallet) 
+status 
+VARCHAR(20) 
+DEFAULT 'credited' 
+('credited', 'cancelled') 
+created_at 
+TIMESTAMP 
+DEFAULT 
+CURRENT_TIMESTAMP 
+ថ្ងៃទទួលបានរង្វាន់ 
+៤.៣ យន្តការអនុវត្តជាក់ស្តែងសម្រាប់ Coupon & Referral (Growth Marketing 
+Engine) 
+9.​ យន្តការគណនាគូប៉ុង (Coupon Checkout Engine)៖ 
+
+--- Page 20 ---
+○​ ពេល Buyer បញ្ចូល Coupon Code ប្រព័ន្ធត្រូវ Validate៖ កាលបរិច្ឆេទផុតកំណត់ 
+(valid_until), តម្លៃ Order អប្បបរមា (min_order_amount), និងចំនួនដងដែល User 
+ធ្លាប់ប្រើ (per_user_limit) ក្នុងតារាង coupon_redemptions។ 
+○​ ទឹកប្រាាក់បញ្ចុះតម្លៃត្រូវកាត់ចេញពី orders.total_amount 
+ប៉ុន្តែមិនត្រូវប៉ះពាល់ដល់ប្រាាក់ចំណូលសុទ្ធរបស់អ្នកលក់ឡើយ (Platform ជាអ្នករ៉ាប់រង 
+Discount នេះ)។ 
+10.​យន្តការណែនាំសមាជិក (Viral Referral Engine)៖ 
+○​ User ម្នាក់ៗមាន Referral Code ផ្ទាល់ខ្លួន។ 
+○​ នៅពេល Referee ចុះឈ្មោះ និងទិញ Order លើកដំបូងជោគជ័យ ប្រព័ន្ធនឹងផ្តល់ Reward (ឧ. 
+$1 ឬ 10% នៃ Platform Commission) បាញ់បញ្ចូលទៅ wallets របស់អ្នកណែនាំ 
+(Referrer) ដោយស្វ័យប្រវត្តិ។ 
+៥. ដំណោះស្រាយបច្ចេកទេស និងការកែសម្រួល Schema 
+ដើម្បីការពារបញ្ហា (Edge Cases Resolution & Schema Updates) 
+៥.១ ដំណោះស្រាយលើបញ្ហាទាំង ៤ (Technical Mitigation Strategies) 
+11.​Financial Discrepancy (ការទូទាត់ប្រាក់ពេលមាន Coupon)៖ 
+○​ ក្នុងតារាង orders បន្ថែម subtotal_amount (តម្លៃដើមគណនី), 
+discount_amount (ទឹកប្រាាក់ដែល Coupon បញ្ចុះ), total_amount (ទឹកប្រាាក់ដែល 
+Buyer បង់ជាក់ស្តែង = Subtotal - Discount), platform_fee (កម្រៃជើងសារគិតពី 
+Subtotal), និង seller_net_amount (ទឹកប្រាាក់សុទ្ធដែល Seller ទទួលបាន = 
+Subtotal - Fee)។ 
+○​ Platform ជាអ្នករ៉ាប់រងលើ discount_amount 
+ដូច្នេះតារាងគណនេយ្យផ្ទៀងផ្ទាត់គ្នាយ៉ាងត្រឹមត្រូវ 100% គ្មានបញ្ហា Balance Mismatch។ 
+12.​Order Reservation Timeout / Expiry (ការដោះលែងគណនីដែលកក់ផុតកំណត់)៖ 
+○​ ក្នុងតារាង game_accounts បន្ថែម reserved_until (Timestamp ផុតកំណត់ 15 
+នាទី)។ 
+○​ Backend ដំណើរការ Background Worker / Redis Keyspace Notification / 
+Cron Job រៀងរាល់ 1 នាទី ដើម្បីពិនិត្យ: ប្រសិនបើ status = 'reserved' ហើយ 
+reserved_until < NOW() នោះប្រព័ន្ធនឹងធ្វើការ Auto-update ស្ថានភាពមកជា 
+status = 'available' និង reserved_until = NULL ដោយស្វ័យប្រវត្តិ។ 
+13.​Listing Snapshot Immutability (ការការពារ Seller កែប្រែព័ត៌មានក្រោយពេលកុម្ម៉ង់)៖ 
+
+--- Page 21 ---
+None‎
+○​ ក្នុងតារាង orders បន្ថែមជួរឈរ listing_snapshot (TEXT ឬ JSONB) 
+ដើម្បីកត់ត្រាាទិន្ន័យដើមនៅខណៈពេលដែលទិញ (Title, Description, Server, Rank, 
+Skins, Game Info)។ 
+○​ បើទោះបីជា Seller ព្យាយាមកែប្រែព័ត៌មានលើ Listing ដើមក៏ដោយ ភស្តុតាងក្នុង Order 
+នៅតែរក្សាដដែល មិនអាចកែប្រែបានឡើយ (Immutable Audit Trail)។ 
+14.​Failed Withdrawal Rollback (យន្តការដកប្រាក់បរាជ័យតាមគោលការណ៍ Double-Entry)៖ 
+○​ នៅពេល Seller ស្នើសុំដកប្រាាក់: បង្កើត Transaction ប្រភេទ withdrawal (Debit: 
+កាត់លុយពី balance) ក្នុងតារាង wallet_transactions។ 
+○​ ប្រសិនបើ Admin បដិសេធ (Reject) ឬផ្ទេរតាមធនាគារបរាជ័យ: ប្រព័ន្ធមិនមែនកែប្រែ Row 
+ចាស់ទេ គឺបង្កើត Transaction ថ្មីមួយទៀតប្រភេទ withdrawal_refund (Credit: 
+បូកលុយត្រឡប់ចូល balance វិញ) រួមជាមួយ withdrawal_request_id។ 
+៥.២ កូដ DBML កែសម្រួលចុងក្រោយ (Final Production-Ready Schema for 
+DBDiagram.io) 
+// ========================================== 
+// 100% BULLETPROOF GAME ACCOUNT MARKETPLACE 
+// Optimized with: Coupon Accounting, Reservation Timers, 
+// Immutable Snapshots, and Double-entry Ledger 
+// ========================================== 
+ 
+Table users { 
+  id bigint [pk, increment] 
+  username varchar(50) [unique, not null] 
+  email varchar(100) [unique, not null] 
+  password_hash varchar(255) 
+  phone varchar(20) [unique] 
+  referral_code varchar(50) [unique, not null] 
+  is_email_verified boolean [default: false] 
+  is_phone_verified boolean [default: false] 
+  two_factor_secret text 
+  two_factor_enabled boolean [default: false] 
+  failed_login_attempts int [default: 0] 
+  lockout_until timestamp 
+  password_changed_at timestamp 
+  last_login_at timestamp 
+  last_login_ip varchar(45) 
+  role varchar(20) [not null, default: 'buyer'] 
+  status varchar(20) [not null, default: 'active'] 
+
+--- Page 22 ---
+  created_at timestamp [default: `now()`] 
+  updated_at timestamp [default: `now()`] 
+} 
+ 
+Table user_social_accounts { 
+  id bigint [pk, increment] 
+  user_id bigint [not null] 
+  provider varchar(20) [not null] 
+  provider_user_id varchar(100) [not null] 
+  phone_number varchar(20) 
+  provider_email varchar(100) 
+  raw_data text 
+  created_at timestamp [default: `now()`] 
+ 
+  indexes { 
+    (provider, provider_user_id) [unique] 
+    (provider, phone_number) [unique] 
+  } 
+} 
+ 
+Table user_refresh_tokens { 
+  id bigint [pk, increment] 
+  user_id bigint [not null] 
+  token_hash varchar(255) [not null] 
+  device_info varchar(255) 
+  ip_address varchar(45) 
+  is_revoked boolean [default: false] 
+  expires_at timestamp [not null] 
+  created_at timestamp [default: `now()`] 
+} 
+ 
+Table password_reset_tokens { 
+  id bigint [pk, increment] 
+  user_id bigint [not null] 
+  token_hash varchar(255) [not null] 
+  expires_at timestamp [not null] 
+  is_used boolean [default: false] 
+  ip_address varchar(45) 
+  created_at timestamp [default: `now()`] 
+} 
+ 
+
+--- Page 23 ---
+Table security_audit_logs { 
+  id bigint [pk, increment] 
+  user_id bigint 
+  action varchar(100) [not null] 
+  ip_address varchar(45) 
+  user_agent text 
+  metadata text 
+  created_at timestamp [default: `now()`] 
+} 
+ 
+Table telegram_notification_settings { 
+  id bigint [pk, increment] 
+  user_id bigint [unique, not null] 
+  telegram_chat_id varchar(50) [unique] 
+  notify_on_order boolean [default: true] 
+  notify_on_payment boolean [default: true] 
+  notify_on_chat boolean [default: true] 
+  notify_on_dispute boolean [default: true] 
+  notify_on_payout boolean [default: true] 
+  is_active boolean [default: true] 
+} 
+ 
+Table games { 
+  id bigint [pk, increment] 
+  title varchar(100) [not null] 
+  platform varchar(50) [not null] 
+  icon_url varchar(255) 
+  is_active boolean [default: true] 
+} 
+ 
+Table game_accounts { 
+  id bigint [pk, increment] 
+  seller_id bigint [not null] 
+  game_id bigint [not null] 
+  title varchar(150) [not null] 
+  description text 
+  price decimal(10,2) [not null] 
+  server_region varchar(50) [not null] 
+  rank_level varchar(50) 
+  delivery_type varchar(20) [not null, default: 'instant'] 
+  is_platform_owned boolean [default: false] 
+
+--- Page 24 ---
+  status varchar(20) [not null, default: 'available'] 
+  reserved_until timestamp [note: 'Auto reset to available if payment expires'] 
+  view_count int [default: 0] 
+  created_at timestamp [default: `now()`] 
+} 
+ 
+Table game_account_binds { 
+  id bigint [pk, increment] 
+  game_account_id bigint [not null] 
+  bind_provider varchar(50) [not null] 
+  bind_status varchar(30) [not null] 
+  note varchar(255) 
+ 
+  indexes { 
+    (game_account_id, bind_provider) [unique] 
+  } 
+} 
+ 
+Table account_credentials { 
+  id bigint [pk, increment] 
+  game_account_id bigint [unique, not null] 
+  key_version int [default: 1] 
+  initialization_vector varchar(64) [not null] 
+  auth_tag varchar(64) [not null] 
+  encrypted_login_identifier text [not null] 
+  encrypted_login_password text [not null] 
+  encrypted_backup_codes text 
+  extra_instructions text 
+  revealed_at timestamp 
+} 
+ 
+Table account_images { 
+  id bigint [pk, increment] 
+  game_account_id bigint [not null] 
+  image_url varchar(255) [not null] 
+  is_primary boolean [default: false] 
+  created_at timestamp [default: `now()`] 
+} 
+ 
+Table orders { 
+  id bigint [pk, increment] 
+
+--- Page 25 ---
+  order_number varchar(50) [unique, not null] 
+  buyer_id bigint [not null] 
+  seller_id bigint [not null] 
+  game_account_id bigint [unique, not null] 
+  subtotal_amount decimal(10,2) [not null, note: 'Original listing price'] 
+  discount_amount decimal(10,2) [not null, default: 0.00, note: 'Coupon 
+discount covered by platform'] 
+  total_amount decimal(10,2) [not null, note: 'Actual cash paid by buyer: 
+subtotal - discount'] 
+  platform_fee decimal(10,2) [not null, default: 0.00, note: 'Commission 
+deducted from subtotal'] 
+  seller_net_amount decimal(10,2) [not null, note: 'Net credit for seller: 
+subtotal - platform_fee'] 
+  listing_snapshot text [note: 'Immutable JSON snapshot of account data at 
+checkout time'] 
+  status varchar(20) [not null, default: 'pending'] 
+  created_at timestamp [default: `now()`] 
+} 
+ 
+Table account_warranties { 
+  id bigint [pk, increment] 
+  order_id bigint [unique, not null] 
+  warranty_type varchar(50) [not null] 
+  warranty_fee decimal(10,2) [not null, default: 0.00] 
+  status varchar(20) [not null, default: 'active'] 
+  start_date timestamp [default: `now()`] 
+  end_date timestamp 
+  claim_reason text 
+  claim_resolved_at timestamp 
+} 
+ 
+Table payments { 
+  id bigint [pk, increment] 
+  order_id bigint [unique, not null] 
+  transaction_id varchar(100) [unique, not null] 
+  payment_method varchar(50) [not null] 
+  amount decimal(10,2) [not null] 
+  status varchar(20) [not null, default: 'pending'] 
+  paid_at timestamp 
+} 
+ 
+
+--- Page 26 ---
+Table wallets { 
+  id bigint [pk, increment] 
+  user_id bigint [unique, not null] 
+  balance decimal(10,2) [not null, default: 0.00] 
+  updated_at timestamp [default: `now()`] 
+} 
+ 
+Table wallet_transactions { 
+  id bigint [pk, increment] 
+  wallet_id bigint [not null] 
+  order_id bigint 
+  withdrawal_request_id bigint [note: 'Linked if transaction is withdrawal or 
+withdrawal_refund'] 
+  transaction_type varchar(20) [not null, note: 'earning, referral_reward, 
+withdrawal, withdrawal_refund, refund'] 
+  amount decimal(10,2) [not null] 
+  balance_after decimal(10,2) [not null, note: 'Immutable balance checkpoint 
+for financial audit'] 
+  created_at timestamp [default: `now()`] 
+} 
+ 
+Table withdrawal_requests { 
+  id bigint [pk, increment] 
+  user_id bigint [not null] 
+  amount decimal(10,2) [not null] 
+  bank_name varchar(50) [not null] 
+  account_number varchar(50) [not null] 
+  account_name varchar(100) [not null] 
+  status varchar(20) [not null, default: 'pending', note: 'pending, approved, 
+rejected'] 
+  admin_notes text 
+  created_at timestamp [default: `now()`] 
+} 
+ 
+Table disputes { 
+  id bigint [pk, increment] 
+  order_id bigint [unique, not null] 
+  raised_by bigint [not null] 
+  reason varchar(150) [not null] 
+  description text [not null] 
+  status varchar(20) [not null, default: 'open'] 
+
+--- Page 27 ---
+  admin_notes text 
+  created_at timestamp [default: `now()`] 
+} 
+ 
+Table coupons { 
+  id bigint [pk, increment] 
+  code varchar(50) [unique, not null] 
+  discount_type varchar(20) [not null] 
+  discount_value decimal(10,2) [not null] 
+  min_order_amount decimal(10,2) [default: 0.00] 
+  max_discount_amount decimal(10,2) 
+  usage_limit int 
+  used_count int [default: 0] 
+  per_user_limit int [default: 1] 
+  valid_from timestamp [default: `now()`] 
+  valid_until timestamp [not null] 
+  is_active boolean [default: true] 
+  created_at timestamp [default: `now()`] 
+} 
+ 
+Table coupon_redemptions { 
+  id bigint [pk, increment] 
+  coupon_id bigint [not null] 
+  order_id bigint [unique, not null] 
+  user_id bigint [not null] 
+  discount_amount decimal(10,2) [not null] 
+  redeemed_at timestamp [default: `now()`] 
+} 
+ 
+Table user_referrals { 
+  id bigint [pk, increment] 
+  referrer_id bigint [not null] 
+  referee_id bigint [unique, not null] 
+  status varchar(20) [not null, default: 'pending'] 
+  created_at timestamp [default: `now()`] 
+} 
+ 
+Table referral_rewards { 
+  id bigint [pk, increment] 
+  referral_id bigint [not null] 
+  referrer_id bigint [not null] 
+
+--- Page 28 ---
+  order_id bigint [not null] 
+  reward_amount decimal(10,2) [not null] 
+  status varchar(20) [not null, default: 'credited'] 
+  created_at timestamp [default: `now()`] 
+} 
+ 
+// ========================================== 
+// RELATIONSHIPS 
+// ========================================== 
+ 
+Ref: user_social_accounts.user_id > users.id [delete: cascade] 
+Ref: user_refresh_tokens.user_id > users.id [delete: cascade] 
+Ref: password_reset_tokens.user_id > users.id [delete: cascade] 
+Ref: security_audit_logs.user_id > users.id [delete: set null] 
+Ref: telegram_notification_settings.user_id - users.id [delete: cascade] 
+ 
+Ref: game_accounts.seller_id > users.id [delete: restrict] 
+Ref: game_accounts.game_id > games.id [delete: restrict] 
+Ref: game_account_binds.game_account_id > game_accounts.id [delete: cascade] 
+Ref: account_credentials.game_account_id - game_accounts.id [delete: cascade] 
+Ref: account_images.game_account_id > game_accounts.id [delete: cascade] 
+ 
+Ref: orders.buyer_id > users.id [delete: restrict] 
+Ref: orders.seller_id > users.id [delete: restrict] 
+Ref: orders.game_account_id - game_accounts.id [delete: restrict] 
+Ref: account_warranties.order_id - orders.id [delete: cascade] 
+Ref: payments.order_id - orders.id [delete: cascade] 
+ 
+Ref: wallets.user_id - users.id [delete: cascade] 
+Ref: wallet_transactions.wallet_id > wallets.id [delete: cascade] 
+Ref: wallet_transactions.order_id > orders.id [delete: set null] 
+Ref: wallet_transactions.withdrawal_request_id > withdrawal_requests.id 
+[delete: set null] 
+Ref: withdrawal_requests.user_id > users.id [delete: restrict] 
+Ref: disputes.order_id - orders.id [delete: cascade] 
+Ref: disputes.raised_by > users.id [delete: restrict] 
+ 
+Ref: coupon_redemptions.coupon_id > coupons.id [delete: restrict] 
+Ref: coupon_redemptions.order_id - orders.id [delete: cascade] 
+Ref: coupon_redemptions.user_id > users.id [delete: cascade] 
+Ref: user_referrals.referrer_id > users.id [delete: cascade] 
+
+--- Page 29 ---
+Ref: user_referrals.referee_id - users.id [delete: cascade] 
+Ref: referral_rewards.referral_id > user_referrals.id [delete: cascade] 
+Ref: referral_rewards.referrer_id > users.id [delete: cascade] 
+Ref: referral_rewards.order_id > orders.id [delete: cascade] 
+○​  
+
+
+================================================================================
+FILE: Full UX_UI & Motion Design SpecificationឥGame Account Marketplace.pdf
+================================================================================
+--- Page 1 ---
+ឯកសារបញ្ជាក់លម្អិតអំពី UX/UI និង Motion 
+Design សម្រាប់ Web App លក់ Game 
+Account កម្រិត Luxury 
+ឯកសាររចនានេះកំណត់អំពីស្តង់ដារបទពិសោធន៍អ្នកប្រើប្រាស់ (UX) ចំណុចប្រទាក់អេក្រង់ (UI) និងចលនាអន្តរកម្ម 
+(Motion Design) សម្រាប់ប្រព័ន្ធពាណិជ្ជកម្មអេឡិចត្រូនិចលក់គណនីហ្គេមប្រណីត។ 
+១. ទស្សនវិស័យនៃការរចនា និងអត្តសញ្ញាណម៉ាក (Design Vision & 
+Brand Identity) 
+●​ Concept: Cyber-Luxury & AAA Gaming Marketplace ដែលរួមបញ្ចូលនូវភាពប្រណីត ទំនើប 
+ទំនុកចិត្តខ្ពស់ និងរស់រវើក។ 
+●​ Tone & Mood: ទំនើប (Futuristic), មានអំណាច (Prestigious), សុវត្ថិភាពខ្ពស់ 
+(Secure/Trustworthy), និងរំភើបបែប Gaming (Immersive)។ 
+១.១ កាតាតាឡុកពណ៌ (Color Palette Specifications) 
+ 
+ប្រភេទពណ៌ (Category) 
+ឈ្មោះពណ៌ (Color Name) 
+លេខកូដ HEX 
+ការប្រើប្រាស់ (Usage Context) 
+Background Primary 
+Deep Obsidian 
+#0B0E14 
+ផ្ទៃខាងក្រោយទូទៅនៃ Web App ទាំងមូល 
+Surface / Card 
+Frosted Dark Slate 
+#151A23 
+ផ្ទៃកាត Product, Modals, ជាមួយ Backdrop 
+Blur 12px 
+Accent Gold 
+Polished Metallic Gold 
+#D4AF37 
+Account Mythic/High-tier, CTA Buttons, 
+Tier Badges 
+Accent Violet 
+Electric Cyber Violet 
+#8A2BE2 
+Glow Effects, Primary Category 
+Highlights 
+
+--- Page 2 ---
+ប្រភេទពណ៌ (Category) 
+ឈ្មោះពណ៌ (Color Name) 
+លេខកូដ HEX 
+ការប្រើប្រាស់ (Usage Context) 
+Accent Cyan 
+Neon Cyan 
+#00F0FF 
+Status Active, System Verification, 
+Escrow Secured 
+Text Primary 
+Pure Ice White 
+#F9FAFB 
+អត្ថបទចំណងជើង និងព័ត៌មានសំខាន់ៗ 
+Text Muted 
+Slate Silver 
+#9CA3AF 
+អត្ថបទរង, Secondary labels, មតិពិពណ៌នា 
+១.២ ប្រព័ន្ធពុម្ពអក្សរ (Typography System) 
+●​ Heading & Display: Orbitron / Rajdhani / Clash Display (រចនាបថបែប Sci-Fi / Gaming 
+Geometry) ប្រើប្រាស់សម្រាប់ចំណងជើងធំៗ និងលេខកូដសំខាន់ៗ។ 
+●​ Body & Numbers: Plus Jakarta Sans / Inter (ងាយស្រួលអាន ស្អាត និងទំនើប) 
+ប្រើប្រាស់សម្រាប់អត្ថបទពិពណ៌នា និងទិន្ន័យទូទៅ។ 
+២. រចនាសម្ព័ន្ធទំព័រទាំងមូល (Full Platform Information 
+Architecture & Sitemap) 
+វេបសាយទាំងមូលចែកចេញជា ៣ ផ្នែកធំៗ រួមមាន ១១ ទំព័រ៖ 
+២.១ ផ្នែកសាធារណៈ (Public Storefront) 
+1.​ Landing Page (ទំព័រដើម): 
+○​ Hero banner បែប 3D interactive 
+○​ Featured Games (MLBB, PUBG, Genshin Impact, ល) 
+○​ Live Tickers បង្ហាញការទិញលក់ជាក់ស្តែងក្នុងប្រព័ន្ធ 
+○​ Flash Deals ជាមួយ countdown timer 
+○​ Security Guarantee Badges (100% Escrow Protection) 
+2.​ Marketplace / Catalog Page: 
+○​ ប្រព័ន្ធ Filter ឆ្លាតវៃ (តាម Rank, Server, តម្លៃ, Delivery Type) 
+○​ Advanced Multi-Sorting (តម្លៃ, ប្រជាប្រិយភាព, ការចុះតម្លៃ) 
+○​ Search Bar បែប Instant Preview បង្ហាញលទ្ធផលភ្លាមៗ 
+
+--- Page 3 ---
+3.​ Product / Account Detail Page: 
+○​ 3D Tilt Carousel បង្ហាញ Skins/Heroes proof 
+○​ Seller Trust Score និង Verification Badges (B2C Official vs C2C Verified Seller) 
+○​ Escrow Protection Information យ៉ាងច្បាស់លាស់ 
+○​ CTA "Buy Now" និង "Add to Cart" 
+4.​ Checkout & Escrow Payment Modal/Page: 
+○​ បង្ហាញ QR Code 动态 (KHQR/Bakong) 
+○​ នាឡិការាប់ថយក្រោយ 15 នាទី (Account Lock Timer) 
+○​ ការធានាសងប្រាក់ 100% និងសេចក្តីណែនាំអំពីការទូទាត់ 
+២.២ ផ្នែកអ្នកទិញ និងអ្នកលក់ (User / Seller Dashboard) 
+5.​ My Orders / Purchased Accounts: 
+○​ ទំព័រមើល Account ដែលបានទិញជោគជ័យ 
+○​ ប្រព័ន្ធ Decrypt បង្ហាញ Password ជាមួយ Effect ពិសេស 
+○​ ប្រព័ន្ធទាញយកវិក្កយបត្រ PDF និងប្រវត្តិប្រតិបត្តិការ 
+6.​ Seller Studio (ដាក់លក់ Account): 
+○​ Form បញ្ចូលព័ត៌មានបែប Step-by-Step wizard 
+○​ Step 1: Game selection -> Step 2: Account details -> Step 3: Screenshots 
+upload -> Step 4: Encrypted credentials -> Step 5: Pricing & Delivery mode 
+7.​ Digital Wallet & Payout Hub: 
+○​ ផ្ទាំងតាមដានសមតុល្យលុយ Escrow និងសមតុល្យអាចដកបាន 
+○​ គណនាចំណូលសុទ្ធបន្ទាប់ពីកាត់ Platform Fee រួច 
+○​ ប្រវត្តិប្រតិបត្តិការលម្អិត និងប៊ូតុងស្នើសុំដកប្រាក់ទៅ ABA/Wing/Bakong 
+8.​ In-App Messenger & Dispute Center: 
+○​ ប្រអប់ Chat ផ្ទាល់រវាង Buyer និង Seller សម្រាប់ Manual Delivery 
+○​ ប៊ូតុងប្តឹងតវ៉ា (Open Dispute) ប្រសិនបើគណនីមានបញ្ហា 
+○​ ប្រព័ន្ធផ្ញើភស្តុតាងរូបភាព និង File Attachment 
+២.៣ ផ្នែកគ្រប់គ្រងប្រព័ន្ធ (Admin Portal) 
+9.​ Executive Overview Dashboard: 
+
+--- Page 4 ---
+○​ ស្ថិតិចំណូលសរុប (GMV) និង Commission Earned 
+○​ Volume ទិញលក់ប្រចាំថ្ងៃ និង Real-time Active Listings 
+○​ ក្រាហ្វិភាគចរាចរណ៍អ្នកប្រើប្រាស់ 
+10.​Inventory & Listing Control: 
+○​ គ្រប់គ្រងគណនីដែល Platform ទិញមកលក់ផ្ទាល់ (B2C Model) 
+○​ ពិនិត្យ និង Approve គណនីដែល Seller ដាក់លក់ (C2C Model) 
+11.​Dispute Resolution & Payout Approvals: 
+○​ ផ្ទាំងសម្រាប់ Admin កាត់សេចក្តីវិវាទ (Refund ទៅ Buyer ឬ Release លុយឱ្យ Seller) 
+○​ ពិនិត្យ និងអនុម័តសំណើដកប្រាក់ (Manual/Automated Payout Workflow) 
+៣. ការរចនាចលនា និងបទពិសោធន៍អន្តរកម្ម (Micro-Animations & 
+Interaction Design) 
+៣.១ ចលនាពេលទំនេរ (Idle & Ambient Animations) 
+●​ Breathing Border Glow: កាត Account នីមួយៗមានពន្លឺ Glow ជះតិចៗតាមកម្រិតនៃ Item 
+(មាសសម្រាប់ Mythic, ស្វាយសម្រាប់ Legendary) ក្នុងចង្វាក់ 3-second cubic-bezier breath 
+cycles។ 
+●​ Subtle Particle Field: ផ្ទៃខាងក្រោយមានអណ្តែតនូវធូលីពន្លឺ (Canvas-based particles) 
+បង្កើតបរិយាកាសបែប Cyber Gaming ជាមួយល្បឿនយឺតបំផុត។ 
+៣.២ ចលនាពេលប៉ះ និងដាក់ Mouse លើលើ (Hover & Cursor Effects) 
+●​ 3D Card Tilt with Parallax: ពេលដាក់ Mouse លើ Card គណនីហ្គេម Card នឹងផ្អៀងតាមទិសដៅ 
+Mouse (Spring damping: stiffness 300, damping 20) ដោយរូប Character 
+ខាងក្នុងរំកិលចេញមកមុខ 5px តាមបច្ចេកទេស Parallax។ 
+●​ Liquid Metallic Shimmer: ប៊ូតុង "Buy Now" ឬ "Deposit" 
+មានចលនាពន្លឺពណ៌មាសរត់កាត់ពេលដាក់ Mouse ពីលើ (Linear sweep animation across a 
+metallic gradient)។ 
+●​ Magnetic Buttons: ប៊ូតុងអូសទាញចូលទៅជិត Mouse ក្នុងកាំ 15px (Magnetic interaction) 
+បង្កើនភាពទន់ភ្លន់ និងភាពរស់រវើក។ 
+
+--- Page 5 ---
+៣.៣ ចលនាពេលចុច និងការឆ្លើឆ្លើយតប (Click & Tactile Feedback) 
+●​ Micro Press-Down Effect: រាល់ការចុចប៊ូតុង ធាតុទាំងនោះនឹងស្រកចុះ (Scale: 0.96) រយៈពេល 
+100ms រួចត្រឡប់មកវិញភ្លាមៗជាមួយនឹង Ripple Wave ចេញពីចំណុចចុច។ 
+●​ Matrix Credential Reveal: នៅពេល Buyer ចុចមើលលេខសម្ងាត់ Password អក្សរនឹងរត់ប្តូរបែប 
+Matrix/Glitch scramble រយៈពេល 0.5 វិនាទី មុននឹងបង្ហាញលេខសម្ងាត់ពិតប្រាកដ។ 
+៣.៤ ចលនាផ្លាស់ប្តូរទំព័រ (Transitions & Flow Experience) 
+●​ Shared Layout Morphing: ពេលចុចលើ Card ក្នុងទំព័រ Explore រូបភាព Card នឹងរីកធំឡើងទៅជា 
+Product Detail Page ដោយគ្មាន Refresh ទំព័រ ដោយប្រើប្រាស់ Framer Motion layoutId។ 
+●​ Payment Success Celebration: ពេលបង់ប្រាក់ជោគជ័យ ប្រព័ន្ធមានចលនា Confetti Glow 
+និងសញ្ញា Checkmark បែប 3D holographic លោតឡើង ជាមួយនឹងបទពិសោធន៍ឈ្នះរង្វាន់ 
+(Achievement Unlocked feel)។ 
+៤. គន្លឹះអនុវត្តផ្នែកបច្ចេកវិទ្យាសម្រាប់ Developers (Tech Stack 
+Recommendations) 
+●​ Frontend Framework: Next.js 15+ (App Router, Server Actions, React Server 
+Components) 
+●​ Styling & UI Components: Tailwind CSS, Shadcn UI, Radix Primitives 
+●​ Motion & Animation Engine: Framer Motion (សម្រាប់ Page Transitions, Layout 
+Morphing, Gestures) 
+●​ 3D Graphics Rendering: Three.js / @react-three/fiber / @react-three/drei (សម្រាប់ 
+Interactive 3D Weapon/Character លើ Hero Section) 
+●​ State & Data Management: Zustand (Client state), TanStack Query v5 (Server State, 
+Caching, Real-time Refetching) 
+●​ Real-time Engine: Socket.io / Supabase Realtime (សម្រាប់ In-App Chat, Live Bidding, 
+និង Live Tickers) 
+៥. ការរៀរៀបចំ Action & Animation លម្អិតសម្រាប់ Page នីមួយៗ 
+(Page-by-Page Animation Specs) 
+9.​ Landing Page (ទំព័រដើម): 
+
+--- Page 6 ---
+○​ Hero Section: ប្រើ 3D Floating Hero Character ឬ Skin Weapon 
+ដែលបង្វិលយឺតៗតាមចលនា Mouse Parallax (Gyroscopic effect)។ 
+○​ Live Tickers / Floating Feeds: ចលនារត់រំកិលផ្ដេក (Smooth Infinite Marquee) 
+បង្ហាញការបញ្ជាទិញជោគជ័យថ្មីៗ "User *** ទើបតែទិញ Mythic MLBB Account"។ 
+○​ Flash Deals: នាឡិការាប់ថយក្រោយបែប Pulse Glow ក្រហម/មាស 
+នៅពេលជិតដល់ម៉ោងកំណត់។ 
+10.​Marketplace / Catalog Page: 
+○​ Filter Sidebar: ចលនា Smooth Drawer Slide-in ឬ Dropdown Accordion 
+ដែលពង្រីកដោយគ្មានទាក់ (Staggered Animation សម្រាប់ Tag នីមួយៗ)។ 
+○​ Account Grid Cards: ពេល Load ប្រើ Skeleton Shimmer Loading បែប Neon 
+Sweep។ ពេល Hover លើ Card មាន 3D Card Tilt ជាមួយ Foil Holographic Shimmer 
+រត់កាត់គែម Card។ 
+○​ Badge Animation: សញ្ញា "B2C Official" បញ្ចេញពន្លឺ Gold Particle តូចៗ ចំណែក "C2C 
+Verified" បញ្ចេញពន្លឺ Cyan Glow។ 
+11.​Product / Account Detail Page: 
+○​ Screenshots Gallery Carousel: ចលនា 3D Coverflow Slide ពេលចុចមើលរូបភាព 
+Skin និង Rank ដោយរូបភាពកណ្តាលរីកធំ ហើយរូបចំហៀហៀងព្រិលតិចៗ (Depth of Field Blur)។ 
+○​ Buy Now CTA Button: ចលនា Metallic Pulse អមដោយ Magnetic Pull Effect ពេល 
+Mouse រំកិលទៅជិតប៊ូតុង។ 
+12.​Checkout & Escrow Payment Modal/Page: 
+○​ Account Lock Timer: របារពេលវេលារាប់ថយក្រោយ 15 នាទី 
+រំកិលស្រកចុះបន្តិចម្តងៗជាមួយពន្លឺ Warning Pulse ពណ៌ទឹកក្រូច។ 
+○​ KHQR Reveal: QR Code លេចឡើងជាមួយចលនា Scanline Laser រត់ពីលើចុះក្រោមមួយជុំ 
+បង្ហាញភាព Tech-Security។ 
+○​ Success Payment Celebration: ពេលបង់លុយជោគជ័យ មានចលនា 3D Holographic 
+Checkmark រីកឡើង រួមជាមួយ Golden Confetti Particles ផ្ទុះចេញមកក្រៅ។ 
+13.​My Orders / Purchased Accounts Page: 
+○​ Matrix Credential Reveal: ពេលចុចប៊ូតុង "បង្ហាញលេខសម្ងាត់" (Reveal Password) 
+អក្សរនឹងរត់ប្តូរបែប Glitch Scramble (Cipher Decryption) រយៈពេល 0.5 វិនាទី មុននឹងចេញ 
+Password ពិត។ 
+○​ Copy Action: ពេលចុច Copy Password មាន Micro Tooltip លោតចេញមកសរសេរថា 
+"Copied!" ជាមួយ Ripple Wave ជុំវិញ Icon។ 
+14.​Seller Studio (ទំព័រដាក់លក់ Account): 
+
+--- Page 7 ---
+○​ Multi-Step Form Wizard: ចលនា Slide & Fade រវាងជំហាននីមួយៗ (Framer Motion 
+AnimatePresence) ជាមួយរបារ Progress Bar បែប Liquid Filling។ 
+○​ Image Drag & Drop: ពេលទាញរូបភាពទម្លាក់ចូល ប្រអប់ Upload នឹងរីកប៉ោងបន្តិច (Spring 
+Bounce) អមដោយពន្លឺ Cyan Border Dash រត់ជុំវិញ។ 
+15.​Digital Wallet & Payout Page: 
+○​ Balance Counter: លេខសមតុល្យលុយរត់ឡើងបែប Odometer/Rolling Number 
+Animation ពេលបើកចូលទំព័រ។ 
+○​ Withdrawal Modal: ពេលចុចដកប្រាក់ មានចលនា Slide-up Modal ជាមួយ Progress 
+Indicator បង្ហាញពីស្ថានភាព "កំពុងផ្ទៀងផ្ទាត់ -> ផ្ទេរទៅ Bank"។ 
+16.​In-App Live Chat & Dispute Hub: 
+○​ Message Bubble Pop-in: សារនីមួយៗលោតចេញមកបែប Spring Pop-in 
+ស្រាលៗពីខាងក្រោម។ 
+○​ Dispute Alert Banner: ប្រសិនបើមាន Case ប្តឹងតវ៉ា ផ្ទាំង Banner 
+ខាងលើនឹងភ្លឹបភ្លែតពណ៌លឿលឿង/ក្រហមស្រាលៗ ដើម្បីដាស់តឿតឿន។ 
+17.​Admin Overview & Analytics Dashboard: 
+○​ Interactive Charts: ក្រាហ្វចំណូល និង Volume រីកដុះឡើង (SVG Path Draw 
+Animation) ពេលទើបបើកមើល។ 
+○​ Live Notification Badges: ចំនួន Alert ថ្មីៗលោតភ្លឹបភ្លែត (Heartbeat Pulse) លើ Icon 
+កណ្តឹង។ 
+18.​Inventory & Listing Control (Admin): 
+○​ Status Toggle Switch: ប៊ូតុង Toggle (Approve / Reject) ប្តូរពណ៌យ៉ាងរលូនជាមួយ 
+Liquid Fill Transition។ 
+○​ Row Hover: តារាងទិន្ន័យនីមួយៗភ្លឺរំលេចឡើង (Subtle Slate Glow) ពេលដាក់ Mouse 
+លើ។ 
+19.​Dispute Resolution & Payout Approvals (Admin): 
+○​ Split-Screen Evidence Viewer: ចុចប្រៀបធៀធៀបភស្តុតាងរបស់ Buyer និង Seller 
+ដោយផ្ទាំងទាំងពីររុញចូលគ្នាបែប Dual-slider។ 
+○​ Action Confirmations: ប៊ូតុង "Release Funds" ឬ "Refund" ត្រូវឱ្យ Admin 
+ចុចសង្កត់ជាប់ 2 វិនាទី (Long-press Fill Animation) ដើម្បីការពារការចុចច្រឡំ។ 
+
+--- Page 8 ---
+None‎
+៦. Full Prompts សម្រាប់ Generate UX/UI & Code តាម Page 
+នីមួយៗ (Page-by-Page AI Generation Prompts) 
+ខាងក្រោមនេះជា Prompts ពេញលេញ និងលម្អិតសម្រាប់ការប្រើប្រាស់ជាមួយ AI (ដូចជា Claude, ChatGPT, 
+v0.dev ឬ Bolt.new) ដើម្បីបង្កើត UX/UI, Framer Motion animations និង React Component Code 
+សម្រាប់ទំព័រទាំង ១១៖ 
+Global Design System Context (ប្រើប្រាស់ជាមួយគ្រប់ Prompt) 
+Tech Stack & Styling Rules: Next.js 15 (App Router), Tailwind CSS v4, Framer Motion, 
+Shadcn UI, Radix Primitives, Lucide Icons, Three.js (@react-three/fiber). 
+Color Palette: Background (#0B0E14), Surface/Card (#151A23 with 12px backdrop blur), Gold 
+Accent (#D4AF37), Violet Accent (#8A2BE2), Cyan Accent (#00F0FF), Text Primary 
+(#F9FAFB), Text Muted (#9CA3AF). 
+20.​Prompt 1: Landing Page (ទំព័រដើម) 
+ 
+Create a high-converting, Cyber-Luxury Game Account Marketplace Landing Page in 
+Next.js 15, Tailwind CSS, and Framer Motion. 
+Theme & Aesthetics: Dark obsidian background (#0B0E14), glassmorphism cards 
+(#151A23 with 12px backdrop-blur), gold (#D4AF37), electric violet (#8A2BE2), 
+and neon cyan (#00F0FF) accents. 
+Key Sections: 
+1. Hero Section: 3D interactive floating weapon/character canvas 
+(@react-three/fiber), headline with gradient typography, dual CTA ("Explore 
+Marketplace" with metallic shimmer sweep animation, "Sell Account" with 
+magnetic hover effect), and trust stats counter. 
+2. Live Marquee Ticker: Smooth infinite horizontal loop showing real-time 
+verified purchase activities ("User *** purchased Mythic MLBB Account for $450 
+- 2 mins ago"). 
+3. Featured Games Grid: Interactive cards for MLBB, PUBG, Genshin Impact, Wild 
+Rift with hover glow (#8A2BE2/cyan) and 3D tilt effect. 
+4. Flash Deals Section: Countdown timer with pulsing red/gold warning glow, 
+account listing cards featuring 3D card tilt, tier badges, and price drop tags. 
+
+--- Page 9 ---
+None‎
+None‎
+5. Security & Escrow Section: 4-column feature matrix showcasing 100% Escrow 
+Protection, Automated Verification, Instant Credential Delivery, and 24/7 
+Support with ambient breathing borders. 
+21.​Prompt 2: Marketplace / Catalog Page 
+ 
+Design a feature-rich, high-performance Game Account Catalog / Marketplace page 
+with advanced multi-filter capabilities. 
+Layout: Left sidebar filters + Top bar search/sort + Right item grid 
+(responsive 1 to 4 columns). 
+Components & Functionality: 
+- Left Sidebar: Collapsible accordions for Game Selection, Price Range Slider 
+($0 - $5,000), Rank/Tier Selector (Mythic, Radiant, Immortal), Delivery Type 
+(Instant Automated vs Escrow Manual), and Seller Badge (B2C Official, C2C 
+Verified). 
+- Top Bar: Search input with instant preview popup, Active filters tags with 
+'Clear All', Sorting dropdown (Price Low/High, Popularity, Newest, Highest 
+Discount). 
+- Product Grid Cards: Card component with 3D cursor tilt (Framer Motion), foil 
+shimmer overlay on hover, rank badge with cyan/gold glow, skin count tag, 
+seller rating score, and quick-add to cart/wishlist buttons. 
+- Skeleton Loading: Neon shimmer sweep skeleton state while switching filters. 
+22.​Prompt 3: Product / Account Detail Page 
+ 
+Build an immersive, high-trust Product Detail Page (PDP) for a high-value 
+gaming account. 
+Structure: 
+1. Media Gallery: 3D Coverflow / Tilt Carousel showcasing high-res skin 
+screenshots, account proof images, and video preview with depth-of-field blur 
+on side items. 
+2. Account Summary Header: Title, Account ID, Game Title, Verified Seller badge 
+with trust score (e.g. 99.8% positive, 500+ sales), and Escrow Protection 
+guarantee badge. 
+
+--- Page 10 ---
+None‎
+None‎
+3. Specification Grid: Interactive tabs for "Skins & Heroes", "Rank & Stats", 
+"Bind Info (Email/Moonton/Facebook/Google)", and "Transaction History". 
+4. Buy Box Widget (Sticky Right): Price tag with discount percentage, Escrow 
+protection breakdown tooltip, "Buy Now" primary button with metallic pulse & 
+magnetic cursor pull, "Add to Cart" secondary button, and live viewer count tag 
+("14 people viewing this right now"). 
+23.​Prompt 4: Checkout & Escrow Payment Modal / Page 
+ 
+Design a secure, frictionless Checkout and Escrow Payment Interface with 
+real-time KHQR payment integration. 
+Key Elements: 
+- Order Summary: Item thumbnail, account title, breakdown of Item Price, 
+Platform Fee, Escrow Protection Fee, and Total Amount in USD/KHR. 
+- Account Lock Timer: Prominent 15-minute countdown progress bar with warning 
+pulse animation indicating temporary account reserve. 
+- KHQR Payment Container: Dynamic KHQR code container with a neon laser 
+scanline effect sliding up and down, Bakong / ABA Bank logos, and an option to 
+save QR code image. 
+- Payment Status Indicator: WebSocket live status updates ("Waiting for 
+Payment..." -> "Verifying Transaction..." -> "Payment Confirmed!"). 
+- Celebration Modal: Upon success, launch 3D holographic checkmark animation 
+and golden confetti particle burst, redirecting to the Purchased Accounts page. 
+24.​Prompt 5: My Orders & Credential Decryption Page 
+ 
+Create a user dashboard page for managing purchased accounts with a secure 
+credential decryption experience. 
+Features: 
+1. Purchased Account Card: Game banner, account ID, purchase date, order total, 
+delivery status badge ("Instant Released" / "In Escrow Hold"). 
+2. Decryption Credentials Box: Encrypted password field displayed as masked 
+asterisks or glitched text. Include a "Reveal Password" button triggering a 
+
+--- Page 11 ---
+None‎
+None‎
+Matrix/Glitch text scramble animation for 0.5s before displaying the cleartext 
+login details. 
+3. One-Click Copy & Security Tools: Copy buttons for username, password, 
+recovery email, and security code with ripple wave micro-feedback and "Copied!" 
+tooltip. 
+4. PDF Invoice Generator & Order Dispute Button: Download official invoice PDF 
+and an "Open Dispute" button if credentials fail verification within the 
+24-hour escrow window. 
+25.​Prompt 6: Seller Studio (ទំព័រដាក់លក់ Account) 
+ 
+Design a multi-step wizard form for sellers to list their game accounts safely 
+and efficiently. 
+Step Flow (Framer Motion Slide & Fade Transitions): 
+- Step 1 (Game Selection): Grid selector for games (MLBB, PUBG, Genshin, etc.) 
+with active glow outlines. 
+- Step 2 (Account Specs): Dynamic form inputs based on chosen game (Server ID, 
+Rank, Hero Count, Skin Count, Emblem Levels). 
+- Step 3 (Screenshot Drag & Drop): Image upload area with drag-and-drop 
+support, spring bounce feedback on drag-over, and animated cyan dash border 
+sweep. 
+- Step 4 (Encrypted Credentials Input): Form fields for sensitive account login 
+details (stored encrypted server-side). 
+- Step 5 (Pricing & Delivery Mode): Price setting input, live fee calculator 
+showing platform commission deduction and net payout, and selection of delivery 
+mode (Automated Instant vs Manual Escrow Transfer). 
+26.​Prompt 7: Digital Wallet & Payout Page 
+ 
+Build a sleek financial dashboard for sellers to track earnings, active escrow 
+holds, and initiate bank payouts. 
+Components: 
+
+--- Page 12 ---
+None‎
+None‎
+1. Financial Overview Cards: Available Balance, Escrow Locked Balance, Total 
+Withdrawn, Net Commission Earned. Use Odometer/Rolling Number counter 
+animations on page load. 
+2. Withdrawal Request Widget: Input for payout amount, selection of Cambodian 
+bank payout methods (ABA Bank, Wing, Bakong, Prince Bank), and instant fee 
+preview. 
+3. Animated Withdrawal Modal: Slide-up modal displaying a step-by-step progress 
+indicator ("Request Submitted" -> "Admin Verification" -> "Bank Transfer 
+Complete"). 
+4. Transaction History Table: Searchable, filterable ledger table displaying 
+transaction ID, type (Sale Credit, Escrow Release, Bank Withdrawal, Fee 
+Deduction), status pill, and amount. 
+27.​Prompt 8: In-App Live Chat & Dispute Hub 
+ 
+Create an in-app real-time messaging interface for Buyers and Sellers with an 
+integrated Dispute Center. 
+Layout: Left sidebar (Active Chats & Open Disputes list) + Main panel (Chat 
+view) + Right sidebar (Order summary & Dispute control panel). 
+Features: 
+- Chat Panel: Real-time message bubbles with spring pop-in animations, media 
+attachment preview, system notification messages, and automated warning banner 
+against sharing external contacts. 
+- Dispute Alert Banner: Pulsing warning banner (Yellow/Red glow) appearing at 
+the top when an order enters dispute mode. 
+- Evidence Submission Widget: Upload drag-and-drop box for screenshots/screen 
+recording proof during a dispute. 
+- Dispute Status Timeline: Visual step tracker showing dispute progress 
+("Opened" -> "Evidence Gathering" -> "Admin Review" -> "Resolution"). 
+28.​Prompt 9: Admin Overview & Analytics Dashboard 
+ 
+Design an executive-level Admin Portal Analytics Dashboard in dark luxury cyber 
+theme. 
+
+--- Page 13 ---
+None‎
+None‎
+Key Components: 
+1. Top Metric Cards: Gross Merchandise Value (GMV), Platform Commission 
+Revenue, Total Active Listings, Pending Dispute Count, Pending Payouts Count. 
+Include heartbeat pulsing alert badges on icons. 
+2. Interactive Analytics Charts (Recharts / Chart.js): SVG path drawing 
+animation for GMV & Sales volume over time, game popularity breakdown pie 
+chart, and peak transaction time heatmaps. 
+3. Live Transaction Activity Feed: Real-time scrolling feed of platform events 
+(Listings submitted, Orders completed, Disputes raised, Payouts requested). 
+4. Quick Action Shortcuts: Instant navigation buttons for pending approvals and 
+dispute resolutions. 
+29.​Prompt 10: Inventory & Listing Control (Admin) 
+ 
+Build a powerful Admin Data Table interface for reviewing and approving game 
+account listings (B2C & C2C). 
+Features: 
+- Advanced Data Table: Multi-select rows, column sorting, search filters by 
+game, seller type, verification status, and price range. 
+- Hover & Selection Effects: Subtle slate glow background on row hover and 
+smooth state transitions. 
+- Status Toggle Switches: Interactive toggle controls for approving or 
+rejecting listings with a smooth liquid fill transition. 
+- Quick Inspection Modal: Slide-over drawer displaying full account 
+screenshots, input credentials preview, price justification score, and 
+automated security risk flags. 
+30.​Prompt 11: Dispute Resolution & Payout Desk (Admin) 
+ 
+Design a high-security Admin Dispute Case Management and Payout Approval Desk. 
+Interface Layout: 
+1. Split-Screen Evidence Viewer: Dual-slider view allowing side-by-side 
+comparison of Buyer complaints vs Seller proof with zoomable screenshot 
+lightbox. 
+
+--- Page 14 ---
+2. Chat Log Audit Trail: Complete read-only view of all buyer-seller messages 
+and system logs with highlighted suspicious keyword tags. 
+3. Long-Press Action Confirmation Buttons: High-stakes action buttons ("Release 
+Funds to Seller", "Full Refund to Buyer") requiring a 2-second hold (Long-press 
+fill animation) to execute, preventing accidental triggers. 
+4. Payout Queue Manager: Table of pending bank transfers with batch approval 
+controls and automated Bakong/ABA payment gateway status indicators. 
+ 
+៧. ការធ្វើបច្ចុប្បន្នភាពលើលើ UX/UI ស្របតាមប្រព័ន្ធថ្មី (UX/UI System 
+Alignments) 
+31.​៧.១ Authentication & Onboarding UX: 
+○​ OAuth Social Login Buttons: ប៊ូតុង Google និង Telegram ជាមួយចលនា Neon 
+Shimmer Sweep ពេល Hover។ 
+○​ Telegram Phone Validation Micro-Alert: 
+បង្ហាញសារប្រុងប្រយ័ត្ន/រំលឹកភ្លាមៗអំពីការផ្ទៀងផ្ទាត់លេខទូរស័ព្ទ Telegram តែមួយគត់ក្នុងប្រព័ន្ធ។ 
+○​ Forgot Password Flow: ទំព័រស្នើសុំកំណត់ពាក្យសម្ងាត់ឡើងវិញជាមួយនាឡិការាប់ថយក្រោយ 
+15 នាទីសម្រាប់ការប្រើប្រាស់ OTP/Reset Link។ 
+32.​៧.២ Catalog & Product Detail Page UX: 
+○​ Game Binding Status Badges: បង្ហាញស្លាកសញ្ញាបញ្ជាក់ស្ថានភាព Bind ដូចជា Clean 
+Unbound (ពណ៌ខៀខៀវ/បៃតង Neon), Changeable Email (ពណ៌លឿលឿង) និង Dead Bind 
+(ពណ៌ក្រហម)។ 
+○​ Account Warranty Selector: ប្រអប់ជ្រើសរើសកញ្ចប់ធានាលើទំព័រ Product Detail 
+(ជម្រើស 7 Days, 30 Days, និង Lifetime Warranty)។ 
+33.​៧.៣ Checkout UX: 
+○​ Interactive Coupon Code Input: ប្រអប់បញ្ចូល Coupon/Voucher 
+ជាមួយការទាញគណនាតម្លៃភ្លាមៗ (Subtotal, Coupon Discount, Warranty Fee, Total 
+Amount)។ 
+34.​៧.៤ Dashboard & Wallet UX: 
+○​ Viral Referral Widget: ផ្ទាំងបង្ហាញលេខកូដ/តំណភ្ជាប់ Referral, ប៊ូតុង Copy 
+ដោយចុចតែមួយដង និងស្ថិតិតាមដានចំណូលពីការណែនាំ។ 
+
+--- Page 15 ---
+○​ Telegram Bot Notification Toggle: ប៊ូតុងបើក/បិទការជូនដំណឹងតាម Telegram Bot 
+ជាមួយ Deep Link ភ្ជាប់ទៅកាន់ Bot ដោយផ្ទាល់។ 
+
+

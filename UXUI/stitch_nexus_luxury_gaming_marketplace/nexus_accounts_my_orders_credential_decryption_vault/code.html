@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "primary-fixed": "#ffe088", "primary-container": "#d4af37", "surface": "#10131a", "on-secondary-container": "#dcb7ff", "surface-tint": "#e9c349", "on-primary": "#3c2f00", "tertiary-fixed": "#7df4ff", "primary": "#f2ca50", "background": "#10131a", "tertiary-fixed-dim": "#00dbe9", "surface-container-high": "#272a31", "tertiary-container": "#00c6d2", "on-surface-variant": "#d0c5af", "outline-variant": "#4d4635", "surface-container": "#1d2026", "inverse-primary": "#735c00", "inverse-surface": "#e1e2eb", "surface-dim": "#10131a", "secondary-fixed": "#efdbff", "on-error-container": "#ffdad6", "on-tertiary-container": "#004d53", "on-tertiary-fixed-variant": "#004f54", "on-primary-fixed": "#241a00", "surface-variant": "#32353c", "on-primary-fixed-variant": "#574500", "surface-container-lowest": "#0b0e14", "on-primary-container": "#554300", "error-container": "#93000a", "on-error": "#690005", "error": "#ffb4ab", "surface-bright": "#363940", "secondary-fixed-dim": "#dcb8ff", "outline": "#99907c", "surface-container-low": "#191c22", "on-tertiary": "#00363a", "on-secondary-fixed-variant": "#6700b5", "secondary-container": "#7701d0", "surface-container-highest": "#32353c", "on-background": "#e1e2eb", "tertiary": "#00e4f2", "on-tertiary-fixed": "#002022", "on-secondary-fixed": "#2c0051", "on-secondary": "#480081", "secondary": "#dcb8ff", "primary-fixed-dim": "#e9c349", "on-surface": "#e1e2eb", "inverse-on-surface": "#2e3037" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "space-sm": "0.5rem", "space-lg": "1.5rem", "gutter-mobile": "0.75rem", "gutter": "1.5rem", "space-xl": "2.5rem", "space-xs": "0.25rem", "margin-mobile": "1rem", "margin": "2.5rem", "space-md": "1rem" }, "fontFamily": { "headline-sm": [ "Space Grotesk" ], "body-lg": [ "Inter" ], "headline-xl": [ "Space Grotesk" ], "label-sm": [ "Space Grotesk" ], "display-lg": [ "Space Grotesk" ], "label-md": [ "Space Grotesk" ], "headline-xl-mobile": [ "Space Grotesk" ], "headline-lg": [ "Space Grotesk" ], "title-md": [ "Inter" ], "display-lg-mobile": [ "Space Grotesk" ], "body-md": [ "Inter" ], "body-sm": [ "Inter" ] }, "fontSize": { "headline-sm": [ "22px", { "lineHeight": "28px", "letterSpacing": "0.02em", "fontWeight": "600" } ], "body-lg": [ "16px", { "lineHeight": "26px", "letterSpacing": "0.01em", "fontWeight": "400" } ], "headline-xl": [ "40px", { "lineHeight": "48px", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "label-sm": [ "10px", { "lineHeight": "14px", "letterSpacing": "0.12em", "fontWeight": "700" } ], "display-lg": [ "56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "label-md": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "600" } ], "headline-xl-mobile": [ "28px", { "lineHeight": "36px", "letterSpacing": "0em", "fontWeight": "700" } ], "headline-lg": [ "32px", { "lineHeight": "40px", "letterSpacing": "0em", "fontWeight": "600" } ], "title-md": [ "18px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "600" } ], "display-lg-mobile": [ "36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "body-md": [ "14px", { "lineHeight": "22px", "letterSpacing": "0.01em", "fontWeight": "400" } ], "body-sm": [ "12px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "400" } ] } } } };</script></head><body class="bg-surface-container-lowest font-body-md text-body-md text-on-surface min-h-screen relative selection:bg-primary-container selection:text-on-primary-container"><div class="fixed inset-0 pointer-events-none z-0 overflow-hidden"><div class="absolute -top-[20%] left-1/4 w-[600px] h-[600px] bg-secondary-container/10 rounded-full blur-[140px]"></div><div class="absolute top-[40%] -right-[10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[160px]"></div><div class="absolute -bottom-[10%] left-1/3 w-[700px] h-[500px] bg-tertiary-container/5 rounded-full blur-[180px]"></div></div><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-low/60 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.4)]"><div class="h-20 max-w-[1440px] mx-auto px-margin flex items-center justify-between gap-gutter"><div class="flex items-center gap-space-md shrink-0"><img alt="NEXUS ACCOUNTS Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WGEfLRkwPWZL06Z5I_9WZWMKXy-zZBT6NJYluQQCDA3NCR48DmubnAmwMrLFRFKUF0cD4CCed05JoySMS7VyNHBK21xjR6zY-NY5rraYGfymY7q9bJxmdfVgWXR-e35q_v0-xwqFRjsMH8RphhaelpS8w--8A5P2KELSCuSiP-0gu2T5XliWmncimCqGDu4p7tDs0cHXpaQEZd6NIdQVUTRh-Bw6LXFSWyVAfnskafbXQGtpAUcWOnMwlj"/><div class="hidden sm:flex flex-col"><span class="font-headline-sm text-headline-sm text-primary tracking-wider uppercase font-bold leading-none">NEXUS</span><span class="font-label-sm text-label-sm text-tertiary tracking-widest uppercase">Cyber-Vault</span></div></div><div class="hidden xl:flex items-center gap-space-lg flex-1 max-w-2xl justify-center"><div class="flex items-center gap-space-sm bg-surface-container-lowest/80 px-space-md py-space-xs rounded-xl shadow-inner w-full max-w-xs text-on-surface-variant"><span class="material-symbols-outlined text-outline text-[18px]">search</span><span class="font-body-sm text-body-sm text-outline truncate flex-1">Search titles, skins, tiers...</span><span class="font-label-sm text-label-sm bg-surface-container-high text-tertiary px-space-xs py-0.5 rounded">⌘K</span></div><nav class="flex items-center gap-space-md" data-active-classes="bg-primary-container text-on-primary-container font-bold rounded-lg shadow-[0_0_12px_rgba(212,175,55,0.2)]"><a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-headline-sm text-label-md tracking-wider uppercase" data-path="explore-catalog" href="#">Explore Catalog</a><a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-headline-sm text-label-md tracking-wider uppercase" data-path="sell-asset" href="#">Sell Asset</a><a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-headline-sm text-label-md tracking-wider uppercase" data-path="escrow-guarantee" href="#">Escrow Guarantee</a><a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-headline-sm text-label-md tracking-wider uppercase" data-path="vip-club" href="#">VIP Club</a></nav></div><div class="flex items-center gap-space-md shrink-0"><div class="hidden md:flex items-center gap-space-xs bg-surface-container px-space-md py-space-xs rounded-full shadow-[0_0_10px_rgba(0,0,0,0.5)]"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span class="font-label-sm text-label-sm text-outline-variant tracking-wider uppercase">VAULT</span><span class="font-headline-sm text-label-md text-primary font-bold ml-1">$1,240.50</span></div><div class="flex items-center gap-space-sm"><a class="hidden sm:inline-flex items-center justify-center px-space-md py-space-xs rounded-lg font-headline-sm text-label-md uppercase tracking-wider text-on-surface bg-surface-container-high/40 hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="sign-in" href="#">Sign In</a><a class="inline-flex items-center justify-center px-space-md py-space-xs rounded-lg font-headline-sm text-label-md uppercase tracking-wider text-on-primary bg-primary font-bold hover:bg-primary-fixed-dim hover:text-on-primary transition-all shadow-[0_0_16px_rgba(242,202,80,0.25)]" data-path="connect-wallet" href="#">Connect</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 ml-1"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><main class="relative z-10 w-full pt-20 bg-transparent min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full">
+<div class="max-w-[1440px] mx-auto w-full px-margin py-space-lg flex flex-col gap-space-lg">
+<!-- 1. TOP STATUS & NAVIGATION HEADER -->
+<div class="flex flex-col gap-space-md">
+<!-- Breadcrumb & Telemetry Marker -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm text-outline font-label-md text-label-md tracking-widest uppercase">
+<div class="flex items-center gap-space-xs">
+<span class="hover:text-tertiary transition-colors cursor-pointer">Terminal</span>
+<span class="text-outline-variant">/</span>
+<span class="hover:text-tertiary transition-colors cursor-pointer">Vault Ledgers</span>
+<span class="text-outline-variant">/</span>
+<span class="text-primary font-bold">Order #NX-88291</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="inline-flex items-center gap-1.5 px-space-xs py-0.5 rounded bg-surface-container-high text-tertiary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+            AES-256 ZERO-KNOWLEDGE ENCLAVE
+          </span>
+<span class="text-outline-variant">|</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-mono">NODE: VAL-APEX-09</span>
+</div>
+</div>
+<!-- Tabbed Navigation Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-md bg-surface-container-low/70 backdrop-blur-xl p-space-xs rounded-xl shadow-2xl">
+<div class="flex flex-wrap items-center gap-space-xs">
+<button class="px-space-md py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-all font-headline-sm text-label-md tracking-wider uppercase">
+            All Orders (14)
+          </button>
+<button class="relative px-space-md py-space-xs rounded-lg bg-surface-container-high text-primary font-headline-sm text-label-md tracking-wider uppercase flex items-center gap-2 shadow-inner">
+<span>Active Escrow (1)</span>
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+</button>
+<button class="px-space-md py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-all font-headline-sm text-label-md tracking-wider uppercase">
+            Completed (12)
+          </button>
+<button class="px-space-md py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-all font-headline-sm text-label-md tracking-wider uppercase">
+            In Dispute (0)
+          </button>
+<button class="px-space-md py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 transition-all font-headline-sm text-label-md tracking-wider uppercase">
+            Cancelled (1)
+          </button>
+</div>
+<div class="flex items-center gap-space-sm px-space-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-tertiary">lock_clock</span>
+<span class="font-label-sm text-label-sm tracking-wider uppercase text-outline">Multi-Sig SLA: ACTIVE</span>
+</div>
+</div>
+<!-- Live Inspection Banner (High-Urgency Cyber Shield) -->
+<div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-surface-container-high via-surface-container to-surface-container-high p-space-md shadow-[0_12px_36px_rgba(0,0,0,0.6)]">
+<div class="absolute -right-16 -top-16 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex items-start sm:items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest flex items-center justify-center shrink-0 shadow-inner">
+<span class="material-symbols-outlined text-primary text-[28px] animate-pulse">timer</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-sm text-headline-sm text-primary tracking-wide font-bold">
+                  INSPECTION WINDOW ACTIVE
+                </span>
+<span class="bg-primary/20 text-primary font-headline-sm text-label-sm px-space-xs py-0.5 rounded tracking-widest uppercase" id="countdownBadge">
+                  23h 41m 18s REMAINING
+                </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                Escrow funds <span class="text-on-surface font-semibold">($1,000.00 USD / 4,100,000 KHR)</span> held in cold multi-sig vault. Verify account and link your security credentials before releasing funds.
+              </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm shrink-0">
+<a class="px-space-md py-space-xs rounded-lg bg-surface-container-lowest hover:bg-surface-bright text-tertiary font-headline-sm text-label-md tracking-widest uppercase transition-all flex items-center gap-1.5 shadow-sm" href="#inspectionChecklist">
+<span class="material-symbols-outlined text-[16px]">fact_check</span>
+              Checklist Audit
+            </a>
+<a class="px-space-md py-space-xs rounded-lg bg-error-container/30 hover:bg-error-container/50 text-error font-headline-sm text-label-md tracking-widest uppercase transition-all flex items-center gap-1.5" href="#disputePanel">
+<span class="material-symbols-outlined text-[16px]">gavel</span>
+              Raise Dispute
+            </a>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. ORDER OVERVIEW SUMMARY CARD -->
+<div class="bg-surface-container-low/80 backdrop-blur-xl rounded-xl p-space-lg shadow-xl relative overflow-hidden">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-lg">
+<!-- Asset Title & Visual Token -->
+<div class="flex gap-space-md items-center">
+<div class="relative w-20 h-20 rounded-xl overflow-hidden shrink-0 bg-surface-container-lowest shadow-md">
+<img class="w-full h-full object-cover" data-alt="Valorant Radiant high tier gaming account banner featuring neon glowing Champions 2021 golden trophy weapon skin and sleek obsidian Kuronami ninja katana, dark cinematic esports photography with cyan and amber volumetric lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtaEDJsWzC68PKRL-1jFpJdFYRUb0kWyAKL_mfyYVP6AHU_lKOemgCIrVthUpv3prfUwNnCRDeTjs_CmaEV1nlttQPTLXu3IYr0Yyl0jhO4KxVR5Ssbbz3XeQzpvao9Qi0dcSdSf6qy-lIWISA34mzJRhxyg0gmtq6kak2Ddn2my9-4Ll62An-zvsfAIA-Z7N8l1-Oow_30s6YTYlBTClud92umzFPYIlysW_JwTu2u3dSGcq9LTPXbQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div>
+<span class="absolute bottom-1 left-1.5 text-[9px] font-headline-sm font-bold text-primary tracking-widest">RADIANT #84</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-tertiary tracking-widest uppercase truncate">Ref: #NX-88291</span>
+<h3 class="font-title-md text-title-md text-on-surface font-bold truncate">Valorant Radiant #84</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">VCT Champions '21 + Kuronami Max</span>
+<div class="mt-1 flex items-center gap-1 text-[11px] text-primary">
+<span class="material-symbols-outlined text-[14px]">military_tech</span>
+<span class="font-headline-sm font-semibold">MMR 742 | Act 7 Verified</span>
+</div>
+</div>
+</div>
+<!-- Financial & Settlement Rail -->
+<div class="flex flex-col justify-center bg-surface-container-lowest/60 p-space-md rounded-lg shadow-inner">
+<span class="font-label-sm text-label-sm text-outline tracking-widest uppercase">Settlement Breakdown</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-headline-lg text-headline-lg text-primary font-bold">$1,000.00</span>
+<span class="font-body-sm text-body-sm text-outline-variant font-mono">4,100,000 KHR</span>
+</div>
+<div class="flex items-center gap-1 mt-1 text-tertiary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px]">qr_code_2</span>
+<span class="font-mono text-[12px] truncate">Bakong KHQR (#KHQR-88291-BAKONG)</span>
+</div>
+</div>
+<!-- Bonded Seller Credentials -->
+<div class="flex flex-col justify-center bg-surface-container-lowest/60 p-space-md rounded-lg shadow-inner">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline tracking-widest uppercase">Bonded Counterparty</span>
+<span class="px-space-xs py-0.5 rounded bg-primary-container text-on-primary-container font-label-sm text-[9px] font-bold uppercase">Tier 1 Sovereign</span>
+</div>
+<div class="flex items-center gap-space-sm mt-1.5">
+<div class="w-8 h-8 rounded-full bg-surface-bright flex items-center justify-center font-bold text-primary font-headline-sm text-body-sm shadow">
+              AV
+            </div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1">
+<span class="font-title-md text-body-lg text-on-surface font-bold truncate">@ApexVault_Official</span>
+<span class="material-symbols-outlined text-primary text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="flex items-center gap-2 text-[11px] text-on-surface-variant font-mono">
+<span class="text-primary font-semibold">★ 5.0</span>
+<span>(1,420 trades)</span>
+<span class="text-tertiary">$2,000 Bond</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Warranty & Guarantee Policy -->
+<div class="flex flex-col justify-center bg-surface-container-lowest/60 p-space-md rounded-lg shadow-inner">
+<span class="font-label-sm text-label-sm text-outline tracking-widest uppercase">Indemnity Reserve</span>
+<div class="flex items-center gap-1.5 mt-1 text-on-surface font-headline-sm text-label-md font-bold">
+<span class="material-symbols-outlined text-tertiary text-[18px]">verified_user</span>
+<span>100% Anti-Recall Guarantee</span>
+</div>
+<span class="font-mono text-[11px] text-tertiary-fixed-dim mt-0.5">Policy #POL-88291-NX</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Automated 24/7 liquidity backstop active</span>
+</div>
+</div>
+</div>
+<!-- MAIN TWO-COLUMN SPLIT: VAULT TERMINAL & CHECKLIST -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- 3. CENTRAL FOCUS: CRYPTOGRAPHIC CREDENTIAL VAULT TERMINAL (7 COLS) -->
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<!-- Terminal Outer Container -->
+<div class="relative bg-surface-container-low/90 backdrop-blur-2xl rounded-xl p-space-lg shadow-2xl overflow-hidden flex flex-col gap-space-md">
+<!-- Ambient Glow Background -->
+<div class="absolute -top-24 -left-24 w-80 h-80 bg-tertiary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Terminal Top Meta Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-space-sm border-b border-surface-container-highest/60 gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary shadow-inner">
+<span class="material-symbols-outlined text-[20px]">enhanced_encryption</span>
+</div>
+<div class="flex flex-col">
+<h2 class="font-headline-sm text-title-md text-on-surface font-bold tracking-wide uppercase">
+                  Zero-Knowledge Decryption Portal
+                </h2>
+<span class="font-mono text-[11px] text-tertiary tracking-wider">HARDWARE KEY ENCLAVE • CLIENT-SIDE DECRYPT</span>
+</div>
+</div>
+<!-- Terminal Hash String -->
+<div class="flex items-center gap-2 bg-surface-container-lowest px-space-sm py-1 rounded font-mono text-[11px] text-outline">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+<span>SESSION: 0x9f..8a2</span>
+<span class="text-outline-variant">|</span>
+<span class="text-tertiary">HASH: 7b3109a..e44f</span>
+</div>
+</div>
+<!-- Global Controls Bar -->
+<div class="flex items-center justify-between bg-surface-container-lowest/80 px-space-md py-space-xs rounded-lg">
+<span class="font-label-sm text-label-sm text-outline tracking-wider uppercase">Credentials (5 Assets Ready)</span>
+<div class="flex items-center gap-space-sm">
+<button class="text-tertiary hover:text-tertiary-fixed font-headline-sm text-label-sm tracking-wider uppercase flex items-center gap-1 transition-colors" id="toggleAllBtn">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span id="toggleAllText">Reveal All Vault Keys</span>
+</button>
+<span class="text-outline-variant">|</span>
+<button class="text-primary hover:text-primary-fixed font-headline-sm text-label-sm tracking-wider uppercase flex items-center gap-1 transition-colors" id="copyAllVaultBtn">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span>Copy All Fields</span>
+</button>
+</div>
+</div>
+<!-- 5 MASKED CREDENTIAL ROWS -->
+<div class="flex flex-col gap-space-sm">
+<!-- ROW 1: Riot Username -->
+<div class="flex flex-col p-space-md bg-surface-container-lowest/90 rounded-xl transition-all shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm text-outline tracking-widest uppercase flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[15px]">badge</span>
+                  Riot Client Username / ID
+                </span>
+<span class="font-mono text-[10px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">PRIMARY ACCESS</span>
+</div>
+<div class="flex items-center justify-between gap-space-md mt-1">
+<div class="font-mono text-[14px] text-on-surface font-semibold tracking-wider flex-1 truncate select-all">
+<span class="cipher-text" data-masked="••••••••••••••" data-real="RadiantApex_VCT21">••••••••••••••</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<button class="row-reveal-btn p-1.5 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-tertiary transition-colors" title="Toggle Decryption">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="row-copy-btn px-2 py-1 rounded bg-surface-container hover:bg-surface-bright text-on-surface font-headline-sm text-[11px] tracking-wider uppercase transition-all flex items-center gap-1" data-copy="RadiantApex_VCT21">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span>Copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ROW 2: Riot Password -->
+<div class="flex flex-col p-space-md bg-surface-container-lowest/90 rounded-xl transition-all shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm text-outline tracking-widest uppercase flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[15px]">key</span>
+                  Riot Account Master Password
+                </span>
+<span class="font-mono text-[10px] text-error bg-surface-container px-1.5 py-0.5 rounded">HIGH SENSITIVITY</span>
+</div>
+<div class="flex items-center justify-between gap-space-md mt-1">
+<div class="font-mono text-[14px] text-on-surface font-semibold tracking-wider flex-1 truncate select-all">
+<span class="cipher-text" data-masked="••••••••••••••••••••" data-real="Nx98#Vct!R4di4nt948">••••••••••••••••••••</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<button class="row-reveal-btn p-1.5 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-tertiary transition-colors" title="Toggle Decryption">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="row-copy-btn px-2 py-1 rounded bg-surface-container hover:bg-surface-bright text-on-surface font-headline-sm text-[11px] tracking-wider uppercase transition-all flex items-center gap-1" data-copy="Nx98#Vct!R4di4nt948">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span>Copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ROW 3: First-Mail Address -->
+<div class="flex flex-col p-space-md bg-surface-container-lowest/90 rounded-xl transition-all shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm text-outline tracking-widest uppercase flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[15px]">mail_lock</span>
+                  First-Mail (OGO) Outlook Address
+                </span>
+<span class="font-mono text-[10px] text-tertiary bg-surface-container px-1.5 py-0.5 rounded">PROVENANCE ROOT</span>
+</div>
+<div class="flex items-center justify-between gap-space-md mt-1">
+<div class="font-mono text-[14px] text-on-surface font-semibold tracking-wider flex-1 truncate select-all">
+<span class="cipher-text" data-masked="••••••••••••••••••••••••" data-real="nexus_val_champs21@outlook.com">••••••••••••••••••••••••</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<button class="row-reveal-btn p-1.5 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-tertiary transition-colors" title="Toggle Decryption">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="row-copy-btn px-2 py-1 rounded bg-surface-container hover:bg-surface-bright text-on-surface font-headline-sm text-[11px] tracking-wider uppercase transition-all flex items-center gap-1" data-copy="nexus_val_champs21@outlook.com">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span>Copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ROW 4: First-Mail Login Key -->
+<div class="flex flex-col p-space-md bg-surface-container-lowest/90 rounded-xl transition-all shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm text-outline tracking-widest uppercase flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[15px]">password</span>
+                  First-Mail Access Key / Password
+                </span>
+<a class="font-mono text-[10px] text-primary hover:text-primary-fixed underline flex items-center gap-0.5" href="https://outlook.live.com" rel="noopener noreferrer" target="_blank">
+<span>Open Outlook Portal</span>
+<span class="material-symbols-outlined text-[12px]">open_in_new</span>
+</a>
+</div>
+<div class="flex items-center justify-between gap-space-md mt-1">
+<div class="font-mono text-[14px] text-on-surface font-semibold tracking-wider flex-1 truncate select-all">
+<span class="cipher-text" data-masked="••••••••••••••••••••" data-real="M4ilK3y_Vault#2024!">••••••••••••••••••••</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<button class="row-reveal-btn p-1.5 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-tertiary transition-colors" title="Toggle Decryption">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="row-copy-btn px-2 py-1 rounded bg-surface-container hover:bg-surface-bright text-on-surface font-headline-sm text-[11px] tracking-wider uppercase transition-all flex items-center gap-1" data-copy="M4ilK3y_Vault#2024!">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span>Copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ROW 5: Riot 2FA Emergency Backup Codes -->
+<div class="flex flex-col p-space-md bg-surface-container-lowest/90 rounded-xl transition-all shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm text-outline tracking-widest uppercase flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[15px]">shield_person</span>
+                  Riot 2FA Emergency Backup Codes (8 Codes)
+                </span>
+<span class="font-mono text-[10px] text-secondary bg-surface-container px-1.5 py-0.5 rounded">8 KEYS MINTED</span>
+</div>
+<div class="flex items-center justify-between gap-space-md mt-1">
+<div class="font-mono text-[13px] text-on-surface font-semibold tracking-wider flex-1 truncate select-all">
+<span class="cipher-text" data-masked="•••• •••• •••• •••• (8 cryptographic backup keys stored)" data-real="9842-1102 | 4491-0082 | 7712-3990 | 1823-9941 | 6601-2910 | 3381-8012 | 5519-4820 | 2049-7711">•••• •••• •••• •••• (8 cryptographic backup keys stored)</span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<button class="row-reveal-btn p-1.5 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-tertiary transition-colors" title="Toggle Decryption">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="px-2 py-1 rounded bg-surface-container hover:bg-surface-bright text-secondary font-headline-sm text-[11px] tracking-wider uppercase transition-all flex items-center gap-1" id="downloadKeysBtn" title="Download .txt">
+<span class="material-symbols-outlined text-[14px]">download</span>
+<span>TXT</span>
+</button>
+<button class="row-copy-btn px-2 py-1 rounded bg-surface-container hover:bg-surface-bright text-on-surface font-headline-sm text-[11px] tracking-wider uppercase transition-all flex items-center gap-1" data-copy="9842-1102, 4491-0082, 7712-3990, 1823-9941, 6601-2910, 3381-8012, 5519-4820, 2049-7711">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span>Copy</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Vault Security Signature Stamp -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pt-space-xs gap-space-xs bg-surface-container-lowest/40 p-space-sm rounded-lg text-outline">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-tertiary text-[18px]">verified</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+                Credentials verified via Automated Riot API Handshake. Zero admin visibility.
+              </span>
+</div>
+<div class="font-mono text-[11px] text-tertiary">
+              CIPHER: AES-GCM-256
+            </div>
+</div>
+</div>
+<!-- Real-time Decryption Visualizer Box -->
+<div class="bg-surface-container-low/60 rounded-xl p-space-md flex items-center justify-between gap-space-md shadow-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-2.5 h-2.5 rounded-full bg-primary animate-ping"></div>
+<span class="font-label-sm text-label-sm text-on-surface tracking-wider uppercase">Active Session Protocol:</span>
+<span class="font-mono text-[12px] text-tertiary">E2EE-VAULT-KH-88291</span>
+</div>
+<div class="hidden sm:flex items-center gap-space-sm font-mono text-[11px] text-outline">
+<span>CLIENT LATENCY: 14ms</span>
+<span>•</span>
+<span class="text-primary">MULTI-SIG: 2 of 3 KEYS READY</span>
+</div>
+</div>
+</div>
+<!-- 4. BUYER HANDOVER & INSPECTION CHECKLIST (5 COLS) -->
+<div class="lg:col-span-5 flex flex-col gap-space-md" id="inspectionChecklist">
+<div class="bg-surface-container-low/90 backdrop-blur-2xl rounded-xl p-space-lg shadow-2xl flex flex-col gap-space-md h-full">
+<div class="flex items-center justify-between pb-space-sm border-b border-surface-container-highest/60">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[24px]">fact_check</span>
+<div>
+<h3 class="font-headline-sm text-title-md text-on-surface font-bold tracking-wide uppercase">
+                  Handover Inspection Checklist
+                </h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Complete all 4 verification protocols</span>
+</div>
+</div>
+<div class="flex items-center gap-1 bg-surface-container px-space-xs py-1 rounded">
+<span class="font-headline-sm text-label-md text-primary font-bold" id="completedStepsCount">2</span>
+<span class="font-body-sm text-body-sm text-outline">/ 4 Completed</span>
+</div>
+</div>
+<!-- Interactive Progress Bar -->
+<div class="w-full bg-surface-container-lowest h-2 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-primary to-tertiary h-full transition-all duration-300 w-1/2" id="checklistProgressBar"></div>
+</div>
+<!-- Step Items Container -->
+<div class="flex flex-col gap-space-sm">
+<!-- Step 1 (Completed) -->
+<label class="group flex items-start gap-space-sm p-space-md rounded-xl bg-surface-container-lowest/80 cursor-pointer hover:bg-surface-container-lowest transition-all">
+<input checked="" class="inspection-step mt-1 w-4 h-4 rounded accent-primary bg-surface-container cursor-pointer" type="checkbox"/>
+<div class="flex flex-col flex-1">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-label-md text-on-surface font-bold tracking-wide">
+                    Step 1: Riot Inventory Audit
+                  </span>
+<span class="step-status px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-primary-container/20 text-primary">
+                    Verified
+                  </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                  Logged in to Riot Client. Confirmed Radiant Gun Buddy, Champions '21 Vandal, Kuronami melee &amp; MMR 742+.
+                </p>
+</div>
+</label>
+<!-- Step 2 (Completed) -->
+<label class="group flex items-start gap-space-sm p-space-md rounded-xl bg-surface-container-lowest/80 cursor-pointer hover:bg-surface-container-lowest transition-all">
+<input checked="" class="inspection-step mt-1 w-4 h-4 rounded accent-primary bg-surface-container cursor-pointer" type="checkbox"/>
+<div class="flex flex-col flex-1">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-label-md text-on-surface font-bold tracking-wide">
+                    Step 2: Secure First-Mail (OGO)
+                  </span>
+<span class="step-status px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-primary-container/20 text-primary">
+                    Verified
+                  </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                  Logged into Outlook mailbox, bound private recovery phone, updated master OGO credentials.
+                </p>
+</div>
+</label>
+<!-- Step 3 (Pending Action) -->
+<label class="group flex items-start gap-space-sm p-space-md rounded-xl bg-surface-container-lowest/80 cursor-pointer hover:bg-surface-container-lowest transition-all">
+<input class="inspection-step mt-1 w-4 h-4 rounded accent-primary bg-surface-container cursor-pointer" type="checkbox"/>
+<div class="flex flex-col flex-1">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-label-md text-on-surface font-bold tracking-wide">
+                    Step 3: Rotate Riot Pass &amp; 2FA
+                  </span>
+<span class="step-status px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-error-container/30 text-error">
+                    Action Required
+                  </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                  Change Riot Account password and bind personal Riot Mobile Authenticator app.
+                </p>
+</div>
+</label>
+<!-- Step 4 (Pending Action) -->
+<label class="group flex items-start gap-space-sm p-space-md rounded-xl bg-surface-container-lowest/80 cursor-pointer hover:bg-surface-container-lowest transition-all">
+<input class="inspection-step mt-1 w-4 h-4 rounded accent-primary bg-surface-container cursor-pointer" type="checkbox"/>
+<div class="flex flex-col flex-1">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-label-md text-on-surface font-bold tracking-wide">
+                    Step 4: Terminate Active Sessions
+                  </span>
+<span class="step-status px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-surface-container-highest text-outline">
+                    Pending
+                  </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                  Navigate to Riot Account Management and revoke all previous authorized login tokens.
+                </p>
+</div>
+</label>
+</div>
+<!-- Protocol Security Notice Box -->
+<div class="mt-auto bg-surface-container-lowest/50 p-space-md rounded-xl flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px] shrink-0">shield</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-label-sm text-on-surface uppercase tracking-wider font-bold">Anti-Recall Protocol Safeguard</span>
+<p class="font-body-sm text-body-sm text-outline-variant mt-0.5">
+                Completing Step 2 (First-Mail) transfers sovereign ownership. The original creator cannot recover this account through Riot Support.
+              </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 5. ESCROW LIFECYCLE ACTIONS & DECISION CONTROL PANEL -->
+<div class="bg-surface-container-low/90 backdrop-blur-2xl rounded-xl p-space-lg shadow-2xl relative overflow-hidden flex flex-col gap-space-md">
+<div class="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-space-lg">
+<!-- Release Action (Primary Conversion) -->
+<div class="flex-1 flex flex-col gap-space-xs">
+<button class="w-full py-space-md px-space-lg rounded-xl bg-gradient-to-r from-primary via-primary-fixed to-primary-container text-on-primary font-headline-sm text-headline-sm uppercase tracking-wider font-bold shadow-[0_0_24px_rgba(242,202,80,0.35)] hover:shadow-[0_0_36px_rgba(242,202,80,0.5)] hover:scale-[1.005] active:scale-[0.99] transition-all flex items-center justify-center gap-space-sm" id="releaseEscrowBtn">
+<span class="material-symbols-outlined text-[26px]">lock_open</span>
+<span>Confirm Account Received &amp; Release Escrow ($1,000.00)</span>
+</button>
+<div class="flex items-center gap-2 px-space-xs text-outline font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-tertiary text-[16px]">info</span>
+<span>Transfers funds directly to <span class="text-on-surface font-semibold">@ApexVault_Official</span>. Action is final and activates your Lifetime Anti-Recall Warranty.</span>
+</div>
+</div>
+<div class="hidden xl:block w-px h-24 bg-surface-container-highest/60"></div>
+<!-- Dispute & Emergency Actions -->
+<div class="xl:w-5/12 flex flex-col gap-space-xs" id="disputePanel">
+<button class="w-full py-space-md px-space-lg rounded-xl bg-surface-container-highest/60 hover:bg-error-container/40 text-error font-headline-sm text-title-md uppercase tracking-wider font-bold transition-all flex items-center justify-center gap-space-sm shadow-md" id="openDisputeBtn">
+<span class="material-symbols-outlined text-[24px]">report</span>
+<span>Open Escrow Dispute / Claim Issue</span>
+</button>
+<div class="flex items-center gap-2 px-space-xs text-outline font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-error text-[16px]">support_agent</span>
+<span>Report login failure or inventory discrepancy. Halts auto-release and alerts Arbitrators.</span>
+</div>
+</div>
+</div>
+<!-- Auto Release Ticker Strip -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-sm border-t border-surface-container-highest/60 text-outline-variant font-mono text-[12px]">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span>AUTOPILOT: Funds will auto-release in <span class="text-primary font-bold">23h 41m 18s</span> unless dispute is submitted.</span>
+</div>
+<div class="flex items-center gap-space-sm text-outline">
+<span>TXID: 0x9812bc..91a</span>
+<span>•</span>
+<span>ESCROW LOCKER: MULTI-SIG 2/3</span>
+</div>
+</div>
+</div>
+<!-- 6. LIVE ARBITRATION & SUPPORT DOCK -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md bg-surface-container-low/60 p-space-md rounded-xl shadow-lg">
+<!-- Bonded Seller Contact Card -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container-lowest/80 rounded-lg">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-bold font-headline-sm">
+            AV
+          </div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-label-md text-on-surface font-bold truncate">@ApexVault_Official</span>
+<span class="font-body-sm text-body-sm text-outline-variant truncate">Bonded Seller • Online</span>
+</div>
+</div>
+<button class="px-space-sm py-1.5 rounded bg-surface-container hover:bg-surface-bright text-tertiary font-headline-sm text-label-sm tracking-wider uppercase transition-colors shrink-0">
+          Chat Seller
+        </button>
+</div>
+<!-- Assigned Escrow Concierge Agent -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container-lowest/80 rounded-lg">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-label-md text-on-surface font-bold truncate">Agent 04 (Concierge)</span>
+<span class="font-body-sm text-body-sm text-tertiary truncate">Escrow Mediator Assigned</span>
+</div>
+</div>
+<button class="px-space-sm py-1.5 rounded bg-surface-container hover:bg-surface-bright text-primary font-headline-sm text-label-sm tracking-wider uppercase transition-colors shrink-0">
+          Call Agent
+        </button>
+</div>
+<!-- Cryptographic Vault Receipt Download -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container-lowest/80 rounded-lg">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-label-md text-on-surface font-bold truncate">Vault Receipt</span>
+<span class="font-mono text-[11px] text-outline truncate">PDF / JSON Cryptographic Proof</span>
+</div>
+</div>
+<button class="px-space-sm py-1.5 rounded bg-surface-container hover:bg-surface-bright text-secondary font-headline-sm text-label-sm tracking-wider uppercase transition-colors shrink-0 flex items-center gap-1" id="downloadReceiptBtn">
+<span class="material-symbols-outlined text-[14px]">download</span>
+          Receipt
+        </button>
+</div>
+</div>
+</div>
+<!-- Interactive JavaScript -->
+<script>
+    (function initDecryptionVault() {
+      // 1. Interactive Single-Row Reveal / Hide
+      const rowRevealBtns = document.querySelectorAll('.row-reveal-btn');
+      rowRevealBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const row = e.currentTarget.closest('.p-space-md');
+          const cipherSpan = row.querySelector('.cipher-text');
+          const isMasked = cipherSpan.textContent.includes('•');
+          const iconSpan = btn.querySelector('.material-symbols-outlined');
+
+          if (isMasked) {
+            cipherSpan.textContent = cipherSpan.getAttribute('data-real');
+            cipherSpan.classList.add('text-primary');
+            iconSpan.textContent = 'visibility_off';
+          } else {
+            cipherSpan.textContent = cipherSpan.getAttribute('data-masked');
+            cipherSpan.classList.remove('text-primary');
+            iconSpan.textContent = 'visibility';
+          }
+        });
+      });
+
+      // 2. Interactive Global "Reveal All" Toggle
+      const toggleAllBtn = document.getElementById('toggleAllBtn');
+      const toggleAllText = document.getElementById('toggleAllText');
+      let allRevealed = false;
+
+      toggleAllBtn.addEventListener('click', () => {
+        allRevealed = !allRevealed;
+        const cipherSpans = document.querySelectorAll('.cipher-text');
+        const icons = document.querySelectorAll('.row-reveal-btn .material-symbols-outlined');
+
+        cipherSpans.forEach(span => {
+          if (allRevealed) {
+            span.textContent = span.getAttribute('data-real');
+            span.classList.add('text-primary');
+          } else {
+            span.textContent = span.getAttribute('data-masked');
+            span.classList.remove('text-primary');
+          }
+        });
+
+        icons.forEach(ic => {
+          ic.textContent = allRevealed ? 'visibility_off' : 'visibility';
+        });
+
+        toggleAllText.textContent = allRevealed ? 'Mask All Vault Keys' : 'Reveal All Vault Keys';
+      });
+
+      // 3. Interactive Copy Buttons
+      const rowCopyBtns = document.querySelectorAll('.row-copy-btn');
+      rowCopyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const textToCopy = btn.getAttribute('data-copy');
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<span class="material-symbols-outlined text-[14px]">check</span><span>Copied!</span>`;
+            btn.classList.add('text-primary');
+            setTimeout(() => {
+              btn.innerHTML = originalHTML;
+              btn.classList.remove('text-primary');
+            }, 2000);
+          });
+        });
+      });
+
+      // 4. Copy All Fields Button
+      const copyAllVaultBtn = document.getElementById('copyAllVaultBtn');
+      copyAllVaultBtn.addEventListener('click', () => {
+        const vaultData = `NEXUS ACCOUNTS DECRYPTION VAULT
+Order Ref: #NX-88291 | Valorant Radiant #84
+------------------------------------------------
+Riot Username: RadiantApex_VCT21
+Riot Password: Nx98#Vct!R4di4nt948
+OGO Email: nexus_val_champs21@outlook.com
+OGO Password: M4ilK3y_Vault#2024!
+2FA Backup Codes: 9842-1102, 4491-0082, 7712-3990, 1823-9941, 6601-2910, 3381-8012, 5519-4820, 2049-7711
+------------------------------------------------
+Warranty: 100% Anti-Recall #POL-88291-NX`;
+        
+        navigator.clipboard.writeText(vaultData).then(() => {
+          const original = copyAllVaultBtn.innerHTML;
+          copyAllVaultBtn.innerHTML = `<span class="material-symbols-outlined text-[16px]">check</span><span>All Keys Copied!</span>`;
+          setTimeout(() => {
+            copyAllVaultBtn.innerHTML = original;
+          }, 2500);
+        });
+      });
+
+      // 5. Download .TXT Backup Keys
+      const downloadKeysBtn = document.getElementById('downloadKeysBtn');
+      downloadKeysBtn.addEventListener('click', () => {
+        const content = `NEXUS VAULT EMERGENCY 2FA CODES
+ORDER: #NX-88291
+ACCOUNT: RadiantApex_VCT21
+--------------------------------
+1: 9842-1102
+2: 4491-0082
+3: 7712-3990
+4: 1823-9941
+5: 6601-2910
+6: 3381-8012
+7: 5519-4820
+8: 2049-7711
+--------------------------------
+Keep this encrypted and offline.`;
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'NEXUS_2FA_KEYS_NX88291.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // 6. Interactive Step Checklist Logic & Progress Bar
+      const checkboxes = document.querySelectorAll('.inspection-step');
+      const counterText = document.getElementById('completedStepsCount');
+      const progressBar = document.getElementById('checklistProgressBar');
+
+      function updateChecklist() {
+        let count = 0;
+        checkboxes.forEach(cb => {
+          const parent = cb.closest('label');
+          const statusTag = parent.querySelector('.step-status');
+          if (cb.checked) {
+            count++;
+            statusTag.textContent = 'Verified';
+            statusTag.className = 'step-status px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-primary-container/20 text-primary';
+          } else {
+            statusTag.textContent = 'Action Required';
+            statusTag.className = 'step-status px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-error-container/30 text-error';
+          }
+        });
+
+        counterText.textContent = count;
+        const percentage = (count / checkboxes.length) * 100;
+        progressBar.style.width = percentage + '%';
+
+        // Update release CTA state
+        const releaseBtn = document.getElementById('releaseEscrowBtn');
+        if (count === checkboxes.length) {
+          releaseBtn.classList.remove('opacity-90');
+          releaseBtn.classList.add('shadow-[0_0_40px_rgba(242,202,80,0.6)]');
+        }
+      }
+
+      checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateChecklist);
+      });
+
+      // 7. Release Escrow Action Simulation
+      const releaseBtn = document.getElementById('releaseEscrowBtn');
+      releaseBtn.addEventListener('click', () => {
+        const totalChecked = Array.from(checkboxes).filter(c => c.checked).length;
+        if (totalChecked < checkboxes.length) {
+          const proceed = confirm(`You have completed ${totalChecked} of 4 inspection steps. Are you certain you want to release the $1,000.00 escrow immediately?`);
+          if (!proceed) return;
+        }
+
+        releaseBtn.disabled = true;
+        releaseBtn.innerHTML = `<span class="material-symbols-outlined text-[24px] animate-spin">refresh</span><span>BROADCASTING MULTI-SIG SETTLEMENT...</span>`;
+        setTimeout(() => {
+          releaseBtn.innerHTML = `<span class="material-symbols-outlined text-[24px]">verified</span><span>ESCROW RELEASED — WARRANTY CERTIFIED</span>`;
+          releaseBtn.classList.remove('from-primary', 'via-primary-fixed', 'to-primary-container');
+          releaseBtn.classList.add('bg-tertiary-container', 'text-on-tertiary-container');
+        }, 1800);
+      });
+
+      // 8. Open Dispute Action Simulation
+      const openDisputeBtn = document.getElementById('openDisputeBtn');
+      openDisputeBtn.addEventListener('click', () => {
+        const issue = prompt("Enter the reason for freezing escrow (e.g. Invalid Riot password, missing Champions 2021 skin, OGO inaccessible):");
+        if (issue && issue.trim().length > 0) {
+          openDisputeBtn.innerHTML = `<span class="material-symbols-outlined text-[20px]">lock</span><span>ARBITRATION DESK NOTIFIED (#DISP-9921)</span>`;
+          openDisputeBtn.classList.add('bg-error', 'text-on-error');
+          alert("Escrow halted. 24/7 Arbitrator Agent 04 has frozen the $1,000.00 deposit and will contact both parties within 15 minutes.");
+        }
+      });
+
+      // 9. Download Vault Receipt Simulation
+      const downloadReceiptBtn = document.getElementById('downloadReceiptBtn');
+      downloadReceiptBtn.addEventListener('click', () => {
+        const receiptData = JSON.stringify({
+          receipt_id: "NEXUS-REC-88291",
+          order: "#NX-88291",
+          item: "Valorant Radiant #84 (Champions 2021 + Kuronami)",
+          settlement_usd: 1000.00,
+          settlement_khr: 4100000,
+          rail: "Bakong KHQR (#KHQR-88291-BAKONG)",
+          buyer_signature: "0x8fa92841029cde81",
+          seller_signature: "0x7728190012eecbd0",
+          warranty_policy: "POL-88291-NX",
+          escrow_type: "Cold Multi-Sig 2/3",
+          timestamp_utc: new Date().toISOString()
+        }, null, 2);
+
+        const blob = new Blob([receiptData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'NEXUS_VAULT_RECEIPT_NX88291.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    })();
+  </script>
+</div></main><footer class="relative z-10 w-full bg-surface-container-lowest/90 backdrop-blur-2xl"><div class="max-w-[1440px] mx-auto px-margin py-space-xl"><div class="grid grid-cols-2 lg:grid-cols-4 gap-gutter mb-space-xl bg-surface-container-low/50 p-space-lg rounded-xl"><div class="flex items-start gap-space-sm"><span class="material-symbols-outlined text-primary text-[28px]">shield_lock</span><div><h4 class="font-headline-sm text-label-md uppercase tracking-wider text-on-surface font-bold">Dual-Custody Vault</h4><p class="font-body-sm text-body-sm text-on-surface-variant">Multi-sig escrow holding until complete credential verification.</p></div></div><div class="flex items-start gap-space-sm"><span class="material-symbols-outlined text-tertiary text-[28px]">verified_user</span><div><h4 class="font-headline-sm text-label-md uppercase tracking-wider text-on-surface font-bold">100% Anti-Recall</h4><p class="font-body-sm text-body-sm text-on-surface-variant">Life-cycle hardware warranty backed by dedicated liquidity reserves.</p></div></div><div class="flex items-start gap-space-sm"><span class="material-symbols-outlined text-secondary text-[28px]">lock_reset</span><div><h4 class="font-headline-sm text-label-md uppercase tracking-wider text-on-surface font-bold">Instant Decryption</h4><p class="font-body-sm text-body-sm text-on-surface-variant">Automated zero-trust key transfer within 45 seconds of settlement.</p></div></div><div class="flex items-start gap-space-sm"><span class="material-symbols-outlined text-primary-fixed text-[28px]">currency_bitcoin</span><div><h4 class="font-headline-sm text-label-md uppercase tracking-wider text-on-surface font-bold">Bakong &amp; Crypto</h4><p class="font-body-sm text-body-sm text-on-surface-variant">Audited instantaneous KHQR settlement alongside major web3 protocols.</p></div></div></div><div class="grid grid-cols-1 md:grid-cols-5 gap-gutter mb-space-xl"><div class="md:col-span-2 flex flex-col gap-space-md"><div class="flex items-center gap-space-sm"><img alt="NEXUS ACCOUNTS Brand Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WGEfLRkwPWZL06Z5I_9WZWMKXy-zZBT6NJYluQQCDA3NCR48DmubnAmwMrLFRFKUF0cD4CCed05JoySMS7VyNHBK21xjR6zY-NY5rraYGfymY7q9bJxmdfVgWXR-e35q_v0-xwqFRjsMH8RphhaelpS8w--8A5P2KELSCuSiP-0gu2T5XliWmncimCqGDu4p7tDs0cHXpaQEZd6NIdQVUTRh-Bw6LXFSWyVAfnskafbXQGtpAUcWOnMwlj"/><span class="font-headline-sm text-headline-sm text-primary tracking-wider uppercase font-bold">NEXUS</span></div><p class="font-body-md text-body-md text-on-surface-variant max-w-sm">The preeminent cyber-luxury liquidity protocol and sovereign marketplace for vaulted high-tier digital gaming assets, esports accounts, and immortal cosmetics.</p><div class="flex items-center gap-space-sm text-tertiary font-label-sm text-label-sm"><span class="w-2 h-2 rounded-full bg-tertiary animate-ping"></span>All Systems Operational | Escrow Vault Synced | 99.98% Handover Uptime</div></div><div><h5 class="font-headline-sm text-label-md uppercase tracking-wider text-primary mb-space-md font-bold">Marketplace</h5><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface-variant"><li><a class="hover:text-tertiary transition-colors" data-path="explore-catalog" href="#">Explore Catalog</a></li><li><a class="hover:text-tertiary transition-colors" data-path="sell-asset" href="#">Sell High-Tier Asset</a></li><li><a class="hover:text-tertiary transition-colors" data-path="instant-liquidity" href="#">Instant Liquidity Buyout</a></li><li><a class="hover:text-tertiary transition-colors" data-path="escrow-guarantee" href="#">Escrow Protocol</a></li></ul></div><div><h5 class="font-headline-sm text-label-md uppercase tracking-wider text-primary mb-space-md font-bold">Sanctuary &amp; VIP</h5><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface-variant"><li><a class="hover:text-tertiary transition-colors" data-path="vip-club" href="#">The VIP Vault Club</a></li><li><a class="hover:text-tertiary transition-colors" data-path="concierge" href="#">Private Broker Concierge</a></li><li><a class="hover:text-tertiary transition-colors" data-path="provenance-verifier" href="#">Provenance Verifier</a></li><li><a class="hover:text-tertiary transition-colors" data-path="bug-bounty" href="#">Smart Contract Bounty</a></li></ul></div><div><h5 class="font-headline-sm text-label-md uppercase tracking-wider text-primary mb-space-md font-bold">Protocol Compliance</h5><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface-variant"><li><a class="hover:text-tertiary transition-colors" data-path="terms-of-custody" href="#">Terms of Custody</a></li><li><a class="hover:text-tertiary transition-colors" data-path="anti-recall-policy" href="#">Anti-Recall Guarantee</a></li><li><a class="hover:text-tertiary transition-colors" data-path="privacy-vault" href="#">Zero-Knowledge Privacy</a></li><li><a class="hover:text-tertiary transition-colors" data-path="audit-reports" href="#">Security Audits</a></li></ul></div></div><div class="pt-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md font-body-sm text-body-sm text-outline"><p>© 2025 NEXUS ACCOUNTS. All cryptographic guarantees and vault keys reserved.</p><div class="flex items-center gap-space-lg"><a class="hover:text-on-surface transition-colors" data-path="terms-of-custody" href="#">Terms</a><a class="hover:text-on-surface transition-colors" data-path="privacy-vault" href="#">Privacy</a><a class="hover:text-on-surface transition-colors" data-path="escrow-guarantee" href="#">Security SLA</a></div></div></div></footer></body></html>

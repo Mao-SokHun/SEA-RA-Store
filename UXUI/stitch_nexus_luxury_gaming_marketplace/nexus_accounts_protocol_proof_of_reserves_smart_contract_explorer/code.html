@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "secondary-fixed-dim": "#dcb8ff", "tertiary-container": "#00c6d2", "secondary-fixed": "#efdbff", "primary-fixed": "#ffe088", "inverse-on-surface": "#2e3037", "on-surface-variant": "#d0c5af", "tertiary": "#00e4f2", "background": "#10131a", "on-tertiary-container": "#004d53", "tertiary-fixed-dim": "#00dbe9", "on-primary-fixed": "#241a00", "surface": "#10131a", "outline-variant": "#4d4635", "inverse-primary": "#735c00", "on-secondary-container": "#dcb7ff", "on-background": "#e1e2eb", "on-primary-container": "#554300", "secondary": "#dcb8ff", "surface-container-highest": "#32353c", "inverse-surface": "#e1e2eb", "primary": "#f2ca50", "on-primary-fixed-variant": "#574500", "primary-fixed-dim": "#e9c349", "surface-container": "#1d2026", "error-container": "#93000a", "error": "#ffb4ab", "on-tertiary-fixed": "#002022", "on-error-container": "#ffdad6", "on-primary": "#3c2f00", "on-secondary": "#480081", "surface-container-high": "#272a31", "surface-container-lowest": "#0b0e14", "on-secondary-fixed-variant": "#6700b5", "secondary-container": "#7701d0", "on-error": "#690005", "surface-dim": "#10131a", "on-tertiary": "#00363a", "on-surface": "#e1e2eb", "outline": "#99907c", "surface-bright": "#363940", "primary-container": "#d4af37", "on-tertiary-fixed-variant": "#004f54", "surface-variant": "#32353c", "tertiary-fixed": "#7df4ff", "surface-tint": "#e9c349", "surface-container-low": "#191c22", "on-secondary-fixed": "#2c0051" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "space-sm": "0.5rem", "margin-mobile": "1rem", "space-md": "1rem", "space-xs": "0.25rem", "space-lg": "1.5rem", "gutter": "1.5rem", "gutter-mobile": "0.75rem", "margin": "2.5rem", "space-xl": "2.5rem" }, "fontFamily": { "label-sm": [ "Space Grotesk" ], "body-md": [ "Inter" ], "display-lg": [ "Space Grotesk" ], "label-md": [ "Space Grotesk" ], "headline-xl-mobile": [ "Space Grotesk" ], "display-lg-mobile": [ "Space Grotesk" ], "body-sm": [ "Inter" ], "headline-sm": [ "Space Grotesk" ], "headline-lg": [ "Space Grotesk" ], "title-md": [ "Inter" ], "headline-xl": [ "Space Grotesk" ], "body-lg": [ "Inter" ] }, "fontSize": { "label-sm": [ "10px", { "lineHeight": "14px", "letterSpacing": "0.12em", "fontWeight": "700" } ], "body-md": [ "14px", { "lineHeight": "22px", "letterSpacing": "0.01em", "fontWeight": "400" } ], "display-lg": [ "56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "label-md": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "600" } ], "headline-xl-mobile": [ "28px", { "lineHeight": "36px", "letterSpacing": "0em", "fontWeight": "700" } ], "display-lg-mobile": [ "36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "body-sm": [ "12px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "400" } ], "headline-sm": [ "22px", { "lineHeight": "28px", "letterSpacing": "0.02em", "fontWeight": "600" } ], "headline-lg": [ "32px", { "lineHeight": "40px", "letterSpacing": "0em", "fontWeight": "600" } ], "title-md": [ "18px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "600" } ], "headline-xl": [ "40px", { "lineHeight": "48px", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "body-lg": [ "16px", { "lineHeight": "26px", "letterSpacing": "0.01em", "fontWeight": "400" } ] } } } };</script></head><body class="bg-surface-container-lowest font-body-md text-body-md text-on-surface min-h-screen relative selection:bg-primary-container selection:text-on-primary-container"><div class="fixed inset-0 pointer-events-none z-0 overflow-hidden"><div class="absolute -top-[20%] left-1/4 w-[600px] h-[600px] bg-secondary-container/10 rounded-full blur-[140px]"></div><div class="absolute top-[40%] -right-[10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[160px]"></div><div class="absolute -bottom-[10%] left-1/3 w-[700px] h-[500px] bg-tertiary-container/5 rounded-full blur-[180px]"></div></div><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-low/70 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.5)]"><div class="h-20 max-w-[1440px] mx-auto px-margin flex items-center justify-between gap-gutter"><div class="flex items-center gap-space-md shrink-0"><img alt="NEXUS ACCOUNTS Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WGEfLRkwPWZL06Z5I_9WZWMKXy-zZBT6NJYluQQCDA3NCR48DmubnAmwMrLFRFKUF0cD4CCed05JoySMS7VyNHBK21xjR6zY-NY5rraYGfymY7q9bJxmdfVgWXR-e35q_v0-xwqFRjsMH8RphhaelpS8w--8A5P2KELSCuSiP-0gu2T5XliWmncimCqGDu4p7tDs0cHXpaQEZd6NIdQVUTRh-Bw6LXFSWyVAfnskafbXQGtpAUcWOnMwlj"/><div class="hidden sm:flex flex-col"><span class="font-headline-sm text-headline-sm text-primary tracking-wider uppercase font-bold leading-none">NEXUS</span><span class="font-label-sm text-label-sm text-tertiary tracking-widest uppercase">Cyber-Vault</span></div></div><div class="hidden xl:flex items-center gap-space-md flex-1 max-w-3xl justify-center"><div class="flex items-center gap-space-sm bg-surface-container-lowest/80 px-space-md py-space-xs rounded-xl shadow-inner w-full max-w-[200px] text-on-surface-variant"><span class="material-symbols-outlined text-outline text-[18px]">search</span><span class="font-body-sm text-body-sm text-outline truncate flex-1">Search vault...</span><span class="font-label-sm text-label-sm bg-surface-container-high text-tertiary px-space-xs py-0.5 rounded">⌘K</span></div><nav class="flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary-container font-bold rounded-lg shadow-[0_0_12px_rgba(212,175,55,0.25)]"><a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-headline-sm text-label-md tracking-wider uppercase whitespace-nowrap" data-path="seller-studio" href="#">Seller Studio</a><a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-headline-sm text-label-md tracking-wider uppercase whitespace-nowrap" data-path="explore-catalog" href="#">Explore Catalog</a><a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-headline-sm text-label-md tracking-wider uppercase whitespace-nowrap" data-path="escrow-guarantee" href="#">Escrow Guarantee</a><a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-headline-sm text-label-md tracking-wider uppercase whitespace-nowrap" data-path="vip-club" href="#">VIP Club</a><a aria-current="page" class="px-space-sm py-space-xs transition-colors tracking-wider uppercase whitespace-nowrap bg-primary-container text-on-primary-container font-bold rounded-lg shadow-[0_0_12px_rgba(212,175,55,0.25)]" data-path="proof-of-reserves" href="#">Proof of Reserves</a><a class="px-space-sm py-space-xs text-on-surface-variant hover:text-on-surface transition-colors font-headline-sm text-label-md tracking-wider uppercase whitespace-nowrap" data-path="my-orders" href="#">My Orders</a></nav></div><div class="flex items-center gap-space-md shrink-0"><div class="hidden md:flex items-center gap-space-xs bg-surface-container px-space-md py-space-xs rounded-full shadow-[0_0_10px_rgba(0,0,0,0.5)]"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span class="font-label-sm text-label-sm text-outline-variant tracking-wider uppercase">VAULT</span><span class="font-headline-sm text-label-md text-primary font-bold ml-1">$1,240.50</span></div><div class="flex items-center gap-space-sm"><a class="hidden sm:inline-flex items-center justify-center px-space-md py-space-xs rounded-lg font-headline-sm text-label-md uppercase tracking-wider text-on-surface bg-surface-container-high/40 hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="sign-in" href="#">Sign In</a><a class="inline-flex items-center justify-center px-space-md py-space-xs rounded-lg font-headline-sm text-label-md uppercase tracking-wider text-on-primary bg-primary font-bold hover:bg-primary-fixed-dim hover:text-on-primary transition-all shadow-[0_0_16px_rgba(242,202,80,0.25)]" data-path="connect-wallet" href="#">Connect Wallet</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 ml-1"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><main class="relative z-10 w-full pt-20 bg-transparent min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full">
+<!-- Top Command HUD & Telemetry Bar -->
+<section class="w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin pt-space-md pb-space-lg flex flex-col gap-space-md">
+<!-- Breadcrumbs & Global Sync State -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-sm pb-space-sm border-b border-outline-variant/30">
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm tracking-widest text-outline uppercase flex-wrap">
+<span class="text-tertiary">TERMINAL</span>
+<span class="text-outline-variant">/</span>
+<span class="text-on-surface-variant">AUDIT &amp; SECURITY</span>
+<span class="text-outline-variant">/</span>
+<span class="text-primary font-bold">PROTOCOL PROOF OF RESERVES (PoR)</span>
+</div>
+<div class="flex items-center gap-space-sm flex-wrap">
+<div class="inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high/80 text-on-surface">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-ping"></span>
+<span class="font-label-sm text-label-sm text-tertiary tracking-wider uppercase font-semibold">CHAINLINK &amp; BAKONG ORACLE CONSENSUS SYNCED</span>
+<span class="text-outline-variant">|</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">BLOCK #21,849,102</span>
+<span class="text-outline-variant">|</span>
+<span class="font-label-sm text-label-sm text-primary font-mono">2.8ms LATENCY</span>
+</div>
+</div>
+</div>
+<!-- Protocol Reserve Master Banner -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-low/90 backdrop-blur-xl p-space-lg shadow-2xl flex flex-col xl:flex-row items-start xl:items-center justify-between gap-space-lg">
+<div class="absolute -right-20 -top-20 w-80 h-80 bg-primary/10 rounded-full blur-[90px] pointer-events-none"></div>
+<div class="absolute -left-12 -bottom-12 w-64 h-64 bg-tertiary/10 rounded-full blur-[80px] pointer-events-none"></div>
+<!-- Left Master Numerical Metric -->
+<div class="flex flex-col gap-space-xs z-10">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">account_balance</span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant font-bold">Consolidated Vault Reserve</span>
+<span class="px-space-xs py-0.5 rounded bg-tertiary-container/20 text-tertiary font-label-sm text-label-sm font-semibold tracking-wider">LIVE ORACLE</span>
+</div>
+<div class="flex items-baseline gap-space-sm flex-wrap">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg font-bold text-on-surface tracking-tight leading-none">$4,892,450.00 <span class="font-headline-sm text-headline-sm text-primary">USD</span></h1>
+<span class="font-body-md text-body-md text-outline font-mono">≈ 20,059,045,000 KHR</span>
+</div>
+<div class="flex items-center gap-space-sm mt-1 flex-wrap">
+<div class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container-highest text-tertiary font-label-sm text-label-sm font-mono">
+<span>ROOT HASH:</span>
+<span class="text-on-surface font-semibold select-all" id="merkle-root-display">0x7d8a9e4...b2f1c8</span>
+<button class="ml-1 text-primary hover:text-primary-fixed uppercase tracking-wider font-bold transition-colors" onclick="navigator.clipboard.writeText('0x7d8a9e4fa36b8120c99f441029e843c1b2f1c8'); this.innerText='COPIED!';">COPY</button>
+</div>
+<a class="inline-flex items-center gap-1 text-outline hover:text-tertiary transition-colors font-label-sm text-label-sm uppercase tracking-wider" href="#">
+<span>Etherscan Solv-Contract</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+</div>
+<!-- Right Action & Collateral Indicator -->
+<div class="flex flex-col md:flex-row items-start md:items-center gap-space-md z-10 w-full xl:w-auto justify-between xl:justify-end">
+<div class="flex flex-col gap-1 p-space-sm px-space-md bg-surface-container-lowest/80 rounded-lg">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Solvency Coverage Ratio</span>
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">142.8%</span>
+<span class="material-symbols-outlined text-tertiary text-[24px]">verified</span>
+</div>
+<span class="font-body-sm text-body-sm text-tertiary font-mono">+$1,468,120 USD Net Surplus</span>
+</div>
+<div class="flex flex-col items-start gap-space-xs">
+<button class="inline-flex items-center gap-space-xs px-space-md py-space-sm rounded-lg font-headline-sm text-label-md uppercase tracking-wider text-on-primary bg-primary font-bold hover:bg-primary-fixed-dim transition-all shadow-[0_0_20px_rgba(242,202,80,0.3)] cursor-pointer" id="trigger-audit-btn" onclick="runOnDemandAudit()">
+<span class="material-symbols-outlined text-[18px]" id="audit-icon">sync</span>
+<span id="audit-btn-text">Trigger On-Demand Audit</span>
+</button>
+<span class="font-label-sm text-label-sm text-outline font-mono tracking-wider ml-1">Cryptographic snapshot: <span class="text-on-surface-variant font-bold" id="snapshot-timestamp">3 minutes ago</span></span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 1: KPI Reserve Architecture (4 Bento Blocks) -->
+<section class="w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin pb-space-lg">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Card 1: Liquid Escrow Liabilities -->
+<div class="bg-surface-container-low/70 backdrop-blur-md p-space-md rounded-xl flex flex-col justify-between shadow-lg relative group hover:bg-surface-container-low transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-outline">Protocol Liability</span>
+<span class="px-space-xs py-0.5 rounded bg-tertiary/10 text-tertiary font-label-sm text-label-sm font-mono">100% MATCHED</span>
+</div>
+<div class="flex flex-col gap-0.5 my-space-xs">
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">$3,424,330.00</h2>
+<span class="font-label-sm text-label-sm uppercase text-outline-variant font-mono">Escrow Deposits in Flight</span>
+</div>
+<div class="pt-space-xs flex flex-col gap-1 font-body-sm text-body-sm text-on-surface-variant">
+<div class="flex justify-between items-center text-body-sm">
+<span>Bakong KHQR Reserves:</span>
+<span class="text-on-surface font-mono font-medium">$2,140,000 USD</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span>Multi-sig USDT/USDC:</span>
+<span class="text-on-surface font-mono font-medium">$1,284,330 USD</span>
+</div>
+</div>
+<div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden mt-space-sm">
+<div class="bg-tertiary h-full w-full"></div>
+</div>
+</div>
+<!-- Card 2: Anti-Recall Insurance Indemnity Pool -->
+<div class="bg-surface-container-low/70 backdrop-blur-md p-space-md rounded-xl flex flex-col justify-between shadow-lg relative group hover:bg-surface-container-low transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-primary">Indemnity Reserve</span>
+<span class="px-space-xs py-0.5 rounded bg-primary/10 text-primary font-label-sm text-label-sm font-mono">COLD CUSTODY</span>
+</div>
+<div class="flex flex-col gap-0.5 my-space-xs">
+<h2 class="font-headline-lg text-headline-lg font-bold text-primary">$1,000,000.00</h2>
+<span class="font-label-sm text-label-sm uppercase text-outline-variant font-mono">Anti-Recall Underwriting Pool</span>
+</div>
+<div class="pt-space-xs flex flex-col gap-1 font-body-sm text-body-sm text-on-surface-variant">
+<div class="flex justify-between items-center text-body-sm">
+<span>Custodial Trustee:</span>
+<span class="text-on-surface font-mono font-medium">Zurich &amp; NBC Escrow</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span>Claims Disbursed (All-Time):</span>
+<span class="text-primary font-mono font-medium">$8,450 USD</span>
+</div>
+</div>
+<div class="flex items-center justify-between mt-space-sm font-label-sm text-label-sm text-tertiary">
+<span>Solvency Margin: 99.8%</span>
+<span class="material-symbols-outlined text-[16px] text-primary">security</span>
+</div>
+</div>
+<!-- Card 3: Bonded Seller Collateral -->
+<div class="bg-surface-container-low/70 backdrop-blur-md p-space-md rounded-xl flex flex-col justify-between shadow-lg relative group hover:bg-surface-container-low transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Slashable Bonds</span>
+<span class="px-space-xs py-0.5 rounded bg-secondary/10 text-secondary font-label-sm text-label-sm font-mono">STAKED &amp; LOCKED</span>
+</div>
+<div class="flex flex-col gap-0.5 my-space-xs">
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">$468,120.00</h2>
+<span class="font-label-sm text-label-sm uppercase text-outline-variant font-mono">Seller Bond Guarantee</span>
+</div>
+<div class="pt-space-xs flex flex-col gap-1 font-body-sm text-body-sm text-on-surface-variant">
+<div class="flex justify-between items-center text-body-sm">
+<span>Avg Stake Per Verified Seller:</span>
+<span class="text-on-surface font-mono font-medium">$2,000 USD</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span>Uncollateralized Listings:</span>
+<span class="text-tertiary font-mono font-medium">0.00 (Strict Zero-Trust)</span>
+</div>
+</div>
+<div class="w-full bg-surface-container-lowest h-1.5 rounded-full overflow-hidden mt-space-sm">
+<div class="bg-secondary h-full w-[85%]"></div>
+</div>
+</div>
+<!-- Card 4: Proof of Solvency Gauge -->
+<div class="bg-surface-container-low/70 backdrop-blur-md p-space-md rounded-xl flex flex-col justify-between shadow-lg relative group hover:bg-surface-container-low transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-outline">Forensic Grade</span>
+<span class="px-space-xs py-0.5 rounded bg-tertiary/15 text-tertiary font-label-sm text-label-sm font-mono font-bold">AAA+ CERTIFIED</span>
+</div>
+<div class="flex items-center justify-between my-space-xs">
+<div>
+<div class="font-headline-lg text-headline-lg font-bold text-tertiary">142.8%</div>
+<span class="font-label-sm text-label-sm uppercase text-outline-variant font-mono">Net Protocol Solvency</span>
+</div>
+<!-- Gauge SVG -->
+<div class="relative w-16 h-16 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-highest" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-tertiary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="100, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="material-symbols-outlined text-primary absolute text-[20px]">verified_user</span>
+</div>
+</div>
+<div class="pt-space-xs font-body-sm text-body-sm text-on-surface-variant flex items-center justify-between">
+<span>Continuous Trail of Bits &amp; CertiK</span>
+<span class="font-label-sm text-label-sm text-tertiary font-mono">SURPLUS HIGH</span>
+</div>
+<div class="mt-space-sm text-label-sm font-label-sm text-outline-variant font-mono">
+          Last Full Zero-Knowledge Cycle: 12m ago
+        </div>
+</div>
+</div>
+</section>
+<!-- Section 2: Core Cryptographic Merkle Inclusion Verifier & Depositories Breakdown -->
+<section class="w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin pb-space-lg">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Interactive Merkle Tree Inclusion Tool (7 Cols - ~58%) -->
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<div class="bg-surface-container-low/80 backdrop-blur-xl p-space-lg rounded-xl shadow-xl flex flex-col gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-tertiary text-[24px]">account_tree</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface tracking-wide uppercase">Cryptographic Merkle Tree User Inclusion Verifier</h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Confirm your active escrow balance or order deposit is mathematically included in the latest solvency snapshot without revealing private credentials or account identities.
+            </p>
+</div>
+<!-- Interactive Search Bar -->
+<div class="bg-surface-container-lowest p-space-sm rounded-xl flex flex-col sm:flex-row items-center gap-space-sm">
+<div class="flex items-center gap-space-xs flex-1 w-full px-space-xs">
+<span class="material-symbols-outlined text-outline text-[20px]">fingerprint</span>
+<input class="bg-transparent text-on-surface font-mono text-body-md w-full outline-none placeholder:text-outline-variant" id="order-lookup-input" placeholder="Enter Order #, Listing Hash, or Buyer Public Tag" type="text" value="#NX-88291 (Valorant Radiant #84)"/>
+</div>
+<button class="w-full sm:w-auto px-space-md py-space-xs rounded-lg font-headline-sm text-label-md uppercase tracking-wider text-on-primary bg-primary font-bold hover:bg-primary-fixed-dim transition-all shadow-[0_0_12px_rgba(242,202,80,0.25)] shrink-0 cursor-pointer" onclick="verifyMerklePath()">
+              Verify Merkle Proof
+            </button>
+</div>
+<!-- Visual Merkle Interactive Canvas / Graph -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest/90 flex flex-col gap-space-md relative overflow-hidden" id="merkle-graph-container">
+<div class="flex items-center justify-between pb-space-xs border-b border-outline-variant/20">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-outline">Cryptographic Proof Path Verification (SHA-256 Dual-Hash)</span>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-tertiary font-bold tracking-wider" id="validation-tag">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+                PROOF VALIDATED ON-CHAIN
+              </span>
+</div>
+<!-- Merkle Hierarchy Visual -->
+<div class="flex flex-col gap-space-md relative">
+<!-- Root Node -->
+<div class="flex flex-col items-center">
+<div class="px-space-md py-space-xs rounded-lg bg-surface-container-high text-center shadow-lg relative">
+<div class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wider">Merkle Solvency Root (Level 0)</div>
+<div class="font-mono text-body-sm text-on-surface font-semibold select-all">0x7d8a9e4fa36b8120c99f441029e843c1b2f1c8</div>
+<div class="text-label-sm text-tertiary mt-0.5 font-mono">Block Header Solvency Anchor: Validated</div>
+</div>
+<!-- Connector Line -->
+<div class="w-0.5 h-6 bg-outline-variant/60"></div>
+</div>
+<!-- Intermediate Branches (Level 1) -->
+<div class="grid grid-cols-2 gap-space-md relative">
+<!-- Branch Left (Target Branch) -->
+<div class="flex flex-col items-center">
+<div class="w-full p-space-xs rounded bg-surface-container-low text-center shadow-md">
+<span class="font-label-sm text-label-sm text-outline uppercase block">Left Sub-Tree Node</span>
+<span class="font-mono text-body-sm text-tertiary font-semibold truncate block">0x4a2b918...f8c9</span>
+</div>
+<div class="w-0.5 h-6 bg-tertiary"></div>
+</div>
+<!-- Branch Right (Sibling Hash) -->
+<div class="flex flex-col items-center">
+<div class="w-full p-space-xs rounded bg-surface-container-low text-center shadow-md opacity-70">
+<span class="font-label-sm text-label-sm text-outline uppercase block">Sibling Hash Node</span>
+<span class="font-mono text-body-sm text-on-surface truncate block">0x9f1e402...aa33</span>
+</div>
+<div class="w-0.5 h-6 bg-outline-variant/40"></div>
+</div>
+</div>
+<!-- Leaf Node (User Asset) -->
+<div class="flex flex-col items-center">
+<div class="w-full max-w-lg p-space-sm rounded-lg bg-surface-container-high shadow-xl flex flex-col md:flex-row items-center justify-between gap-space-sm" id="user-leaf-node">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[28px]">lock_person</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-label-md text-on-surface font-bold uppercase tracking-wider">Order #NX-88291 (Valorant Radiant #84)</span>
+<span class="font-mono text-body-sm text-tertiary font-semibold">Leaf Hash: 0x88291e2e4b6009af2c0</span>
+</div>
+</div>
+<div class="flex flex-col md:items-end">
+<span class="font-headline-sm text-label-md text-primary font-mono font-bold">$1,000.00 USD</span>
+<span class="font-label-sm text-label-sm text-outline font-mono">KHQR Lock Confirmed</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Attestation Text & Actions -->
+<div class="pt-space-xs flex flex-col sm:flex-row items-center justify-between gap-space-sm text-outline">
+<span class="font-body-sm text-body-sm">
+                Cryptographic inclusion path length: <span class="text-on-surface font-mono font-semibold">14 hashes</span> (Dual-blind zero leakage).
+              </span>
+<div class="flex items-center gap-space-sm">
+<button class="inline-flex items-center gap-1 text-primary hover:text-primary-fixed font-label-sm text-label-sm uppercase font-bold tracking-wider" onclick="downloadJsonProof()">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Raw Proof (.JSON)</span>
+</button>
+<button class="inline-flex items-center gap-1 text-tertiary hover:text-tertiary-fixed font-label-sm text-label-sm uppercase font-bold tracking-wider">
+<span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+<span>CertiK Report (.PDF)</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Vaulted Custody Depositories Breakdown (5 Cols - ~42%) -->
+<div class="lg:col-span-5 flex flex-col gap-space-md">
+<div class="bg-surface-container-low/80 backdrop-blur-xl p-space-lg rounded-xl shadow-xl flex flex-col gap-space-md h-full">
+<div class="flex items-center justify-between pb-space-xs border-b border-outline-variant/30">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">account_balance_wallet</span>
+<h2 class="font-headline-sm text-label-md uppercase tracking-wider text-on-surface font-bold">Custody Depositories &amp; Safe Contracts</h2>
+</div>
+<span class="font-label-sm text-label-sm text-outline font-mono">4 ACTIVE TREASURIES</span>
+</div>
+<!-- Roster of Audited Treasury Nodes -->
+<div class="flex flex-col gap-space-sm flex-1 justify-between">
+<!-- Treasury 1: National Bakong Direct Fiat Reserve -->
+<div class="p-space-sm rounded-lg bg-surface-container-lowest/80 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+<span class="font-headline-sm text-label-md uppercase tracking-wide text-on-surface font-bold">National Bakong Fiat Reserve</span>
+</div>
+<span class="font-mono text-body-md font-bold text-primary">$2,140,000.00 USD</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                NBC Regulated Escrow Trustee Account (ABA Bank Institutional Trust Node).
+              </p>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-outline font-mono">
+<span>ID: KHQR-ESCROW-POOL-01</span>
+<span class="text-tertiary">SYNC: 15s API MIRROR</span>
+</div>
+</div>
+<!-- Treasury 2: Ethereum / Arbitrum Multi-Sig Cold Vault -->
+<div class="p-space-sm rounded-lg bg-surface-container-lowest/80 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-headline-sm text-label-md uppercase tracking-wide text-on-surface font-bold">Safe Cold Vault (USDT/USDC)</span>
+</div>
+<span class="font-mono text-body-md font-bold text-on-surface">$1,284,330.00 USD</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                4-of-7 Hardware Security Keys. Arbitrators in Phnom Penh &amp; Geneva.
+              </p>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-outline font-mono">
+<span class="select-all">0xNexusCold...92b4</span>
+<span class="text-on-surface">ARB / ETH MAINNET</span>
+</div>
+</div>
+<!-- Treasury 3: Anti-Recall Indemnity Pool -->
+<div class="p-space-sm rounded-lg bg-surface-container-lowest/80 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-headline-sm text-label-md uppercase tracking-wide text-on-surface font-bold">Underwriting Buffer Pool</span>
+</div>
+<span class="font-mono text-body-md font-bold text-primary">$1,000,000.00 USD</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Dedicated non-commingled backstop reserve for instantaneous claim payouts.
+              </p>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-outline font-mono">
+<span class="select-all">0xIndemnityVault...44f1</span>
+<span class="text-tertiary">INSTANT DISBURSE</span>
+</div>
+</div>
+<!-- Treasury 4: Physical Hardware Key Custody -->
+<div class="p-space-sm rounded-lg bg-surface-container-lowest/80 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-outline text-[16px]">token</span>
+<span class="font-headline-sm text-label-md uppercase tracking-wide text-on-surface font-bold">Credential HSM Hardware Enclave</span>
+</div>
+<span class="font-mono text-body-md font-bold text-tertiary">42 Vaulted Units</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Zurich Bunker Safe #ZUR-9 &amp; Phnom Penh Military-Grade HSM Facility.
+              </p>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-outline font-mono">
+<span>Dual Air-Gapped YubiKeys</span>
+<span class="text-primary font-bold">FIPS 140-3 LEVEL 4</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Live Real-Time Escrow Activity Stream -->
+<section class="w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin pb-space-lg">
+<div class="bg-surface-container-low/80 backdrop-blur-xl p-space-lg rounded-xl shadow-xl flex flex-col gap-space-md">
+<!-- Stream Header & Filter Tabs -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md pb-space-sm border-b border-outline-variant/30">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary animate-ping"></span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface uppercase font-bold tracking-wide">Real-Time Protocol Settlement Stream</h2>
+<span class="font-label-sm text-label-sm text-outline tracking-wider uppercase">Live Mempool &amp; Bakong KHQR Multi-Sig Operations</span>
+</div>
+</div>
+<!-- Filter Controls -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 md:pb-0" id="tx-filter-container">
+<button class="px-space-sm py-1 rounded bg-primary-container text-on-primary-container font-headline-sm text-label-sm uppercase tracking-wider font-bold transition-all" onclick="filterTx('all', this)">All Operations</button>
+<button class="px-space-sm py-1 rounded bg-surface-container-high text-on-surface-variant hover:text-on-surface font-headline-sm text-label-sm uppercase tracking-wider transition-all" onclick="filterTx('escrow_lock', this)">Escrow Locks</button>
+<button class="px-space-sm py-1 rounded bg-surface-container-high text-on-surface-variant hover:text-on-surface font-headline-sm text-label-sm uppercase tracking-wider transition-all" onclick="filterTx('release', this)">Releases</button>
+<button class="px-space-sm py-1 rounded bg-surface-container-high text-on-surface-variant hover:text-on-surface font-headline-sm text-label-sm uppercase tracking-wider transition-all" onclick="filterTx('bond', this)">Bond Stakes</button>
+</div>
+</div>
+<!-- Real-Time Transactions Table -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="text-outline uppercase font-label-sm text-label-sm border-b border-outline-variant/20">
+<th class="py-space-xs px-space-sm">TX Hash / Identifier</th>
+<th class="py-space-xs px-space-sm">Action Type</th>
+<th class="py-space-xs px-space-sm">Vaulted Gaming Asset</th>
+<th class="py-space-xs px-space-sm">Settlement Value</th>
+<th class="py-space-xs px-space-sm">Payment Rail</th>
+<th class="py-space-xs px-space-sm">Block Height</th>
+<th class="py-space-xs px-space-sm text-right">Verification Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10 font-mono" id="tx-ledger-body">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors tx-row" data-type="escrow_lock">
+<td class="py-space-sm px-space-sm text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+<span>TX #99418</span>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="px-space-xs py-0.5 rounded bg-tertiary-container/20 text-tertiary font-label-sm text-label-sm uppercase font-bold">ESCROW LOCKED</span>
+</td>
+<td class="py-space-sm px-space-sm font-body-sm text-body-sm text-on-surface font-sans">Valorant Radiant #84</td>
+<td class="py-space-sm px-space-sm text-primary font-bold">$1,000.00 USD <span class="text-outline text-label-sm font-normal">(4,100,000 KHR)</span></td>
+<td class="py-space-sm px-space-sm text-on-surface-variant font-sans">Bakong KHQR</td>
+<td class="py-space-sm px-space-sm text-outline">#21,849,102</td>
+<td class="py-space-sm px-space-sm text-right">
+<span class="inline-flex items-center gap-1 text-tertiary font-label-sm text-label-sm uppercase font-bold">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+                  LOCKED IN MULTI-SIG
+                </span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors tx-row" data-type="release">
+<td class="py-space-sm px-space-sm text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span>TX #99417</span>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="px-space-xs py-0.5 rounded bg-primary/20 text-primary font-label-sm text-label-sm uppercase font-bold">ESCROW RELEASED</span>
+</td>
+<td class="py-space-sm px-space-sm font-body-sm text-body-sm text-on-surface font-sans">CS2 AWP Dragon Lore FN</td>
+<td class="py-space-sm px-space-sm text-primary font-bold">$48,500.00 USD</td>
+<td class="py-space-sm px-space-sm text-on-surface-variant font-sans">Bakong VIP Wire</td>
+<td class="py-space-sm px-space-sm text-outline">#21,849,095</td>
+<td class="py-space-sm px-space-sm text-right">
+<span class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm uppercase font-bold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                  DISPATCHED TO SELLER
+                </span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors tx-row" data-type="escrow_lock">
+<td class="py-space-sm px-space-sm text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span>TX #99416</span>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="px-space-xs py-0.5 rounded bg-tertiary-container/20 text-tertiary font-label-sm text-label-sm uppercase font-bold">ESCROW LOCKED</span>
+</td>
+<td class="py-space-sm px-space-sm font-body-sm text-body-sm text-on-surface font-sans">Genshin AR60 God-Whale</td>
+<td class="py-space-sm px-space-sm text-primary font-bold">$780.00 USD</td>
+<td class="py-space-sm px-space-sm text-on-surface-variant font-sans">USDT (Arbitrum)</td>
+<td class="py-space-sm px-space-sm text-outline">#21,849,088</td>
+<td class="py-space-sm px-space-sm text-right">
+<span class="inline-flex items-center gap-1 text-tertiary font-label-sm text-label-sm uppercase font-bold">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+                  LOCKED IN MULTI-SIG
+                </span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors tx-row" data-type="bond">
+<td class="py-space-sm px-space-sm text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>TX #99415</span>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="px-space-xs py-0.5 rounded bg-secondary/20 text-secondary font-label-sm text-label-sm uppercase font-bold">BOND LOCKED</span>
+</td>
+<td class="py-space-sm px-space-sm font-body-sm text-body-sm text-on-surface font-sans">Apex Predator #10 Listing</td>
+<td class="py-space-sm px-space-sm text-on-surface font-bold">$2,000.00 USD</td>
+<td class="py-space-sm px-space-sm text-on-surface-variant font-sans">USDC Staking</td>
+<td class="py-space-sm px-space-sm text-outline">#21,849,074</td>
+<td class="py-space-sm px-space-sm text-right">
+<span class="inline-flex items-center gap-1 text-secondary font-label-sm text-label-sm uppercase font-bold">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+                  SELLER BOND SECURED
+                </span>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors tx-row" data-type="release">
+<td class="py-space-sm px-space-sm text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span>TX #99414</span>
+</td>
+<td class="py-space-sm px-space-sm">
+<span class="px-space-xs py-0.5 rounded bg-primary/20 text-primary font-label-sm text-label-sm uppercase font-bold">ESCROW RELEASED</span>
+</td>
+<td class="py-space-sm px-space-sm font-body-sm text-body-sm text-on-surface font-sans">League Challenger Unranked</td>
+<td class="py-space-sm px-space-sm text-primary font-bold">$450.00 USD</td>
+<td class="py-space-sm px-space-sm text-on-surface-variant font-sans">Bakong KHQR</td>
+<td class="py-space-sm px-space-sm text-outline">#21,849,061</td>
+<td class="py-space-sm px-space-sm text-right">
+<span class="inline-flex items-center gap-1 text-primary font-label-sm text-label-sm uppercase font-bold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                  DISPATCHED TO SELLER
+                </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Live Block Footnote -->
+<div class="flex items-center justify-between text-outline font-label-sm text-label-sm pt-space-xs border-t border-outline-variant/20">
+<span class="flex items-center gap-1 font-mono">
+<span class="material-symbols-outlined text-[14px] text-tertiary">autorenew</span>
+          BLOCK DISCOVERY INTERVAL: 12.4 SECONDS AVERAGE
+        </span>
+<a class="text-tertiary hover:text-tertiary-fixed font-bold uppercase tracking-wider" href="#">Download Block Archive (.CSV)</a>
+</div>
+</div>
+</section>
+<!-- Section 4: Independent Security Certifications & Compliance Attestations -->
+<section class="w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin pb-space-xl">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
+<!-- Cert 1: CertiK Skynet -->
+<div class="p-space-md rounded-xl bg-surface-container-low/60 backdrop-blur-md flex flex-col gap-space-xs shadow-md">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase text-outline tracking-wider font-bold">CertiK Skynet</span>
+<span class="font-headline-sm text-label-md text-primary font-bold">96/100</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Top 2% Cyber-Security Architecture &amp; Escrow Verification score.</p>
+<span class="font-label-sm text-label-sm text-tertiary font-mono">AUDIT HASH: #CK-2025-01</span>
+</div>
+<!-- Cert 2: Trail of Bits -->
+<div class="p-space-md rounded-xl bg-surface-container-low/60 backdrop-blur-md flex flex-col gap-space-xs shadow-md">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase text-outline tracking-wider font-bold">Trail of Bits</span>
+<span class="font-headline-sm text-label-md text-tertiary font-bold">VERIFIED</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Mathematical formal verification on multi-sig withdrawal contracts.</p>
+<span class="font-label-sm text-label-sm text-tertiary font-mono">FORMAL PROOF: PASS</span>
+</div>
+<!-- Cert 3: Chainlink PoR -->
+<div class="p-space-md rounded-xl bg-surface-container-low/60 backdrop-blur-md flex flex-col gap-space-xs shadow-md">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase text-outline tracking-wider font-bold">Chainlink Oracle</span>
+<span class="font-headline-sm text-label-md text-primary font-bold">ACTIVE FEED</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Decentralized off-chain reserve feeds synced directly to EVM contracts.</p>
+<span class="font-label-sm text-label-sm text-tertiary font-mono">ORACLE: DON-ID #42</span>
+</div>
+<!-- Cert 4: NBC Compliance -->
+<div class="p-space-md rounded-xl bg-surface-container-low/60 backdrop-blur-md flex flex-col gap-space-xs shadow-md">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase text-outline tracking-wider font-bold">Bakong Custody</span>
+<span class="font-headline-sm text-label-md text-primary font-bold">COMPLIANT</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">National Bank of Cambodia regulated institutional trust node integration.</p>
+<span class="font-label-sm text-label-sm text-tertiary font-mono">REGULATORY LICENSE: 2024-C</span>
+</div>
+</div>
+</section>
+<!-- Inline Dynamic JavaScript for Micro-Interactions -->
+<script>
+    function runOnDemandAudit() {
+      const btn = document.getElementById('trigger-audit-btn');
+      const text = document.getElementById('audit-btn-text');
+      const icon = document.getElementById('audit-icon');
+      const stamp = document.getElementById('snapshot-timestamp');
+
+      icon.classList.add('animate-spin');
+      text.innerText = 'Synchronizing Oracles...';
+
+      setTimeout(() => {
+        icon.classList.remove('animate-spin');
+        text.innerText = 'Audit Verified (Block Synced)';
+        stamp.innerText = 'Just now (0s ago)';
+        
+        setTimeout(() => {
+          text.innerText = 'Trigger On-Demand Audit';
+        }, 3000);
+      }, 1200);
+    }
+
+    function verifyMerklePath() {
+      const input = document.getElementById('order-lookup-input');
+      const userNode = document.getElementById('user-leaf-node');
+      const tag = document.getElementById('validation-tag');
+
+      if (!input.value.trim()) return;
+
+      userNode.classList.add('bg-tertiary-container/30');
+      tag.innerHTML = '<span class="material-symbols-outlined text-[16px] text-tertiary animate-spin">refresh</span> VALIDATING LEAF...';
+
+      setTimeout(() => {
+        userNode.classList.remove('bg-tertiary-container/30');
+        tag.innerHTML = '<span class="material-symbols-outlined text-[16px] text-tertiary">check_circle</span> PROOF VALIDATED ON-CHAIN';
+      }, 800);
+    }
+
+    function filterTx(category, btnElement) {
+      const rows = document.querySelectorAll('.tx-row');
+      const buttons = document.querySelectorAll('#tx-filter-container button');
+
+      buttons.forEach(b => {
+        b.className = 'px-space-sm py-1 rounded bg-surface-container-high text-on-surface-variant hover:text-on-surface font-headline-sm text-label-sm uppercase tracking-wider transition-all';
+      });
+      btnElement.className = 'px-space-sm py-1 rounded bg-primary-container text-on-primary-container font-headline-sm text-label-sm uppercase tracking-wider font-bold transition-all';
+
+      rows.forEach(r => {
+        if (category === 'all') {
+          r.style.display = '';
+        } else {
+          r.style.display = r.getAttribute('data-type') === category ? '' : 'none';
+        }
+      });
+    }
+
+    function downloadJsonProof() {
+      const dummyProof = {
+        protocol: "NEXUS ACCOUNTS PoR",
+        merkleRoot: "0x7d8a9e4fa36b8120c99f441029e843c1b2f1c8",
+        orderId: "#NX-88291",
+        depositUSD: 1000.00,
+        currencyRail: "Bakong KHQR",
+        leafHash: "0x88291e2e4b6009af2c0b699a21d120a4427",
+        blockNumber: 21849102,
+        verified: true,
+        auditTimestamp: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(dummyProof, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "nexus-merkle-proof-NX88291.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</div></main><footer class="relative z-10 w-full bg-surface-container-lowest/90 backdrop-blur-2xl"><div class="max-w-[1440px] mx-auto px-margin py-space-xl"><div class="grid grid-cols-2 lg:grid-cols-4 gap-gutter mb-space-xl bg-surface-container-low/50 p-space-lg rounded-xl"><div class="flex items-start gap-space-sm"><span class="material-symbols-outlined text-primary text-[28px]">shield_lock</span><div><h4 class="font-headline-sm text-label-md uppercase tracking-wider text-on-surface font-bold">Dual-Custody Vault</h4><p class="font-body-sm text-body-sm text-on-surface-variant">Multi-sig escrow holding until complete credential verification.</p></div></div><div class="flex items-start gap-space-sm"><span class="material-symbols-outlined text-tertiary text-[28px]">verified_user</span><div><h4 class="font-headline-sm text-label-md uppercase tracking-wider text-on-surface font-bold">100% Anti-Recall</h4><p class="font-body-sm text-body-sm text-on-surface-variant">Life-cycle hardware warranty backed by dedicated liquidity reserves.</p></div></div><div class="flex items-start gap-space-sm"><span class="material-symbols-outlined text-secondary text-[28px]">lock_reset</span><div><h4 class="font-headline-sm text-label-md uppercase tracking-wider text-on-surface font-bold">Instant Decryption</h4><p class="font-body-sm text-body-sm text-on-surface-variant">Automated zero-trust key transfer within 45 seconds of settlement.</p></div></div><div class="flex items-start gap-space-sm"><span class="material-symbols-outlined text-primary-fixed text-[28px]">currency_bitcoin</span><div><h4 class="font-headline-sm text-label-md uppercase tracking-wider text-on-surface font-bold">Bakong &amp; Crypto</h4><p class="font-body-sm text-body-sm text-on-surface-variant">Audited instantaneous KHQR settlement alongside major web3 protocols.</p></div></div></div><div class="grid grid-cols-1 md:grid-cols-5 gap-gutter mb-space-xl"><div class="md:col-span-2 flex flex-col gap-space-md"><div class="flex items-center gap-space-sm"><img alt="NEXUS ACCOUNTS Brand Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WGEfLRkwPWZL06Z5I_9WZWMKXy-zZBT6NJYluQQCDA3NCR48DmubnAmwMrLFRFKUF0cD4CCed05JoySMS7VyNHBK21xjR6zY-NY5rraYGfymY7q9bJxmdfVgWXR-e35q_v0-xwqFRjsMH8RphhaelpS8w--8A5P2KELSCuSiP-0gu2T5XliWmncimCqGDu4p7tDs0cHXpaQEZd6NIdQVUTRh-Bw6LXFSWyVAfnskafbXQGtpAUcWOnMwlj"/><span class="font-headline-sm text-headline-sm text-primary tracking-wider uppercase font-bold">NEXUS</span></div><p class="font-body-md text-body-md text-on-surface-variant max-w-sm">The preeminent cyber-luxury liquidity protocol and sovereign marketplace for vaulted high-tier digital gaming assets, esports accounts, and immortal cosmetics.</p><div class="flex items-center gap-space-sm text-tertiary font-label-sm text-label-sm"><span class="w-2 h-2 rounded-full bg-tertiary animate-ping"></span>All Systems Operational | Escrow Vault Synced | 99.98% Handover Uptime</div></div><div><h5 class="font-headline-sm text-label-md uppercase tracking-wider text-primary mb-space-md font-bold">Marketplace</h5><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface-variant"><li><a class="hover:text-tertiary transition-colors" data-path="seller-studio" href="#">Seller Studio (List Asset)</a></li><li><a class="hover:text-tertiary transition-colors" data-path="explore-catalog" href="#">Explore Catalog</a></li><li><a class="hover:text-tertiary transition-colors" data-path="instant-liquidity" href="#">Instant Liquidity Buyout</a></li><li><a class="hover:text-tertiary transition-colors" data-path="escrow-guarantee" href="#">Escrow Protocol</a></li></ul></div><div><h5 class="font-headline-sm text-label-md uppercase tracking-wider text-primary mb-space-md font-bold">Sanctuary &amp; VIP</h5><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface-variant"><li><a class="hover:text-tertiary transition-colors" data-path="vip-club" href="#">The VIP Vault Club</a></li><li><a class="hover:text-tertiary transition-colors" data-path="concierge" href="#">Private Broker Concierge</a></li><li><a class="hover:text-tertiary transition-colors" data-path="proof-of-reserves" href="#">Proof of Reserves Explorer</a></li><li><a class="hover:text-tertiary transition-colors" data-path="bug-bounty" href="#">Smart Contract Bounty</a></li></ul></div><div><h5 class="font-headline-sm text-label-md uppercase tracking-wider text-primary mb-space-md font-bold">Protocol Compliance</h5><ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface-variant"><li><a class="hover:text-tertiary transition-colors" data-path="terms-of-custody" href="#">Terms of Custody</a></li><li><a class="hover:text-tertiary transition-colors" data-path="anti-recall-policy" href="#">Anti-Recall Guarantee</a></li><li><a class="hover:text-tertiary transition-colors" data-path="privacy-vault" href="#">Zero-Knowledge Privacy</a></li><li><a class="hover:text-tertiary transition-colors" data-path="audit-reports" href="#">Security Audits</a></li></ul></div></div><div class="pt-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md font-body-sm text-body-sm text-outline"><p>© 2025 NEXUS ACCOUNTS. All cryptographic guarantees and vault keys reserved.</p><div class="flex items-center gap-space-lg"><a class="hover:text-on-surface transition-colors" data-path="terms-of-custody" href="#">Terms</a><a class="hover:text-on-surface transition-colors" data-path="privacy-vault" href="#">Privacy</a><a class="hover:text-on-surface transition-colors" data-path="escrow-guarantee" href="#">Security SLA</a></div></div></div></footer></body></html>

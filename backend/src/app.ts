@@ -49,7 +49,14 @@ export function createApp(): Application {
   );
 
   // Body Parsing Middlewares
-  app.use(express.json({ limit: '10mb' }));
+  app.use(
+    express.json({
+      limit: '10mb',
+      verify: (req: any, _res, buf) => {
+        req.rawBody = buf ? buf.toString('utf8') : '';
+      },
+    })
+  );
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
   app.use(cookieParser());
   app.use(compression());

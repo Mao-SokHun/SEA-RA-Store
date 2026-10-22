@@ -7,10 +7,10 @@ import path from 'path';
 // Ensure .env is loaded
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
 
 if (!connectionString) {
-  throw new Error('DATABASE_URL is not defined in environment variables');
+  throw new Error('DATABASE_URL or DIRECT_URL is not defined in environment variables');
 }
 
 // Global singleton pattern for PrismaClient
@@ -23,6 +23,7 @@ const pool =
   globalForPrisma.pool ??
   new Pool({
     connectionString,
+    ssl: { rejectUnauthorized: false },
     max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000,

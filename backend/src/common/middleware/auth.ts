@@ -64,14 +64,48 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
 }
 
 /**
- * Optional authentication middleware for endpoints accessible to both guests and members
+ * Optional authentication middleware for endpoints accessible to both guests and members.
+ * Supports Bearer header & cookies; safely ignores expired/invalid tokens so guests are not blocked.
  */
 export async function optionalAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return next();
+  try {
+    let token: string | undefined;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    } else if (req.cookies && req.cookies.accessToken) {
+      token = req.cookies.accessToken;
+    }
+
+    if (!token) {
+      return next();
+    }
+
+    const payload = verifyAccessToken(token);
+    const user = await prisma.user.findUnique({
+      where: { id: BigInt(payload.sub) },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        status: true,
+      },
+    });
+
+    if (user && user.status === 'active') {
+      req.user = {
+        id: user.id.toString(),
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+      };
+    }
+  } catch {
+    // Gracefully ignore token errors for optional auth (fallback to guest)
   }
-  return authenticate(req, res, next);
+  return next();
 }
 
 /**

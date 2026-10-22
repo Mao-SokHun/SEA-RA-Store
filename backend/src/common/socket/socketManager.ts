@@ -27,15 +27,19 @@ export function initSocketServer(server: HttpServer): SocketIOServer {
   // JWT Authentication Middleware for WebSockets
   io.use(async (socket: AuthenticatedSocket, next) => {
     try {
-      const token =
+      let rawToken =
         socket.handshake.auth?.token ||
-        socket.handshake.headers?.authorization?.replace('Bearer ', '') ||
+        socket.handshake.headers?.authorization ||
         (socket.handshake.headers?.cookie?.match(/accessToken=([^;]+)/)?.[1]);
 
-      if (!token) {
+      if (!rawToken) {
         // Allow anonymous connection if needed, or enforce auth
         return next();
       }
+
+      const token = typeof rawToken === 'string' && rawToken.startsWith('Bearer ')
+        ? rawToken.slice(7)
+        : rawToken;
 
       const payload = verifyAccessToken(token);
       const user = await prisma.user.findUnique({

@@ -32,7 +32,7 @@ export const withdrawValidator = [
 export const queryTransactionsValidator = [
   query('transactionType')
     .optional()
-    .isIn(['earning', 'withdrawal', 'withdrawal_refund', 'referral_reward', 'refund', 'payment'])
+    .isIn(['earning', 'withdrawal', 'withdrawal_refund', 'referral_reward', 'refund', 'payment', 'deposit', 'dispute_clawback'])
     .withMessage('Invalid transaction type'),
 
   query('page')

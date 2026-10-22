@@ -30,6 +30,70 @@ export class OrderService {
   }
 
   /**
+   * Auto-release expired reservations globally:
+   * 1. Resets expired accounts back to 'available'
+   * 2. Cancels unpaid pending orders
+   * 3. Automatically rolls back any coupons attached to those expired orders
+   */
+  async releaseExpiredReservations(): Promise<number> {
+    const expiredAccounts = await prisma.gameAccount.findMany({
+      where: {
+        status: 'reserved',
+        reservedUntil: { lt: new Date() },
+      },
+      select: { id: true },
+    });
+
+    if (expiredAccounts.length === 0) return 0;
+
+    const accountIds = expiredAccounts.map((a) => a.id);
+
+    // Find all pending orders on these expired accounts
+    const expiredOrders = await prisma.order.findMany({
+      where: {
+        gameAccountId: { in: accountIds },
+        status: 'pending',
+      },
+      include: { couponRedemption: true },
+    });
+
+    await prisma.$transaction(async (tx) => {
+      // Roll back coupons for expired pending orders
+      for (const ord of expiredOrders) {
+        if (ord.couponRedemption) {
+          await tx.coupon.update({
+            where: { id: ord.couponRedemption.couponId },
+            data: { usedCount: { decrement: 1 } },
+          });
+          await tx.couponRedemption.delete({
+            where: { id: ord.couponRedemption.id },
+          });
+        }
+      }
+
+      // Mark pending orders as cancelled
+      await tx.order.updateMany({
+        where: {
+          gameAccountId: { in: accountIds },
+          status: 'pending',
+        },
+        data: { status: 'cancelled' },
+      });
+
+      // Release game accounts back to available
+      await tx.gameAccount.updateMany({
+        where: { id: { in: accountIds } },
+        data: {
+          status: 'available',
+          reservedUntil: null,
+        },
+      });
+    });
+
+    return accountIds.length;
+  }
+
+  /**
    * Checkout & 15-Minute Concurrency Reservation Lock
    */
   async checkout(buyerId: string, data: CheckoutDTO) {
@@ -37,16 +101,7 @@ export class OrderService {
     const accountIdBigInt = BigInt(data.gameAccountId);
 
     // 1. Auto-release expired reservations globally before checking
-    await prisma.gameAccount.updateMany({
-      where: {
-        status: 'reserved',
-        reservedUntil: { lt: new Date() },
-      },
-      data: {
-        status: 'available',
-        reservedUntil: null,
-      },
-    });
+    await this.releaseExpiredReservations();
 
     // 2. If the same buyer already has a valid pending order for this account, return it (Idempotent checkout)
     const existingBuyerOrder = await prisma.order.findFirst({
@@ -164,7 +219,7 @@ export class OrderService {
             });
 
             if (userRedemptions < coupon.perUserLimit) {
-              if (coupon.discountType === 'fixed_amount') {
+              if (coupon.discountType === 'fixed' || coupon.discountType === 'fixed_amount') {
                 discountAmount = Math.min(accountPrice, Number(coupon.discountValue));
               } else if (coupon.discountType === 'percentage') {
                 const calculated = (accountPrice * Number(coupon.discountValue)) / 100;
@@ -211,13 +266,22 @@ export class OrderService {
         purchasedAt: new Date().toISOString(),
       });
 
-      // 6. Delete any existing cancelled orders for this account (to satisfy unique constraint)
-      await tx.order.deleteMany({
+      // 6. Clean up previous inactive/cancelled orders on this account (to satisfy unique constraint)
+      const oldOrders = await tx.order.findMany({
         where: {
           gameAccountId: account.id,
-          status: 'cancelled',
+          status: { in: ['cancelled', 'pending'] },
         },
+        select: { id: true },
       });
+
+      if (oldOrders.length > 0) {
+        const oldOrderIds = oldOrders.map((o) => o.id);
+        await tx.accountWarranty.deleteMany({ where: { orderId: { in: oldOrderIds } } });
+        await tx.payment.deleteMany({ where: { orderId: { in: oldOrderIds } } });
+        await tx.couponRedemption.deleteMany({ where: { orderId: { in: oldOrderIds } } });
+        await tx.order.deleteMany({ where: { id: { in: oldOrderIds } } });
+      }
 
       // 7. Create Order
       let orderNumber = this.generateOrderNumber();

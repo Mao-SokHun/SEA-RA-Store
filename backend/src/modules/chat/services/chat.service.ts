@@ -162,9 +162,9 @@ export class ChatService {
       messages: messages.map((m) => ({
         id: m.id.toString(),
         orderNumber,
-        senderId: m.senderId.toString(),
-        senderName: m.sender.username,
-        senderRole: m.sender.role,
+        senderId: m.messageType === 'system' ? 'SYSTEM' : m.senderId.toString(),
+        senderName: m.messageType === 'system' ? 'SYSTEM' : m.sender.username,
+        senderRole: m.messageType === 'system' ? 'system' : m.sender.role,
         messageType: m.messageType,
         content: m.content,
         isRead: m.isRead,

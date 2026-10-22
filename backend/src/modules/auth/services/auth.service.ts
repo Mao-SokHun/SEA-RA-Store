@@ -344,33 +344,44 @@ export class AuthService {
     // 1. Verify token signature
     const payload = verifyRefreshToken(oldRefreshToken);
 
-    // 2. Verify hashed token exists in DB and is not revoked
+    // 2. Verify hashed token exists in DB
     const oldHash = hashToken(oldRefreshToken);
     const storedToken = await prisma.userRefreshToken.findFirst({
       where: {
         tokenHash: oldHash,
         userId: BigInt(payload.sub),
-        isRevoked: false,
-        expiresAt: { gt: new Date() },
       },
       include: { user: true },
     });
 
     if (!storedToken) {
-      // Possible token reuse attack detected! Revoke all tokens for safety
+      throw new UnauthorizedError('Invalid refresh token. Please sign in again.');
+    }
+
+    // Check if token naturally expired
+    if (storedToken.expiresAt <= new Date()) {
+      throw new UnauthorizedError('Refresh token has expired. Please sign in again.');
+    }
+
+    // If token was already revoked, this is a reuse attack: revoke all tokens for safety
+    if (storedToken.isRevoked) {
       await prisma.userRefreshToken.updateMany({
         where: { userId: BigInt(payload.sub) },
         data: { isRevoked: true },
       });
 
-      throw new UnauthorizedError('Invalid or expired refresh token. Please sign in again.');
+      throw new UnauthorizedError('Refresh token has already been used and revoked. Please sign in again.');
     }
 
-    // 3. Revoke the old refresh token (Token Rotation)
-    await prisma.userRefreshToken.update({
-      where: { id: storedToken.id },
+    // 3. Revoke the old refresh token atomically (Token Rotation with Atomic CAS)
+    const updateCount = await prisma.userRefreshToken.updateMany({
+      where: { id: storedToken.id, isRevoked: false },
       data: { isRevoked: true },
     });
+
+    if (updateCount.count === 0) {
+      throw new UnauthorizedError('Refresh token already rotated. Please use your newest session token.');
+    }
 
     // 4. Issue new access token and new refresh token
     const jwtPayload = {
@@ -514,11 +525,15 @@ export class AuthService {
         },
       });
 
-      // 2. Mark token as used
-      await tx.passwordResetToken.update({
-        where: { id: resetRecord.id },
+      // 2. Mark token as used (Atomic CAS guard)
+      const usedCount = await tx.passwordResetToken.updateMany({
+        where: { id: resetRecord.id, isUsed: false },
         data: { isUsed: true },
       });
+
+      if (usedCount.count === 0) {
+        throw new BadRequestError('Password reset token has already been used.');
+      }
 
       // 3. Invalidate ALL refresh tokens (force re-login on all devices)
       await tx.userRefreshToken.updateMany({

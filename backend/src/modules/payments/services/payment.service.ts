@@ -215,7 +215,16 @@ export class PaymentService {
         },
       });
 
-      // 5. Audit Log
+      // 5. Update Game Account status to in_escrow to prevent auto-release cleanup
+      await tx.gameAccount.update({
+        where: { id: order.gameAccountId },
+        data: {
+          status: 'in_escrow',
+          reservedUntil: null,
+        },
+      });
+
+      // 6. Audit Log
       await tx.securityAuditLog.create({
         data: {
           userId: buyerIdBigInt,
@@ -321,7 +330,16 @@ export class PaymentService {
         return; // Idempotent: already processed by a concurrent webhook call
       }
 
-      // 3. Security Audit Log
+      // 3. Update Game Account status to in_escrow
+      await tx.gameAccount.update({
+        where: { id: order.gameAccountId },
+        data: {
+          status: 'in_escrow',
+          reservedUntil: null,
+        },
+      });
+
+      // 4. Security Audit Log
       await tx.securityAuditLog.create({
         data: {
           userId: order.buyerId,
@@ -390,6 +408,14 @@ export class PaymentService {
       await tx.order.update({
         where: { id: order.id },
         data: { status: 'in_escrow' },
+      });
+
+      await tx.gameAccount.update({
+        where: { id: order.gameAccountId },
+        data: {
+          status: 'in_escrow',
+          reservedUntil: null,
+        },
       });
     });
 

@@ -533,6 +533,10 @@ export class WalletService {
       throw new NotFoundError('Wallet not found');
     }
 
+    if (!amount || amount <= 0 || isNaN(amount)) {
+      throw new BadRequestError('Top-up amount must be a positive number');
+    }
+
     const updated = await prisma.$transaction(async (tx) => {
       const updatedWallet = await tx.wallet.update({
         where: { id: wallet.id },
@@ -544,7 +548,7 @@ export class WalletService {
       await tx.walletTransaction.create({
         data: {
           walletId: wallet.id,
-          transactionType: 'earning', // credit
+          transactionType: 'deposit',
           amount: new Prisma.Decimal(amount),
           balanceAfter: updatedWallet.balance,
         },

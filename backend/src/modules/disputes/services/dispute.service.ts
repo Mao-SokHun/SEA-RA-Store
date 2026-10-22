@@ -325,6 +325,18 @@ export class DisputeService {
         throw new BadRequestError('Dispute was already resolved or is no longer open.');
       }
 
+      // Check if seller was already credited earnings for this order (e.g. order was completed before dispute)
+      const sellerWallet = order.seller.wallet;
+      const existingEarning = sellerWallet
+        ? await tx.walletTransaction.findFirst({
+            where: {
+              walletId: sellerWallet.id,
+              orderId: order.id,
+              transactionType: 'earning',
+            },
+          })
+        : null;
+
       // 1. REFUND BUYER
       if (resolution === 'refund_buyer') {
         const refundAmount = Number(order.totalAmount);
@@ -351,25 +363,48 @@ export class DisputeService {
           });
         }
 
+        // If seller was already paid out (order completed before dispute), claw back from seller wallet
+        if (existingEarning && sellerWallet) {
+          const clawbackAmount = Number(order.sellerNetAmount);
+          const updatedSellerWallet = await tx.wallet.update({
+            where: { id: sellerWallet.id },
+            data: {
+              balance: { decrement: new Prisma.Decimal(clawbackAmount) },
+            },
+          });
+
+          await tx.walletTransaction.create({
+            data: {
+              walletId: sellerWallet.id,
+              orderId: order.id,
+              transactionType: 'dispute_clawback',
+              amount: new Prisma.Decimal(-clawbackAmount),
+              balanceAfter: updatedSellerWallet.balance,
+            },
+          });
+        }
+
         // Update Order status
         await tx.order.update({
           where: { id: order.id },
           data: { status: 'refunded' },
         });
 
-        // Set Account available again
+        // Set Account status to suspended/closed to avoid re-selling compromised credentials
         await tx.gameAccount.update({
           where: { id: order.gameAccountId },
-          data: { status: 'available' },
+          data: {
+            status: 'suspended',
+            reservedUntil: null,
+          },
         });
       }
       // 2. PAYOUT SELLER
       else if (resolution === 'payout_seller') {
         const sellerPayout = Number(order.sellerNetAmount);
-        const sellerWallet = order.seller.wallet;
 
-        if (sellerWallet) {
-          // Credit seller wallet
+        if (sellerWallet && !existingEarning) {
+          // Credit seller wallet ONLY if they were not already paid previously
           const updatedWallet = await tx.wallet.update({
             where: { id: sellerWallet.id },
             data: {
@@ -403,10 +438,10 @@ export class DisputeService {
       }
       // 3. DISMISS
       else if (resolution === 'dismiss') {
-        // Return order status to in_escrow
+        // Return order status to its pre-dispute state
         await tx.order.update({
           where: { id: order.id },
-          data: { status: 'in_escrow' },
+          data: { status: existingEarning ? 'completed' : 'in_escrow' },
         });
       }
 

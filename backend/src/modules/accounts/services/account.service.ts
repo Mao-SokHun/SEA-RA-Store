@@ -6,6 +6,7 @@ import {
 } from '../../../common/errors/AppError';
 import { encryptAES, encryptVaultField } from '../../../common/utils/crypto';
 import { Prisma } from '@prisma/client';
+import { orderService } from '../../orders/services/order.service';
 
 export interface CreateAccountDTO {
   gameId: string;
@@ -194,17 +195,8 @@ export class AccountService {
     const limit = Math.min(100, Math.max(1, Number(filters.limit) || 20));
     const skip = (page - 1) * limit;
 
-    // 1. Auto-release expired reservations (Reservation cleanup worker logic)
-    await prisma.gameAccount.updateMany({
-      where: {
-        status: 'reserved',
-        reservedUntil: { lt: new Date() },
-      },
-      data: {
-        status: 'available',
-        reservedUntil: null,
-      },
-    });
+    // 1. Auto-release expired reservations and cancel associated pending orders
+    await orderService.releaseExpiredReservations();
 
     // 2. Build Prisma where clause
     const where: Prisma.GameAccountWhereInput = {
@@ -213,6 +205,12 @@ export class AccountService {
 
     if (filters.gameId) {
       where.gameId = BigInt(filters.gameId);
+    }
+
+    if (filters.platform) {
+      where.game = {
+        platform: { equals: filters.platform, mode: 'insensitive' },
+      };
     }
 
     if (filters.serverRegion) {

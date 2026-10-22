@@ -27,7 +27,7 @@ export class PaymentController {
   handleWebhook = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const signature = req.headers['x-bakong-signature'] as string | undefined;
-      const rawPayload = JSON.stringify(req.body);
+      const rawPayload = (req as any).rawBody || JSON.stringify(req.body);
 
       const result = await paymentService.handleBakongWebhook(rawPayload, signature, req.body);
       sendSuccess(res, result, result.message);

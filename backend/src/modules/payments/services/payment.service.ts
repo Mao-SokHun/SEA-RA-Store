@@ -9,6 +9,7 @@ import {
 } from '../../../common/errors/AppError';
 import { generateBakongKHQRString, generateQRCodeImage } from '../../../common/utils/khqr';
 import { telegramService } from '../../notifications/services/telegram.service';
+import { emitToOrderRoom } from '../../../common/socket/socketManager';
 import { Prisma } from '@prisma/client';
 
 export interface GenerateKHQRDTO {
@@ -250,6 +251,13 @@ export class PaymentService {
       `🔔 <b>Order Paid!</b>\nBuyer has paid $${orderTotal.toFixed(2)} for order <code>#${orderNumber}</code>. Funds are safely held in escrow.`
     );
 
+    // Real-time WebSocket emission to order escrow room
+    emitToOrderRoom(orderNumber, 'payment_success', {
+      orderNumber,
+      status: 'in_escrow',
+      transactionId,
+    });
+
     return {
       message: 'Payment completed successfully with Wallet balance. Order is now in escrow.',
       orderNumber,
@@ -264,7 +272,11 @@ export class PaymentService {
    */
   async handleBakongWebhook(rawPayload: string, signature: string | undefined, payload: any) {
     // 1. Verify HMAC-SHA256 signature if webhook secret is configured
-    if (config.bakong.webhookSecret) {
+    if (!config.bakong.webhookSecret) {
+      if (config.nodeEnv === 'production') {
+        throw new UnauthorizedError('Bakong webhook secret is not configured on server');
+      }
+    } else {
       if (!signature) {
         throw new UnauthorizedError('Missing webhook signature');
       }
@@ -273,7 +285,10 @@ export class PaymentService {
         .update(rawPayload)
         .digest('hex');
 
-      if (signature !== expectedSignature) {
+      const sigBuf = Buffer.from(signature, 'utf8');
+      const expBuf = Buffer.from(expectedSignature, 'utf8');
+
+      if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
         throw new UnauthorizedError('Invalid webhook signature');
       }
     }
@@ -361,6 +376,13 @@ export class PaymentService {
       `🔔 <b>KHQR Payment Confirmed!</b>\nBuyer has paid for order <code>#${orderNumber}</code>. Escrow funds are held securely.`
     );
 
+    // Real-time WebSocket emission to order escrow room
+    emitToOrderRoom(orderNumber, 'payment_success', {
+      orderNumber,
+      status: 'in_escrow',
+      transactionId: txnId,
+    });
+
     return { message: 'Payment confirmed and order moved to escrow' };
   }
 
@@ -368,6 +390,10 @@ export class PaymentService {
    * Simulate Payment for Development / Sandbox Testing
    */
   async simulatePayment(orderNumber: string, userId: string, userRole: string) {
+    if (config.nodeEnv === 'production' && userRole !== 'admin') {
+      throw new ForbiddenError('Payment simulation is disabled in production environment');
+    }
+
     const order = await prisma.order.findUnique({
       where: { orderNumber },
       include: { payment: true },
@@ -417,6 +443,13 @@ export class PaymentService {
           reservedUntil: null,
         },
       });
+    });
+
+    // Real-time WebSocket emission to order escrow room
+    emitToOrderRoom(orderNumber, 'payment_success', {
+      orderNumber,
+      status: 'in_escrow',
+      transactionId,
     });
 
     return {

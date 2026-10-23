@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { prisma } from '../../../config/database';
+import { config } from '../../../config';
 import {
   AppError,
   BadRequestError,
@@ -485,9 +486,10 @@ export class AuthService {
     });
 
     // In production, send via email service. For dev/testing, token is returned:
+    const isDev = config.nodeEnv !== 'production';
     return {
       message: 'If that email address is in our database, we will send a password reset link.',
-      resetToken, // Provided for easy development testing
+      ...(isDev ? { resetToken } : {}),
     };
   }
 

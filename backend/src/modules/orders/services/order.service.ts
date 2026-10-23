@@ -9,6 +9,7 @@ import {
 } from '../../../common/errors/AppError';
 import { decryptAES, decryptVaultField } from '../../../common/utils/crypto';
 import { telegramService } from '../../notifications/services/telegram.service';
+import { emitToOrderRoom } from '../../../common/socket/socketManager';
 import { Prisma } from '@prisma/client';
 
 export interface CheckoutDTO {
@@ -572,6 +573,13 @@ export class OrderService {
       });
     });
 
+    // Real-time WebSocket emission to order room
+    emitToOrderRoom(orderNumber, 'order_cancelled', {
+      orderNumber,
+      status: 'cancelled',
+      message: `Order ${orderNumber} was cancelled and account returned to marketplace.`,
+    });
+
     return { message: `Order ${orderNumber} has been cancelled and account returned to marketplace.` };
   }
 
@@ -721,6 +729,13 @@ export class OrderService {
       'payout',
       `🎉 <b>Account Handover Confirmed!</b>\nOrder <code>#${orderNumber}</code> is completed. $${netAmount.toFixed(2)} has been credited to your wallet balance.`
     );
+
+    // Real-time WebSocket emission to order room
+    emitToOrderRoom(orderNumber, 'order_completed', {
+      orderNumber,
+      status: 'completed',
+      message: 'Account handover confirmed. Escrow funds released to seller.',
+    });
 
     return {
       message: 'Account handover confirmed successfully. Escrow funds released to seller wallet.',

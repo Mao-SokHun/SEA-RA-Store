@@ -87,9 +87,10 @@ export class WalletController {
   topup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = req.user!.id;
+      const userRole = req.user!.role;
       const amount = Number(req.body.amount);
 
-      const result = await walletService.topup(userId, amount);
+      const result = await walletService.topup(userId, amount, userRole);
       sendSuccess(res, result, result.message);
     } catch (error) {
       next(error);

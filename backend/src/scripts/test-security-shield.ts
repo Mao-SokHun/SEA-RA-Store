@@ -2,6 +2,7 @@ import http from 'http';
 import { createApp } from '../app';
 import { initSocketServer } from '../common/socket/socketManager';
 import { prisma } from '../config/database';
+import { config } from '../config';
 
 const TEST_PORT = 5066;
 const BASE_URL = `http://localhost:${TEST_PORT}`;
@@ -95,14 +96,14 @@ async function runSecurityTests() {
     // TEST 3: Prototype Pollution Injection via Postman
     // -----------------------------------------------------------------
     console.log('\n--- 3. Prototype Pollution & Injection Defense ---');
-    // An attacker sends dangerous __proto__ payload in JSON body
+    const regEmail = `sanitized_${Date.now()}@test.local`;
     const pollutionRes = await request('/api/v1/auth/register', {
       method: 'POST',
       body: JSON.stringify({
         __proto__: { isAdmin: true },
         constructor: { prototype: { hacked: true } },
         username: `sanitized_${Date.now()}`,
-        email: `sanitized_${Date.now()}@test.local`,
+        email: regEmail,
         password: 'Password123!Secure',
         role: 'buyer',
       }),
@@ -111,6 +112,8 @@ async function runSecurityTests() {
       pollutionRes.status === 201,
       'Request processed and payload sanitized safely'
     );
+    const testEmail = regEmail;
+    const buyerToken = pollutionRes.body.data.accessToken;
     // Verify global Object prototype was NOT polluted
     assert(
       (Object.prototype as any).isAdmin === undefined,
@@ -184,8 +187,69 @@ async function runSecurityTests() {
       'Authenticated admin successfully accesses Swagger JSON'
     );
 
+    // -----------------------------------------------------------------
+    // TEST 7: Production Password Reset Token Leak Prevention
+    // -----------------------------------------------------------------
+    console.log('\n--- 7. Production Password Reset Token Leak Prevention ---');
+    process.env.NODE_ENV = 'production';
+    config.nodeEnv = 'production';
+
+    const forgotRes = await request('/api/v1/auth/forgot-password', {
+      method: 'POST',
+      headers: {
+        Origin: 'http://localhost:3000',
+        'X-App-Platform': 'web-nexus',
+      },
+      body: JSON.stringify({ email: testEmail }),
+    });
+    assert(
+      forgotRes.status === 200,
+      'Forgot password responds with 200 generic message'
+    );
+    assert(
+      forgotRes.body.data?.resetToken === undefined,
+      'Reset token is NEVER leaked in HTTP response in production environment'
+    );
+
+    // -----------------------------------------------------------------
+    // TEST 8: Production Wallet Arbitrary Top-up Defense
+    // -----------------------------------------------------------------
+    console.log('\n--- 8. Production Wallet Arbitrary Top-up Defense ---');
+    const topupExploitRes = await request('/api/v1/wallet/topup', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${buyerToken}`,
+        Origin: 'http://localhost:3000',
+        'X-App-Platform': 'web-nexus',
+      },
+      body: JSON.stringify({ amount: 999999 }),
+    });
+    assert(
+      topupExploitRes.status === 403,
+      'Arbitrary wallet top-up by non-admin is blocked in production (HTTP 403)'
+    );
+
+    // -----------------------------------------------------------------
+    // TEST 9: Production Payment Simulation Exploit Defense
+    // -----------------------------------------------------------------
+    console.log('\n--- 9. Production Payment Simulation Exploit Defense ---');
+    const simExploitRes = await request('/api/v1/payments/simulate', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${buyerToken}`,
+        Origin: 'http://localhost:3000',
+        'X-App-Platform': 'web-nexus',
+      },
+      body: JSON.stringify({ orderNumber: 'ORD-FAKE-9999' }),
+    });
+    assert(
+      simExploitRes.status === 403,
+      'Payment simulation by non-admin is blocked in production (HTTP 403)'
+    );
+
     // Restore test environment
     process.env.NODE_ENV = 'test';
+    config.nodeEnv = 'test';
     delete process.env.ENABLE_SWAGGER;
     delete process.env.SWAGGER_USER;
     delete process.env.SWAGGER_PASSWORD;

@@ -556,12 +556,30 @@ export class AccountService {
       throw new ForbiddenError('You do not have permission to delete this listing');
     }
 
-    if (existing.order) {
-      throw new BadRequestError('Cannot delete listing with an existing order record');
+    if (existing.status !== 'available') {
+      throw new BadRequestError(`Cannot delete listing while its status is "${existing.status}"`);
     }
 
-    await prisma.gameAccount.delete({
-      where: { id: accountId },
+    if (existing.order) {
+      if (['paid', 'in_escrow', 'completed', 'in_dispute'].includes(existing.order.status)) {
+        throw new BadRequestError(
+          `Cannot delete listing with an active or completed order (status: "${existing.order.status}")`
+        );
+      }
+    }
+
+    await prisma.$transaction(async (tx) => {
+      if (existing.order) {
+        // Clean up cancelled order and dependent relations
+        await tx.accountWarranty.deleteMany({ where: { orderId: existing.order.id } });
+        await tx.payment.deleteMany({ where: { orderId: existing.order.id } });
+        await tx.couponRedemption.deleteMany({ where: { orderId: existing.order.id } });
+        await tx.order.delete({ where: { id: existing.order.id } });
+      }
+
+      await tx.gameAccount.delete({
+        where: { id: accountId },
+      });
     });
 
     return { message: 'Listing deleted successfully' };

@@ -1,6 +1,8 @@
 import { prisma } from '../../../config/database';
+import { config } from '../../../config';
 import {
   BadRequestError,
+  ForbiddenError,
   NotFoundError,
 } from '../../../common/errors/AppError';
 import { telegramService } from '../../notifications/services/telegram.service';
@@ -522,7 +524,11 @@ export class WalletService {
   /**
    * Top up wallet balance (Simulation / Instant Credit)
    */
-  async topup(userId: string, amount: number) {
+  async topup(userId: string, amount: number, userRole: string = 'buyer') {
+    if (config.nodeEnv === 'production' && userRole !== 'admin') {
+      throw new ForbiddenError('Wallet simulation/top-up is disabled in production environment');
+    }
+
     const userIdBigInt = BigInt(userId);
 
     const wallet = await prisma.wallet.findUnique({

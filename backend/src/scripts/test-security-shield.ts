@@ -222,7 +222,7 @@ async function runSecurityTests() {
         Origin: 'http://localhost:3000',
         'X-App-Platform': 'web-nexus',
       },
-      body: JSON.stringify({ amount: 999999 }),
+      body: JSON.stringify({ amount: 50 }),
     });
     assert(
       topupExploitRes.status === 403,

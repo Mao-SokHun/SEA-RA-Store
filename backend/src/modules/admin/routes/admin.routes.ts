@@ -13,5 +13,6 @@ router.use(authenticate, authorize('admin'));
  * @access  Private (Admin only)
  */
 router.get('/dashboard/stats', adminController.getDashboardStats);
+router.get('/analytics/overview', adminController.getDashboardStats);
 
 export default router;

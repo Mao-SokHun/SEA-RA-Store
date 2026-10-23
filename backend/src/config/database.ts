@@ -31,12 +31,28 @@ const pool =
 
 const adapter = new PrismaPg(pool);
 
-export const prisma =
+const basePrisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
+
+// Wrap $transaction to apply robust defaults for cloud serverless PostgreSQL
+const originalTransaction = basePrisma.$transaction.bind(basePrisma);
+(basePrisma as any).$transaction = (arg: any, options?: any) => {
+  if (typeof arg === 'function') {
+    const defaultOptions = {
+      maxWait: 10000, // 10s to acquire connection
+      timeout: 25000, // 25s timeout for interactive transaction operations
+      ...options,
+    };
+    return originalTransaction(arg, defaultOptions);
+  }
+  return originalTransaction(arg, options);
+};
+
+export const prisma = basePrisma;
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;

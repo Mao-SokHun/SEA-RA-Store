@@ -45,6 +45,7 @@ export class AuthController {
       sendCreated(res, {
         user: result.user,
         accessToken: result.tokens.accessToken,
+        refreshToken: result.tokens.refreshToken,
       }, 'Account registered successfully');
     } catch (error) {
       next(error);
@@ -70,6 +71,7 @@ export class AuthController {
       sendSuccess(res, {
         user: result.user,
         accessToken: result.tokens.accessToken,
+        refreshToken: result.tokens.refreshToken,
       }, 'Logged in successfully');
     } catch (error) {
       next(error);
@@ -92,6 +94,7 @@ export class AuthController {
 
       sendSuccess(res, {
         accessToken: result.tokens.accessToken,
+        refreshToken: result.tokens.refreshToken,
       }, 'Token refreshed successfully');
     } catch (error) {
       next(error);

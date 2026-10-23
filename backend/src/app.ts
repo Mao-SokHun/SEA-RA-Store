@@ -24,6 +24,9 @@ import adminRoutes from './modules/admin/routes/admin.routes';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import { generalLimiter } from './common/middleware/rateLimiter';
+import { swaggerGuard } from './common/middleware/swaggerGuard';
+import { payloadSanitizer } from './common/middleware/sanitizer';
+import { apiShield } from './common/middleware/apiShield';
 import './common/utils/json'; // Setup BigInt toJSON serialization
 
 export function createApp(): Application {
@@ -31,11 +34,15 @@ export function createApp(): Application {
 
   // Trust proxy for reverse proxy setups (Nginx, Cloudflare)
   app.set('trust proxy', 1);
+  app.disable('x-powered-by');
 
   // Security Middlewares
   app.use(
     helmet({
       crossOriginResourcePolicy: { policy: 'cross-origin' },
+      hidePoweredBy: true,
+      xssFilter: true,
+      noSniff: true,
     })
   );
 
@@ -44,22 +51,25 @@ export function createApp(): Application {
       origin: [config.frontendUrl, 'http://localhost:3000', 'http://localhost:5173'],
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-App-Platform'],
     })
   );
 
-  // Body Parsing Middlewares
+  // Body Parsing Middlewares (Protected with size limits to prevent DoS)
   app.use(
     express.json({
-      limit: '10mb',
+      limit: '2mb',
       verify: (req: any, _res, buf) => {
         req.rawBody = buf ? buf.toString('utf8') : '';
       },
     })
   );
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '2mb' }));
   app.use(cookieParser());
   app.use(compression());
+
+  // Prototype Pollution & Injection Sanitizer
+  app.use(payloadSanitizer);
 
   // Logging
   if (config.nodeEnv !== 'test') {
@@ -114,16 +124,24 @@ export function createApp(): Application {
     }, 'Welcome to Game Account Marketplace API');
   });
 
-  // Interactive Swagger API Documentation
-  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'Game Marketplace API Documentation',
-  }));
+  // Interactive Swagger API Documentation (Protected with swaggerGuard)
+  app.use(
+    '/api/docs',
+    swaggerGuard,
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, {
+      customCss: '.swagger-ui .topbar { display: none }',
+      customSiteTitle: 'Game Marketplace API Documentation',
+    })
+  );
 
-  app.get('/api/docs.json', (req: Request, res: Response) => {
+  app.get('/api/docs.json', swaggerGuard, (req: Request, res: Response) => {
     res.setHeader('Content-Type', 'application/json');
     res.send(swaggerSpec);
   });
+
+  // Enterprise API Shield (Prevents Postman / headless bot / untrusted direct attacks)
+  app.use(config.apiPrefix, apiShield);
 
   // Rate Limiting on API
   app.use(config.apiPrefix, generalLimiter);

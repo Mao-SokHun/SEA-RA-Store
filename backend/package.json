@@ -12,7 +12,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "test": "tsx src/scripts/test-e2e.ts",
-    "test:e2e": "tsx src/scripts/test-e2e.ts"
+    "test:e2e": "tsx src/scripts/test-e2e.ts",
+    "test:security": "tsx src/scripts/test-security-shield.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

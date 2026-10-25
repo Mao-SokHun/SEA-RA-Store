@@ -49,6 +49,7 @@ model User {
   kycVerification     SellerKYCVerification?
   securityDeposits    SellerSecurityDeposit[]
   chatMessages        ChatMessage[]
+  topUpOrders         TopUpOrder[]
 
   @@map("users")
 }
@@ -139,7 +140,9 @@ model Game {
   iconUrl  String?  @map("icon_url") @db.VarChar(255)
   isActive Boolean  @default(true) @map("is_active")
 
-  accounts GameAccount[]
+  accounts      GameAccount[]
+  topUpPackages TopUpPackage[]
+  topUpOrders   TopUpOrder[]
 
   @@map("games")
 }
@@ -455,4 +458,59 @@ model ChatMessage {
   sender User  @relation(fields: [senderId], references: [id], onDelete: Cascade)
 
   @@map("chat_messages")
+}
+
+// -------------------------------------------------------------
+// 7. IN-GAME TOP-UP SYSTEM (Direct Game Currency / Items)
+// -------------------------------------------------------------
+model TopUpPackage {
+  id              BigInt    @id @default(autoincrement())
+  gameId          BigInt    @map("game_id")
+  name            String    @db.VarChar(100)
+  category        String    @default("currency") @db.VarChar(50) // currency, pass, bundle
+  currencyAmount  Int       @map("currency_amount")
+  bonusAmount     Int       @default(0) @map("bonus_amount")
+  price           Decimal   @db.Decimal(10, 2)
+  originalPrice   Decimal?  @map("original_price") @db.Decimal(10, 2)
+  badge           String?   @db.VarChar(50) // HOT, BEST VALUE, +10% BONUS
+  iconUrl         String?   @map("icon_url") @db.VarChar(255)
+  isActive        Boolean   @default(true) @map("is_active")
+  sortOrder       Int       @default(0) @map("sort_order")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  game            Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  orders          TopUpOrder[]
+
+  @@map("top_up_packages")
+}
+
+model TopUpOrder {
+  id                    BigInt    @id @default(autoincrement())
+  orderNumber           String    @unique @map("order_number") @db.VarChar(50)
+  userId                BigInt?   @map("user_id")
+  gameId                BigInt    @map("game_id")
+  packageId             BigInt    @map("package_id")
+  playerId              String    @map("player_id") @db.VarChar(100)
+  zoneId                String?   @map("zone_id") @db.VarChar(50)
+  serverRegion          String?   @map("server_region") @db.VarChar(50)
+  playerNickname        String?   @map("player_nickname") @db.VarChar(100)
+  contactPhone          String?   @map("contact_phone") @db.VarChar(30)
+  contactEmail          String?   @map("contact_email") @db.VarChar(100)
+  subtotalAmount        Decimal   @map("subtotal_amount") @db.Decimal(10, 2)
+  discountAmount        Decimal   @default(0) @map("discount_amount") @db.Decimal(10, 2)
+  totalAmount           Decimal   @map("total_amount") @db.Decimal(10, 2)
+  paymentMethod         String    @default("bakong_khqr") @map("payment_method") @db.VarChar(50)
+  paymentStatus         String    @default("pending") @map("payment_status") @db.VarChar(20) // pending, paid, failed
+  deliveryStatus        String    @default("pending") @map("delivery_status") @db.VarChar(20) // pending, processing, completed, failed
+  transactionReference  String?   @map("transaction_reference") @db.VarChar(100)
+  deliveryProof         String?   @map("delivery_proof") @db.Text
+  errorMessage          String?   @map("error_message") @db.Text
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  user                  User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  game                  Game           @relation(fields: [gameId], references: [id], onDelete: Restrict)
+  package               TopUpPackage   @relation(fields: [packageId], references: [id], onDelete: Restrict)
+
+  @@map("top_up_orders")
 }

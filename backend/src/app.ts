@@ -21,6 +21,7 @@ import couponRoutes from './modules/coupons/routes/coupon.routes';
 import referralRoutes from './modules/referrals/routes/referral.routes';
 import userRoutes from './modules/users/routes/user.routes';
 import adminRoutes from './modules/admin/routes/admin.routes';
+import topUpRoutes from './modules/topup/routes/topup.routes';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import { generalLimiter } from './common/middleware/rateLimiter';
@@ -120,6 +121,7 @@ export function createApp(): Application {
         referrals: `${config.apiPrefix}/referrals`,
         users: `${config.apiPrefix}/users`,
         admin: `${config.apiPrefix}/admin`,
+        topup: `${config.apiPrefix}/topup`,
       },
     }, 'Welcome to Game Account Marketplace API');
   });
@@ -159,6 +161,7 @@ export function createApp(): Application {
   app.use(`${config.apiPrefix}/referrals`, referralRoutes);
   app.use(`${config.apiPrefix}/users`, userRoutes);
   app.use(`${config.apiPrefix}/admin`, adminRoutes);
+  app.use(`${config.apiPrefix}/topup`, topUpRoutes);
 
   // 404 Handler
   app.use(notFoundHandler);

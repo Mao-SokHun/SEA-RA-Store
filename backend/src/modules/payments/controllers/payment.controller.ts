@@ -58,6 +58,16 @@ export class PaymentController {
       next(error);
     }
   };
+
+  checkBakongPayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const orderNumber = req.params.orderNumber as string;
+      const result = await paymentService.checkBakongPayment(orderNumber);
+      sendSuccess(res, result, result.message);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const paymentController = new PaymentController();

@@ -1,4 +1,6 @@
+import crypto from 'crypto';
 import QRCode from 'qrcode';
+import { config } from '../../config';
 
 /**
  * CRC16-CCITT calculation for EMVCo / Bakong KHQR
@@ -32,6 +34,14 @@ export interface KHQRData {
   currency?: 'USD' | 'KHR';
   merchantName?: string;
   merchantAccount?: string;
+  merchantCity?: string;
+}
+
+/**
+ * Calculate MD5 hash of KHQR string (used for Bakong Open API check_transaction_by_md5)
+ */
+export function calculateKHQRMD5(qrString: string): string {
+  return crypto.createHash('md5').update(qrString).digest('hex');
 }
 
 /**
@@ -42,8 +52,9 @@ export function generateBakongKHQRString(data: KHQRData): string {
     orderNumber,
     amount,
     currency = 'USD',
-    merchantName = 'GAME MARKETPLACE',
-    merchantAccount = 'gameplatform@dev',
+    merchantName = config.khqr.merchantName || 'MAO SOKHUN',
+    merchantAccount = (currency === 'KHR' ? config.khqr.bakongIdKhr : config.khqr.bakongId) || 'abaakhppxxx@abaa',
+    merchantCity = config.khqr.merchantCity || 'Phnom Penh',
   } = data;
 
   const currencyCode = currency === 'USD' ? '840' : '116';
@@ -67,7 +78,7 @@ export function generateBakongKHQRString(data: KHQRData): string {
   payload += formatTLV('54', formattedAmount); // Amount
   payload += formatTLV('58', 'KH'); // Country Code
   payload += formatTLV('59', merchantName.slice(0, 25)); // Merchant Name
-  payload += formatTLV('60', 'Phnom Penh'); // Merchant City
+  payload += formatTLV('60', merchantCity.slice(0, 15)); // Merchant City
   payload += formatTLV('62', tag62); // Additional Data
 
   // Prepare Tag 63 for CRC checksum

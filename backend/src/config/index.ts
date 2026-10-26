@@ -42,9 +42,31 @@ interface Config {
   telegramBotToken: string;
 
   // Payment
+  khqr: {
+    provider: string;
+    merchantName: string;
+    merchantCity: string;
+    accountUsd: string;
+    accountKhr: string;
+    bakongId: string;
+    bakongIdKhr: string;
+    merchantId: string;
+    apiToken: string;
+    developerEmail: string;
+    webhookSecret: string;
+  };
   bakong: {
     apiKey: string;
     webhookSecret: string;
+  };
+
+  // Top-Up Provider
+  topup: {
+    provider: string;
+    apiKey: string;
+    secret: string;
+    merchantId: string;
+    baseUrl: string;
   };
 
   // S3/R2 Storage
@@ -104,9 +126,30 @@ const config: Config = {
 
   telegramBotToken: getEnvVar('TELEGRAM_BOT_TOKEN', ''),
 
-  bakong: {
-    apiKey: getEnvVar('BAKONG_API_KEY', ''),
+  khqr: {
+    provider: getEnvVar('KHQR_PROVIDER', 'mock'),
+    merchantName: getEnvVar('KHQR_MERCHANT_NAME', 'MAO SOKHUN'),
+    merchantCity: getEnvVar('KHQR_MERCHANT_CITY', 'Phnom Penh'),
+    accountUsd: getEnvVar('KHQR_ACCOUNT_USD', '005282269'),
+    accountKhr: getEnvVar('KHQR_ACCOUNT_KHR', '005282293'),
+    bakongId: getEnvVar('KHQR_BAKONG_ID', 'abaakhppxxx@abaa'),
+    bakongIdKhr: getEnvVar('KHQR_BAKONG_ID_KHR', 'abaakhppxxx@abaa'),
+    merchantId: getEnvVar('KHQR_MERCHANT_ID', '126052614424719'),
+    apiToken: getEnvVar('BAKONG_API_TOKEN', ''),
+    developerEmail: getEnvVar('BAKONG_DEVELOPER_EMAIL', ''),
     webhookSecret: getEnvVar('BAKONG_WEBHOOK_SECRET', ''),
+  },
+  bakong: {
+    apiKey: getEnvVar('BAKONG_API_TOKEN', getEnvVar('BAKONG_API_KEY', '')),
+    webhookSecret: getEnvVar('BAKONG_WEBHOOK_SECRET', ''),
+  },
+
+  topup: {
+    provider: getEnvVar('TOPUP_PROVIDER', 'mock'),
+    apiKey: getEnvVar('TOPUP_PROVIDER_API_KEY', ''),
+    secret: getEnvVar('TOPUP_PROVIDER_SECRET', ''),
+    merchantId: getEnvVar('TOPUP_PROVIDER_MERCHANT_ID', ''),
+    baseUrl: getEnvVar('TOPUP_PROVIDER_BASE_URL', 'https://api.smile.one'),
   },
 
   s3: {

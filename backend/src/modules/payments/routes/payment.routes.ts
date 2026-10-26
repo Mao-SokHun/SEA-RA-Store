@@ -73,4 +73,16 @@ router.get(
   paymentController.getPaymentStatus
 );
 
+/**
+ * @route   POST /api/v1/payments/check-bakong/:orderNumber
+ * @desc    Explicitly verify payment with Bakong Open API (Manual button trigger - Quota-optimized)
+ * @access  Public
+ */
+router.post(
+  '/check-bakong/:orderNumber',
+  paymentOrderParamValidator,
+  validate,
+  paymentController.checkBakongPayment
+);
+
 export default router;

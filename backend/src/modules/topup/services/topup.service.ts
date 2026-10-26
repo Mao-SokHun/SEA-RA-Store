@@ -1,8 +1,10 @@
 import crypto from 'crypto';
 import { prisma } from '../../../config/database';
+import { config } from '../../../config';
 import { BadRequestError, NotFoundError, UnauthorizedError } from '../../../common/errors/AppError';
-import { generateBakongKHQRString, generateQRCodeImage } from '../../../common/utils/khqr';
+import { generateBakongKHQRString, generateQRCodeImage, calculateKHQRMD5 } from '../../../common/utils/khqr';
 import { Prisma } from '@prisma/client';
+import { getTopUpProvider } from '../providers';
 
 export interface GameInputConfig {
   key: string;
@@ -325,66 +327,18 @@ export class TopUpService {
     }
 
     const cleanPlayerId = playerId.trim();
-
     if (!cleanPlayerId) {
       throw new BadRequestError('Player ID or Username is required');
     }
 
-    // Realistic verification logic for different games
-    let nickname = '';
-    let isValid = true;
-    let message = 'Player account verified successfully';
-
-    if (game.title.includes('Roblox')) {
-      if (cleanPlayerId.length < 3 || cleanPlayerId.length > 20) {
-        throw new BadRequestError('Roblox username must be between 3 and 20 characters');
-      }
-      // Generate formatted confirmed nickname
-      nickname = cleanPlayerId.startsWith('@') ? cleanPlayerId.slice(1) : cleanPlayerId;
-    } else if (game.title.includes('Mobile Legends')) {
-      if (!zoneId || zoneId.trim().length < 3) {
-        throw new BadRequestError('Zone ID is required for Mobile Legends');
-      }
-      if (cleanPlayerId.length < 6 || cleanPlayerId.length > 12) {
-        throw new BadRequestError('Invalid MLBB User ID length (must be 6-12 digits)');
-      }
-      // Simulate verified player nickname
-      const sampleNames = [
-        '⚔️ Kitsune_Slayer ⚔️',
-        '꧁༺ProGamer_KH༻꧂',
-        '⚡Shadow_Assassin⚡',
-        '⭐Mythic_Glory⭐',
-        '🔥Vampire_King🔥',
-      ];
-      const hash = Math.abs(cleanPlayerId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0));
-      nickname = sampleNames[hash % sampleNames.length];
-    } else if (game.title.includes('Free Fire')) {
-      if (cleanPlayerId.length < 6 || cleanPlayerId.length > 14) {
-        throw new BadRequestError('Free Fire UID must be between 6 and 14 digits');
-      }
-      nickname = `FF_Elite_${cleanPlayerId.slice(-4)}`;
-    } else if (game.title.includes('PUBG')) {
-      if (cleanPlayerId.length < 7 || cleanPlayerId.length > 14) {
-        throw new BadRequestError('PUBG Character ID must be between 7 and 14 digits');
-      }
-      nickname = `PUBG_Sniper_${cleanPlayerId.slice(-4)}`;
-    } else if (game.title.includes('Genshin')) {
-      if (cleanPlayerId.length !== 9) {
-        throw new BadRequestError('Genshin Impact UID must be exactly 9 digits');
-      }
-      nickname = `Traveler_Lvl${(parseInt(cleanPlayerId.slice(-2)) % 30) + 30}`;
-    } else {
-      nickname = cleanPlayerId;
-    }
-
-    return {
-      isValid: true,
+    // Delegate to configured TopUp Provider (Mock, SmileOne, or ApiGames)
+    const provider = getTopUpProvider();
+    return await provider.verifyPlayer({
+      gameTitle: game.title,
       playerId: cleanPlayerId,
       zoneId: zoneId?.trim() || null,
       serverRegion: serverRegion || null,
-      nickname,
-      message,
-    };
+    });
   }
 
   /**
@@ -533,8 +487,17 @@ export class TopUpService {
       orderNumber: order.orderNumber,
       amount: price,
       currency: 'USD',
-      merchantName: 'NEXUS TOPUP',
-      merchantAccount: 'nexus.topup@bakong',
+      merchantName: config.khqr.merchantName,
+      merchantAccount: config.khqr.bakongId,
+      merchantCity: config.khqr.merchantCity,
+    });
+
+    const md5 = calculateKHQRMD5(qrString);
+
+    // Save MD5 hash in transactionReference so it can be checked
+    await prisma.topUpOrder.update({
+      where: { id: order.id },
+      data: { transactionReference: md5 },
     });
 
     const qrImage = await generateQRCodeImage(qrString);
@@ -552,6 +515,7 @@ export class TopUpService {
       paymentMethod: 'bakong_khqr',
       qrString,
       qrImage,
+      md5,
       deepLink: `bakong://pay?qr=${encodeURIComponent(qrString)}`,
       expiresInSeconds: 900, // 15 mins
     };
@@ -581,8 +545,9 @@ export class TopUpService {
         orderNumber: order.orderNumber,
         amount: Number(order.totalAmount),
         currency: 'USD',
-        merchantName: 'NEXUS TOPUP',
-        merchantAccount: 'nexus.topup@bakong',
+        merchantName: config.khqr.merchantName,
+        merchantAccount: config.khqr.bakongId,
+        merchantCity: config.khqr.merchantCity,
       });
       qrImage = await generateQRCodeImage(qrString);
     }
@@ -611,7 +576,72 @@ export class TopUpService {
   }
 
   /**
-   * Simulate Bakong KHQR payment scan and trigger instant in-game currency delivery
+   * Fulfill Top-Up order by executing real or mock provider reload
+   */
+  async fulfillTopUp(orderNumber: string, externalTxnId?: string) {
+    const order = await prisma.topUpOrder.findUnique({
+      where: { orderNumber },
+      include: {
+        package: true,
+        game: true,
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundError(`Order ${orderNumber} not found`);
+    }
+
+    if (order.deliveryStatus === 'completed') {
+      return {
+        success: true,
+        orderNumber: order.orderNumber,
+        paymentStatus: order.paymentStatus,
+        deliveryStatus: order.deliveryStatus,
+        deliveryProof: order.deliveryProof,
+        message: 'Order has already been fulfilled',
+      };
+    }
+
+    const provider = getTopUpProvider();
+    const result = await provider.fulfillOrder({
+      orderNumber: order.orderNumber,
+      gameTitle: order.game.title,
+      packageId: order.package.id.toString(),
+      packageName: order.package.name,
+      currencyAmount: order.package.currencyAmount,
+      playerId: order.playerId,
+      zoneId: order.zoneId,
+      serverRegion: order.serverRegion,
+      playerNickname: order.playerNickname,
+    });
+
+    const updated = await prisma.topUpOrder.update({
+      where: { orderNumber },
+      data: {
+        paymentStatus: 'paid',
+        deliveryStatus: result.status,
+        deliveryProof: result.deliveryProof,
+        transactionReference: externalTxnId || result.providerOrderId || order.transactionReference,
+        errorMessage: result.success ? null : result.message,
+      },
+      include: {
+        game: true,
+        package: true,
+      },
+    });
+
+    return {
+      success: result.success,
+      orderNumber: updated.orderNumber,
+      paymentStatus: updated.paymentStatus,
+      deliveryStatus: updated.deliveryStatus,
+      deliveryProof: updated.deliveryProof,
+      message: result.message,
+    };
+  }
+
+  /**
+   * Simulate Bakong KHQR payment scan and trigger in-game currency delivery via Provider
    */
   async simulatePayment(orderNumber: string) {
     const order = await prisma.topUpOrder.findUnique({
@@ -634,30 +664,7 @@ export class TopUpService {
       };
     }
 
-    // Update to paid and completed
-    const deliveryProof = `IN-GAME RELOAD CONFIRMED: Gateway Ref #${Date.now()}-SERVICED. ${order.package.name} added to ${order.playerId}`;
-
-    const updated = await prisma.topUpOrder.update({
-      where: { orderNumber },
-      data: {
-        paymentStatus: 'paid',
-        deliveryStatus: 'completed',
-        deliveryProof,
-      },
-      include: {
-        game: true,
-        package: true,
-      },
-    });
-
-    return {
-      success: true,
-      orderNumber: updated.orderNumber,
-      paymentStatus: updated.paymentStatus,
-      deliveryStatus: updated.deliveryStatus,
-      deliveryProof: updated.deliveryProof,
-      message: `Payment received! Successfully credited ${updated.package.name} to player ${updated.playerNickname || updated.playerId}.`,
-    };
+    return await this.fulfillTopUp(orderNumber, `TXN-SIM-TU-${Date.now()}`);
   }
 
   /**

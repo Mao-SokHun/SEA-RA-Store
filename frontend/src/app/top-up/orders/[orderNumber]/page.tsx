@@ -33,6 +33,20 @@ export default function TopUpOrderDetailPage() {
   const [copied, setCopied] = useState<boolean>(false);
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
 
+  // Manual Bakong Check states (Quota preservation: 1 request per user click)
+  const [isCheckingBakong, setIsCheckingBakong] = useState<boolean>(false);
+  const [bakongCheckMessage, setBakongCheckMessage] = useState<string | null>(null);
+  const [bakongCheckCooldown, setBakongCheckCooldown] = useState<number>(0);
+
+  // Cooldown countdown timer for Bakong check button
+  useEffect(() => {
+    if (bakongCheckCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setBakongCheckCooldown((prev) => (prev <= 1 ? 0 : prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [bakongCheckCooldown]);
+
   const fetchOrder = async () => {
     if (!orderNumber) return;
     try {
@@ -74,6 +88,29 @@ export default function TopUpOrderDetailPage() {
       alert(err.message || 'Payment simulation failed');
     } finally {
       setIsSimulating(false);
+    }
+  };
+
+  // Explicit User Trigger: "ខ្ញុំបានផ្ទេរប្រាក់រួចរាល់ (Check Payment)"
+  // Consumes exactly 1 Bakong request per manual click!
+  const handleCheckBakong = async () => {
+    if (!order || isCheckingBakong || bakongCheckCooldown > 0) return;
+    setIsCheckingBakong(true);
+    setBakongCheckMessage(null);
+    try {
+      const res = await api.payments.checkBakongPayment(order.orderNumber);
+      if (res.isPaid) {
+        setBakongCheckMessage(res.message);
+        await fetchOrder();
+      } else {
+        setBakongCheckMessage(res.message);
+        setBakongCheckCooldown(res.waitSeconds || 8);
+      }
+    } catch (err: any) {
+      setBakongCheckMessage(err.message || 'Error verifying with Bakong');
+      setBakongCheckCooldown(6);
+    } finally {
+      setIsCheckingBakong(false);
     }
   };
 
@@ -204,14 +241,50 @@ export default function TopUpOrderDetailPage() {
                   </span>
                 </div>
 
+                {/* Explicit "I Have Transferred" Button (1-Click Quota-Friendly) */}
+                <div className="w-full max-w-sm mx-auto space-y-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleCheckBakong}
+                    disabled={isCheckingBakong || bakongCheckCooldown > 0}
+                    className={`w-full py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg ${
+                      bakongCheckCooldown > 0
+                        ? 'bg-neutral-800 text-neutral-400 border border-neutral-700 cursor-not-allowed'
+                        : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/30 active:scale-[0.99]'
+                    }`}
+                  >
+                    {isCheckingBakong ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>{language === 'kh' ? 'កំពុងផ្ទៀងផ្ទាត់ជាមួយ Bakong...' : 'Checking with Bakong...'}</span>
+                      </>
+                    ) : bakongCheckCooldown > 0 ? (
+                      <span>{language === 'kh' ? `សូមរង់ចាំ ${bakongCheckCooldown} វិនាទី` : `Wait ${bakongCheckCooldown}s to retry`}</span>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>{language === 'kh' ? 'ខ្ញុំបានផ្ទេរប្រាក់រួចរាល់ (Check Payment)' : 'I Have Paid (Check Payment)'}</span>
+                      </>
+                    )}
+                  </button>
+
+                  {bakongCheckMessage && (
+                    <div className={`p-2.5 rounded-lg text-[11px] leading-relaxed text-center font-medium ${
+                      isCompleted ? 'bg-emerald-950/60 border border-emerald-500/30 text-emerald-300' : 'bg-amber-950/40 border border-amber-500/30 text-amber-300'
+                    }`}>
+                      {bakongCheckMessage}
+                    </div>
+                  )}
+                </div>
+
                 {/* Simulate Payment Scan (Dev / Sandbox test) */}
                 <button
                   type="button"
                   onClick={handleSimulatePayment}
                   disabled={isSimulating}
-                  className="w-full max-w-sm mx-auto py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-black font-black text-xs uppercase tracking-wider hover:brightness-110 flex items-center justify-center gap-2"
+                  className="w-full max-w-sm mx-auto py-2.5 rounded-xl bg-[#0b0e14] hover:bg-[#10131a] border border-[#00e4f2]/40 text-[#00e4f2] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
                 >
-                  {isSimulating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                  {isSimulating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
                   <span>{language === 'kh' ? '⚡ ធ្វើតេស្តស្កេនបង់ប្រាក់ (Simulate Payment)' : '⚡ Simulate Payment Scan'}</span>
                 </button>
               </div>

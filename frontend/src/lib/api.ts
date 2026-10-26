@@ -315,6 +315,20 @@ export const api = {
       return res.data;
     },
 
+    async checkBakongPayment(orderNumber: string): Promise<{
+      isPaid: boolean;
+      orderStatus?: string;
+      transactionId?: string;
+      message: string;
+      cooldown?: boolean;
+      waitSeconds?: number;
+    }> {
+      const res = await request(`/payments/check-bakong/${orderNumber}`, {
+        method: 'POST',
+      });
+      return res.data;
+    },
+
     async payWithWallet(orderNumber: string): Promise<{ success: boolean; order: Order }> {
       const res = await request('/payments/pay-with-wallet', {
         method: 'POST',

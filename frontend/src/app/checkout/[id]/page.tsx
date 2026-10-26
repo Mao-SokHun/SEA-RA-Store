@@ -43,6 +43,11 @@ function CheckoutContent() {
   const [isPaid, setIsPaid] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Bakong Manual Verification State (Quota-friendly)
+  const [isCheckingBakong, setIsCheckingBakong] = useState(false);
+  const [bakongCheckMessage, setBakongCheckMessage] = useState<string | null>(null);
+  const [bakongCheckCooldown, setBakongCheckCooldown] = useState<number>(0);
+
   // Poller interval ref
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -87,7 +92,38 @@ function CheckoutContent() {
     return () => clearInterval(timer);
   }, []);
 
-  // 3. Status Poller for KHQR payment
+  // Cooldown countdown for manual Bakong check button
+  useEffect(() => {
+    if (bakongCheckCooldown <= 0) return;
+    const timer = setInterval(() => {
+      setBakongCheckCooldown((prev) => (prev <= 1 ? 0 : prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [bakongCheckCooldown]);
+
+  // Explicit User Trigger: "ខ្ញុំបានផ្ទេរប្រាក់រួចរាល់ (Check Payment)"
+  const handleCheckBakong = async () => {
+    if (!order || isCheckingBakong || bakongCheckCooldown > 0) return;
+    setIsCheckingBakong(true);
+    setBakongCheckMessage(null);
+    try {
+      const res = await api.payments.checkBakongPayment(order.orderNumber);
+      if (res.isPaid) {
+        setBakongCheckMessage(res.message);
+        handlePaymentSuccess();
+      } else {
+        setBakongCheckMessage(res.message);
+        setBakongCheckCooldown(res.waitSeconds || 8);
+      }
+    } catch (err: any) {
+      setBakongCheckMessage(err.message || 'Error verifying with Bakong');
+      setBakongCheckCooldown(6);
+    } finally {
+      setIsCheckingBakong(false);
+    }
+  };
+
+  // 3. Status Poller for Local DB confirmation (Zero Bakong Quota Used!)
   useEffect(() => {
     if (!order || isPaid) return;
 
@@ -100,7 +136,7 @@ function CheckoutContent() {
       } catch {
         // continue polling
       }
-    }, 2500);
+    }, 4000);
 
     return () => {
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
@@ -300,6 +336,42 @@ function CheckoutContent() {
                     <p className="text-[11px] text-neutral-400">
                       {t('khqrSupportedBanks')}
                     </p>
+                  </div>
+
+                  {/* Explicit "I Have Transferred" Button (1-Click Quota-Friendly) */}
+                  <div className="w-full space-y-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleCheckBakong}
+                      disabled={isCheckingBakong || bakongCheckCooldown > 0}
+                      className={`w-full py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg ${
+                        bakongCheckCooldown > 0
+                          ? 'bg-neutral-800 text-neutral-400 border border-neutral-700 cursor-not-allowed'
+                          : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-900/30 active:scale-[0.99]'
+                      }`}
+                    >
+                      {isCheckingBakong ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>{language === 'kh' ? 'កំពុងផ្ទៀងផ្ទាត់ជាមួយ Bakong...' : 'Checking with Bakong...'}</span>
+                        </>
+                      ) : bakongCheckCooldown > 0 ? (
+                        <span>{language === 'kh' ? `សូមរង់ចាំ ${bakongCheckCooldown} វិនាទី` : `Wait ${bakongCheckCooldown}s to retry`}</span>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span>{language === 'kh' ? 'ខ្ញុំបានផ្ទេរប្រាក់រួចរាល់ (Check Payment)' : 'I Have Paid (Check Payment)'}</span>
+                        </>
+                      )}
+                    </button>
+
+                    {bakongCheckMessage && (
+                      <div className={`p-2.5 rounded-lg text-[11px] leading-relaxed text-center font-medium ${
+                        isPaid ? 'bg-emerald-950/60 border border-emerald-500/30 text-emerald-300' : 'bg-amber-950/40 border border-amber-500/30 text-amber-300'
+                      }`}>
+                        {bakongCheckMessage}
+                      </div>
+                    )}
                   </div>
 
                   {/* Dev Sandbox Quick Simulation Pill */}

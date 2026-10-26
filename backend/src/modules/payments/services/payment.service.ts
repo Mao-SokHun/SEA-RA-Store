@@ -7,9 +7,11 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from '../../../common/errors/AppError';
-import { generateBakongKHQRString, generateQRCodeImage } from '../../../common/utils/khqr';
+import { generateBakongKHQRString, generateQRCodeImage, calculateKHQRMD5 } from '../../../common/utils/khqr';
 import { telegramService } from '../../notifications/services/telegram.service';
 import { emitToOrderRoom } from '../../../common/socket/socketManager';
+import { bakongService } from './bakong.service';
+import { topUpService } from '../../topup/services/topup.service';
 import { Prisma } from '@prisma/client';
 
 export interface GenerateKHQRDTO {
@@ -52,18 +54,19 @@ export class PaymentService {
     const amount = Number(order.totalAmount);
     const currency = data.currency || 'USD';
 
-    // Generate unique transaction ID
-    const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
-    const transactionId = `TXN-KHQR-${Date.now()}-${randomSuffix}`;
-
     // Generate standard EMVCo KHQR String
     const qrString = generateBakongKHQRString({
       orderNumber: order.orderNumber,
       amount,
       currency,
-      merchantName: 'GAME MARKETPLACE',
-      merchantAccount: 'gameplatform@dev',
+      merchantName: config.khqr.merchantName,
+      merchantAccount: currency === 'KHR' ? config.khqr.bakongIdKhr : config.khqr.bakongId,
+      merchantCity: config.khqr.merchantCity,
     });
+
+    // Calculate MD5 hash for Bakong Open API verification
+    const md5 = calculateKHQRMD5(qrString);
+    const transactionId = md5;
 
     // Generate Base64 QR Code PNG image
     const qrImage = await generateQRCodeImage(qrString);
@@ -97,6 +100,8 @@ export class PaymentService {
       currency,
       qrString,
       qrImage,
+      md5,
+      deepLink: `bakong://pay?qr=${encodeURIComponent(qrString)}`,
       expiresInSeconds,
     };
   }
@@ -395,17 +400,7 @@ export class PaymentService {
         return { message: 'Top-up order payment already processed (Idempotent response)' };
       }
 
-      const deliveryProof = `IN-GAME RELOAD CONFIRMED: Bakong Gateway Webhook Ref #${txnId}. ${topUpOrder.package.name} credited to ${topUpOrder.playerNickname || topUpOrder.playerId}`;
-
-      await prisma.topUpOrder.update({
-        where: { orderNumber },
-        data: {
-          paymentStatus: 'paid',
-          deliveryStatus: 'completed',
-          deliveryProof,
-          transactionReference: txnId,
-        },
-      });
+      const fulfillResult = await topUpService.fulfillTopUp(orderNumber, txnId);
 
       if (topUpOrder.userId) {
         await prisma.securityAuditLog.create({
@@ -529,22 +524,12 @@ export class PaymentService {
       }
 
       const transactionId = `TXN-SIM-TU-${Date.now()}`;
-      const deliveryProof = `IN-GAME RELOAD CONFIRMED: Sandbox Simulation Ref #${Date.now()}. ${topUpOrder.package.name} added to ${topUpOrder.playerId}`;
-
-      await prisma.topUpOrder.update({
-        where: { orderNumber },
-        data: {
-          paymentStatus: 'paid',
-          deliveryStatus: 'completed',
-          deliveryProof,
-          transactionReference: transactionId,
-        },
-      });
+      const fulfillResult = await topUpService.fulfillTopUp(orderNumber, transactionId);
 
       return {
-        message: `Payment simulated successfully! Credited ${topUpOrder.package.name} to player ${topUpOrder.playerNickname || topUpOrder.playerId}.`,
+        message: fulfillResult.message,
         orderNumber,
-        status: 'completed',
+        status: fulfillResult.deliveryStatus,
         transactionId,
       };
     }
@@ -552,8 +537,10 @@ export class PaymentService {
     throw new NotFoundError(`Order ${orderNumber} not found`);
   }
 
+  private lastCheckTimestamps = new Map<string, number>();
+
   /**
-   * Check real-time payment status (Polled by frontend checkout modal)
+   * Check real-time payment status from local database (Zero Bakong Quota Used!)
    */
   async getPaymentStatus(orderNumber: string) {
     const order = await prisma.order.findUnique({
@@ -576,12 +563,140 @@ export class PaymentService {
     });
 
     if (topUpOrder) {
+      const isPaid = topUpOrder.paymentStatus === 'paid';
       return {
         orderNumber: topUpOrder.orderNumber,
         orderStatus: topUpOrder.deliveryStatus,
-        isPaid: topUpOrder.paymentStatus === 'paid',
+        isPaid,
         paymentMethod: topUpOrder.paymentMethod,
-        paidAt: topUpOrder.paymentStatus === 'paid' ? topUpOrder.updatedAt : null,
+        paidAt: isPaid ? topUpOrder.updatedAt : null,
+      };
+    }
+
+    throw new NotFoundError(`Order ${orderNumber} not found`);
+  }
+
+  /**
+   * Manual Payment Verification with Bakong Open API (Triggered ONLY when user clicks 'Check Payment')
+   * Consumes ONLY 1 Bakong request per click, with an 8-second debounce protection.
+   */
+  async checkBakongPayment(orderNumber: string) {
+    // 1. Debounce cooldown (prevent rapid spam-clicking burning quota)
+    const now = Date.now();
+    const lastCheck = this.lastCheckTimestamps.get(orderNumber) || 0;
+    const cooldownMs = 8000; // 8 seconds
+
+    if (now - lastCheck < cooldownMs) {
+      const waitSeconds = Math.ceil((cooldownMs - (now - lastCheck)) / 1000);
+      return {
+        isPaid: false,
+        cooldown: true,
+        waitSeconds,
+        message: `សូមរង់ចាំ ${waitSeconds} វិនាទីសិន មុនពេលចុចពិនិត្យម្តងទៀត។`,
+      };
+    }
+
+    // 2. Check if this is an Account Order
+    const order = await prisma.order.findUnique({
+      where: { orderNumber },
+      include: { payment: true },
+    });
+
+    if (order) {
+      // If already paid in database, return immediately without touching Bakong API
+      if (['paid', 'in_escrow', 'completed'].includes(order.status)) {
+        return {
+          isPaid: true,
+          orderStatus: order.status,
+          message: 'ការទូទាត់ប្រាក់ត្រូវបានបញ្ជាក់រួចរាល់ហើយ!',
+        };
+      }
+
+      const md5 = order.payment?.transactionId;
+      if (!md5) {
+        throw new BadRequestError('Payment QR code has not been generated for this order yet.');
+      }
+
+      this.lastCheckTimestamps.set(orderNumber, now);
+
+      // Call Bakong Open API (Single USD check!)
+      const checkResult = await bakongService.checkTransactionByMD5(md5);
+
+      if (checkResult.isPaid) {
+        await this.handleBakongWebhook(
+          JSON.stringify({
+            orderNumber: order.orderNumber,
+            transactionId: checkResult.data?.hash || md5,
+          }),
+          undefined,
+          {
+            orderNumber: order.orderNumber,
+            transactionId: checkResult.data?.hash || md5,
+          }
+        );
+
+        return {
+          isPaid: true,
+          orderStatus: 'in_escrow',
+          transactionId: checkResult.data?.hash || md5,
+          message: 'ការទូទាត់ប្រាក់ទទួលបានជោគជ័យ! ប្រព័ន្ធបានដាក់ប្រាក់ក្នុង Escrow សុវត្ថិភាព។',
+        };
+      }
+
+      return {
+        isPaid: false,
+        message: 'មិនទាន់ឃើញការផ្ទេរប្រាក់ពីគណនីរបស់អ្នកនៅឡើយទេ។ សូមពិនិត្យមើល App ធនាគាររបស់អ្នក រួចចុចម្តងទៀត។',
+      };
+    }
+
+    // 3. Check if this is a Top-Up Order
+    const topUpOrder = await prisma.topUpOrder.findUnique({
+      where: { orderNumber },
+    });
+
+    if (topUpOrder) {
+      if (topUpOrder.paymentStatus === 'paid') {
+        return {
+          isPaid: true,
+          orderStatus: topUpOrder.deliveryStatus,
+          message: 'ការទូទាត់ប្រាក់ត្រូវបានបញ្ជាក់រួចរាល់ហើយ!',
+        };
+      }
+
+      const md5 = topUpOrder.transactionReference;
+      if (!md5) {
+        throw new BadRequestError('Payment reference not found for this top-up order.');
+      }
+
+      this.lastCheckTimestamps.set(orderNumber, now);
+
+      // Call Bakong Open API (Single USD check!)
+      const checkResult = await bakongService.checkTransactionByMD5(md5);
+
+      if (checkResult.isPaid) {
+        await this.handleBakongWebhook(
+          JSON.stringify({
+            orderNumber: topUpOrder.orderNumber,
+            transactionId: checkResult.data?.hash || md5,
+          }),
+          undefined,
+          {
+            orderNumber: topUpOrder.orderNumber,
+            transactionId: checkResult.data?.hash || md5,
+          }
+        );
+
+        return {
+          isPaid: true,
+          orderStatus: 'completed',
+          transactionId: checkResult.data?.hash || md5,
+          message: 'ការទូទាត់ប្រាក់ទទួលបានជោគជ័យ! ទំនិញ/ពេជ្រត្រូវបានបញ្ចូលជូនអ្នករួចរាល់។',
+        };
+      }
+
+      return {
+        isPaid: false,
+        message: 'មិនទាន់ឃើញការផ្ទេរប្រាក់ពីគណនីរបស់អ្នកនៅឡើយទេ។ សូមពិនិត្យមើល App ធនាគាររបស់អ្នក រួចចុចម្តងទៀត។',
       };
     }
 

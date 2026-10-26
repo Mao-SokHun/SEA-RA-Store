@@ -403,8 +403,8 @@ export class DisputeService {
       else if (resolution === 'payout_seller') {
         const sellerPayout = Number(order.sellerNetAmount);
 
-        if (sellerWallet && !existingEarning) {
-          // Credit seller wallet ONLY if they were not already paid previously
+        if (sellerWallet && !existingEarning && sellerPayout > 0) {
+          // Credit seller wallet ONLY if they were not already paid previously and payout > 0
           const updatedWallet = await tx.wallet.update({
             where: { id: sellerWallet.id },
             data: {

@@ -298,92 +298,143 @@ export class PaymentService {
       throw new BadRequestError('Missing orderNumber in webhook payload');
     }
 
+    const txnId = transactionId || `TXN-BK-${Date.now()}`;
+
+    // 1. Check if this is an Account Order
     const order = await prisma.order.findUnique({
       where: { orderNumber },
       include: { payment: true },
     });
 
-    if (!order) {
-      throw new NotFoundError(`Order ${orderNumber} not found`);
-    }
-
-    // Idempotency check: If order is already paid/in_escrow/completed, return success immediately
-    if (order.status !== 'pending') {
-      return { message: 'Order payment already processed (Idempotent response)' };
-    }
-
-    const txnId = transactionId || `TXN-BK-${Date.now()}`;
-
-    await prisma.$transaction(async (tx) => {
-      // 1. Mark payment as paid
-      await tx.payment.upsert({
-        where: { orderId: order.id },
-        create: {
-          orderId: order.id,
-          transactionId: txnId,
-          paymentMethod: 'bakong_khqr',
-          amount: order.totalAmount,
-          status: 'paid',
-          paidAt: new Date(),
-        },
-        update: {
-          status: 'paid',
-          paidAt: new Date(),
-        },
-      });
-
-      // 2. Transition order to in_escrow (Atomic idempotency check: only if still pending)
-      const updateCount = await tx.order.updateMany({
-        where: {
-          id: order.id,
-          status: 'pending',
-        },
-        data: { status: 'in_escrow' },
-      });
-
-      if (updateCount.count === 0) {
-        return; // Idempotent: already processed by a concurrent webhook call
+    if (order) {
+      // Idempotency check: If order is already paid/in_escrow/completed, return success immediately
+      if (order.status !== 'pending') {
+        return { message: 'Order payment already processed (Idempotent response)' };
       }
 
-      // 3. Update Game Account status to in_escrow
-      await tx.gameAccount.update({
-        where: { id: order.gameAccountId },
+      await prisma.$transaction(async (tx) => {
+        // 1. Mark payment as paid
+        await tx.payment.upsert({
+          where: { orderId: order.id },
+          create: {
+            orderId: order.id,
+            transactionId: txnId,
+            paymentMethod: 'bakong_khqr',
+            amount: order.totalAmount,
+            status: 'paid',
+            paidAt: new Date(),
+          },
+          update: {
+            status: 'paid',
+            paidAt: new Date(),
+          },
+        });
+
+        // 2. Transition order to in_escrow (Atomic idempotency check: only if still pending)
+        const updateCount = await tx.order.updateMany({
+          where: {
+            id: order.id,
+            status: 'pending',
+          },
+          data: { status: 'in_escrow' },
+        });
+
+        if (updateCount.count === 0) {
+          return; // Idempotent: already processed by a concurrent webhook call
+        }
+
+        // 3. Update Game Account status to in_escrow
+        await tx.gameAccount.update({
+          where: { id: order.gameAccountId },
+          data: {
+            status: 'in_escrow',
+            reservedUntil: null,
+          },
+        });
+
+        // 4. Security Audit Log
+        await tx.securityAuditLog.create({
+          data: {
+            userId: order.buyerId,
+            action: 'PAYMENT_WEBHOOK_RECEIVED',
+            metadata: JSON.stringify({ orderNumber, transactionId: txnId }),
+          },
+        });
+      });
+
+      // Notify buyer and seller via Telegram asynchronously
+      telegramService.notifyUser(
+        order.buyerId,
+        'payment',
+        `✅ <b>KHQR Payment Received!</b>\nOrder <code>#${orderNumber}</code> is confirmed and placed in escrow. You can now access your game credentials.`
+      );
+      telegramService.notifyUser(
+        order.sellerId,
+        'order',
+        `🔔 <b>KHQR Payment Confirmed!</b>\nBuyer has paid for order <code>#${orderNumber}</code>. Escrow funds are held securely.`
+      );
+
+      // Real-time WebSocket emission to order escrow room
+      emitToOrderRoom(orderNumber, 'payment_success', {
+        orderNumber,
+        status: 'in_escrow',
+        transactionId: txnId,
+      });
+
+      return { message: 'Payment confirmed and order moved to escrow' };
+    }
+
+    // 2. Check if this is a Top-Up Order
+    const topUpOrder = await prisma.topUpOrder.findUnique({
+      where: { orderNumber },
+      include: { package: true, game: true },
+    });
+
+    if (topUpOrder) {
+      if (topUpOrder.paymentStatus === 'paid') {
+        return { message: 'Top-up order payment already processed (Idempotent response)' };
+      }
+
+      const deliveryProof = `IN-GAME RELOAD CONFIRMED: Bakong Gateway Webhook Ref #${txnId}. ${topUpOrder.package.name} credited to ${topUpOrder.playerNickname || topUpOrder.playerId}`;
+
+      await prisma.topUpOrder.update({
+        where: { orderNumber },
         data: {
-          status: 'in_escrow',
-          reservedUntil: null,
+          paymentStatus: 'paid',
+          deliveryStatus: 'completed',
+          deliveryProof,
+          transactionReference: txnId,
         },
       });
 
-      // 4. Security Audit Log
-      await tx.securityAuditLog.create({
-        data: {
-          userId: order.buyerId,
-          action: 'PAYMENT_WEBHOOK_RECEIVED',
-          metadata: JSON.stringify({ orderNumber, transactionId: txnId }),
-        },
-      });
-    });
+      if (topUpOrder.userId) {
+        await prisma.securityAuditLog.create({
+          data: {
+            userId: topUpOrder.userId,
+            action: 'TOPUP_PAYMENT_WEBHOOK_RECEIVED',
+            metadata: JSON.stringify({
+              orderNumber,
+              transactionId: txnId,
+              totalAmount: Number(topUpOrder.totalAmount),
+            }),
+          },
+        });
 
-    // Notify buyer and seller via Telegram asynchronously
-    telegramService.notifyUser(
-      order.buyerId,
-      'payment',
-      `✅ <b>KHQR Payment Received!</b>\nOrder <code>#${orderNumber}</code> is confirmed and placed in escrow. You can now access your game credentials.`
-    );
-    telegramService.notifyUser(
-      order.sellerId,
-      'order',
-      `🔔 <b>KHQR Payment Confirmed!</b>\nBuyer has paid for order <code>#${orderNumber}</code>. Escrow funds are held securely.`
-    );
+        telegramService.notifyUser(
+          topUpOrder.userId,
+          'payment',
+          `⚡ <b>Top-Up Successful!</b>\nYour payment for order <code>#${orderNumber}</code> (${topUpOrder.game.title} - ${topUpOrder.package.name}) has been confirmed and credited to player ${topUpOrder.playerNickname || topUpOrder.playerId}.`
+        );
+      }
 
-    // Real-time WebSocket emission to order escrow room
-    emitToOrderRoom(orderNumber, 'payment_success', {
-      orderNumber,
-      status: 'in_escrow',
-      transactionId: txnId,
-    });
+      return {
+        message: 'Top-up payment confirmed and in-game credit delivered',
+        orderNumber,
+        transactionId: txnId,
+      };
+    }
 
-    return { message: 'Payment confirmed and order moved to escrow' };
+    throw new NotFoundError(`Order ${orderNumber} not found`);
   }
 
   /**
@@ -394,70 +445,111 @@ export class PaymentService {
       throw new ForbiddenError('Payment simulation is disabled in production environment');
     }
 
+    // 1. Check Account Order
     const order = await prisma.order.findUnique({
       where: { orderNumber },
       include: { payment: true },
     });
 
-    if (!order) {
-      throw new NotFoundError(`Order ${orderNumber} not found`);
-    }
+    if (order) {
+      if (order.buyerId.toString() !== userId && userRole !== 'admin') {
+        throw new ForbiddenError('You can only simulate payment for your own order');
+      }
 
-    if (order.buyerId.toString() !== userId && userRole !== 'admin') {
-      throw new ForbiddenError('You can only simulate payment for your own order');
-    }
+      if (order.status !== 'pending') {
+        throw new BadRequestError(`Cannot simulate payment for order with status "${order.status}"`);
+      }
 
-    if (order.status !== 'pending') {
-      throw new BadRequestError(`Cannot simulate payment for order with status "${order.status}"`);
-    }
+      const transactionId = `TXN-SIM-${Date.now()}`;
 
-    const transactionId = `TXN-SIM-${Date.now()}`;
+      await prisma.$transaction(async (tx) => {
+        await tx.payment.upsert({
+          where: { orderId: order.id },
+          create: {
+            orderId: order.id,
+            transactionId,
+            paymentMethod: 'bakong_khqr',
+            amount: order.totalAmount,
+            status: 'paid',
+            paidAt: new Date(),
+          },
+          update: {
+            transactionId,
+            status: 'paid',
+            paidAt: new Date(),
+          },
+        });
 
-    await prisma.$transaction(async (tx) => {
-      await tx.payment.upsert({
-        where: { orderId: order.id },
-        create: {
-          orderId: order.id,
-          transactionId,
-          paymentMethod: 'bakong_khqr',
-          amount: order.totalAmount,
-          status: 'paid',
-          paidAt: new Date(),
-        },
-        update: {
-          transactionId,
-          status: 'paid',
-          paidAt: new Date(),
-        },
+        await tx.order.update({
+          where: { id: order.id },
+          data: { status: 'in_escrow' },
+        });
+
+        await tx.gameAccount.update({
+          where: { id: order.gameAccountId },
+          data: {
+            status: 'in_escrow',
+            reservedUntil: null,
+          },
+        });
       });
 
-      await tx.order.update({
-        where: { id: order.id },
-        data: { status: 'in_escrow' },
+      // Real-time WebSocket emission to order escrow room
+      emitToOrderRoom(orderNumber, 'payment_success', {
+        orderNumber,
+        status: 'in_escrow',
+        transactionId,
       });
 
-      await tx.gameAccount.update({
-        where: { id: order.gameAccountId },
+      return {
+        message: 'Payment simulated successfully. Order is now in escrow.',
+        orderNumber,
+        status: 'in_escrow',
+        transactionId,
+      };
+    }
+
+    // 2. Check Top-Up Order
+    const topUpOrder = await prisma.topUpOrder.findUnique({
+      where: { orderNumber },
+      include: { package: true, game: true },
+    });
+
+    if (topUpOrder) {
+      if (topUpOrder.userId && topUpOrder.userId.toString() !== userId && userRole !== 'admin') {
+        throw new ForbiddenError('You can only simulate payment for your own top-up order');
+      }
+
+      if (topUpOrder.paymentStatus === 'paid') {
+        return {
+          message: 'Top-up order has already been paid and processed',
+          orderNumber,
+          status: 'completed',
+        };
+      }
+
+      const transactionId = `TXN-SIM-TU-${Date.now()}`;
+      const deliveryProof = `IN-GAME RELOAD CONFIRMED: Sandbox Simulation Ref #${Date.now()}. ${topUpOrder.package.name} added to ${topUpOrder.playerId}`;
+
+      await prisma.topUpOrder.update({
+        where: { orderNumber },
         data: {
-          status: 'in_escrow',
-          reservedUntil: null,
+          paymentStatus: 'paid',
+          deliveryStatus: 'completed',
+          deliveryProof,
+          transactionReference: transactionId,
         },
       });
-    });
 
-    // Real-time WebSocket emission to order escrow room
-    emitToOrderRoom(orderNumber, 'payment_success', {
-      orderNumber,
-      status: 'in_escrow',
-      transactionId,
-    });
+      return {
+        message: `Payment simulated successfully! Credited ${topUpOrder.package.name} to player ${topUpOrder.playerNickname || topUpOrder.playerId}.`,
+        orderNumber,
+        status: 'completed',
+        transactionId,
+      };
+    }
 
-    return {
-      message: 'Payment simulated successfully. Order is now in escrow.',
-      orderNumber,
-      status: 'in_escrow',
-      transactionId,
-    };
+    throw new NotFoundError(`Order ${orderNumber} not found`);
   }
 
   /**
@@ -469,17 +561,31 @@ export class PaymentService {
       include: { payment: true },
     });
 
-    if (!order) {
-      throw new NotFoundError(`Order ${orderNumber} not found`);
+    if (order) {
+      return {
+        orderNumber: order.orderNumber,
+        orderStatus: order.status,
+        isPaid: ['paid', 'in_escrow', 'completed'].includes(order.status),
+        paymentMethod: order.payment?.paymentMethod || null,
+        paidAt: order.payment?.paidAt || null,
+      };
     }
 
-    return {
-      orderNumber: order.orderNumber,
-      orderStatus: order.status,
-      isPaid: ['paid', 'in_escrow', 'completed'].includes(order.status),
-      paymentMethod: order.payment?.paymentMethod || null,
-      paidAt: order.payment?.paidAt || null,
-    };
+    const topUpOrder = await prisma.topUpOrder.findUnique({
+      where: { orderNumber },
+    });
+
+    if (topUpOrder) {
+      return {
+        orderNumber: topUpOrder.orderNumber,
+        orderStatus: topUpOrder.deliveryStatus,
+        isPaid: topUpOrder.paymentStatus === 'paid',
+        paymentMethod: topUpOrder.paymentMethod,
+        paidAt: topUpOrder.paymentStatus === 'paid' ? topUpOrder.updatedAt : null,
+      };
+    }
+
+    throw new NotFoundError(`Order ${orderNumber} not found`);
   }
 }
 

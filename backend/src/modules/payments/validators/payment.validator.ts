@@ -28,8 +28,8 @@ export const paymentOrderParamValidator = [
     .trim()
     .notEmpty()
     .withMessage('orderNumber is required')
-    .matches(/^ORD-[A-Z0-9-]+$/)
-    .withMessage('Invalid order number format'),
+    .matches(/^(ORD|TU)-[A-Z0-9-]+$/)
+    .withMessage('Invalid order number format (must start with ORD- or TU-)'),
 ];
 
 export const mockPaymentValidator = [
@@ -37,8 +37,8 @@ export const mockPaymentValidator = [
     .trim()
     .notEmpty()
     .withMessage('orderNumber is required')
-    .matches(/^ORD-[A-Z0-9-]+$/)
-    .withMessage('Invalid order number format'),
+    .matches(/^(ORD|TU)-[A-Z0-9-]+$/)
+    .withMessage('Invalid order number format (must start with ORD- or TU-)'),
 
   body('transactionId')
     .optional()

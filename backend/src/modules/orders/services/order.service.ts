@@ -237,11 +237,28 @@ export class OrderService {
 
       // 4. Financial Calculation
       const subtotalAmount = Number(account.price);
-      const totalAmount = Math.max(0, subtotalAmount - discountAmount);
-      // Platform takes 10% commission from subtotal
-      const platformFee = Math.round(subtotalAmount * config.platform.commissionRate * 100) / 100;
-      // Seller gets subtotal minus platform commission
-      const sellerNetAmount = Math.round((subtotalAmount - platformFee) * 100) / 100;
+      let totalAmount = Math.max(0, subtotalAmount - discountAmount);
+      let platformFee: number;
+      let sellerNetAmount: number;
+
+      if (account.isPlatformOwned) {
+        // B2C Platform-Owned: 100% of revenue belongs to Platform Treasury
+        platformFee = totalAmount;
+        sellerNetAmount = 0;
+      } else {
+        // C2C Marketplace: Platform takes commission (default 10%)
+        const maxCommission = Math.round(subtotalAmount * config.platform.commissionRate * 100) / 100;
+        // Cap platform coupon discount to platform commission to prevent negative platform revenue
+        const effectiveDiscount = Math.min(discountAmount, maxCommission);
+        totalAmount = Math.max(0, subtotalAmount - effectiveDiscount);
+        discountAmount = effectiveDiscount;
+        platformFee = Math.max(0, Math.round((maxCommission - effectiveDiscount) * 100) / 100);
+        sellerNetAmount = Math.round((subtotalAmount - maxCommission) * 100) / 100;
+      }
+
+      // If promotional coupon covers 100% (total = 0), transition immediately to in_escrow
+      const isFreeOrder = totalAmount === 0;
+      const initialOrderStatus = isFreeOrder ? 'in_escrow' : 'pending';
 
       // 5. Generate Immutable Listing Snapshot
       const listingSnapshot = JSON.stringify({
@@ -302,11 +319,33 @@ export class OrderService {
           platformFee: new Prisma.Decimal(platformFee),
           sellerNetAmount: new Prisma.Decimal(sellerNetAmount),
           listingSnapshot,
-          status: 'pending',
+          status: initialOrderStatus,
         },
       });
 
-      // 7. Create Warranty Record
+      // If free order, record automated payment and lock account into escrow immediately
+      if (isFreeOrder) {
+        await tx.payment.create({
+          data: {
+            orderId: order.id,
+            transactionId: `TXN-FREE-${Date.now()}`,
+            paymentMethod: 'coupon_free',
+            amount: new Prisma.Decimal(0),
+            status: 'paid',
+            paidAt: new Date(),
+          },
+        });
+
+        await tx.gameAccount.update({
+          where: { id: account.id },
+          data: {
+            status: 'in_escrow',
+            reservedUntil: null,
+          },
+        });
+      }
+
+      // 8. Create Warranty Record
       const warrantyType = data.warrantyType || '24h';
       await tx.accountWarranty.create({
         data: {
@@ -640,22 +679,38 @@ export class OrderService {
         data: { status: 'sold' },
       });
 
-      // 3. Release Escrow Funds: Credit seller wallet
-      const updatedWallet = await tx.wallet.update({
-        where: { id: sellerWallet.id },
-        data: { balance: { increment: new Prisma.Decimal(netAmount) } },
-      });
+      // 3. Release Escrow Funds
+      if (order.gameAccount.isPlatformOwned) {
+        // B2C Platform-Owned: 100% of revenue belongs to Platform Treasury
+        await tx.securityAuditLog.create({
+          data: {
+            userId: buyerIdBigInt,
+            action: 'B2C_REVENUE_CONFIRMED',
+            metadata: JSON.stringify({
+              orderNumber,
+              platformRevenue: Number(order.totalAmount),
+              platformFee: Number(order.platformFee),
+            }),
+          },
+        });
+      } else if (netAmount > 0) {
+        // C2C Marketplace: Credit seller wallet
+        const updatedWallet = await tx.wallet.update({
+          where: { id: sellerWallet.id },
+          data: { balance: { increment: new Prisma.Decimal(netAmount) } },
+        });
 
-      // 4. Create Ledger Transaction
-      await tx.walletTransaction.create({
-        data: {
-          walletId: sellerWallet.id,
-          orderId: order.id,
-          transactionType: 'earning',
-          amount: new Prisma.Decimal(netAmount),
-          balanceAfter: updatedWallet.balance,
-        },
-      });
+        // 4. Create Ledger Transaction
+        await tx.walletTransaction.create({
+          data: {
+            walletId: sellerWallet.id,
+            orderId: order.id,
+            transactionType: 'earning',
+            amount: new Prisma.Decimal(netAmount),
+            balanceAfter: updatedWallet.balance,
+          },
+        });
+      }
 
       // 5. Automatic Referral Reward on referee's first completed trade
       const pendingReferral = await tx.userReferral.findFirst({

@@ -320,8 +320,8 @@ export class TopUpService {
       where: { id: BigInt(gameId) },
     });
 
-    if (!game) {
-      throw new NotFoundError('Game not found');
+    if (!game || !game.isActive) {
+      throw new NotFoundError('Game not found or currently inactive');
     }
 
     const cleanPlayerId = playerId.trim();
@@ -395,8 +395,8 @@ export class TopUpService {
       where: { id: BigInt(data.gameId) },
     });
 
-    if (!game) {
-      throw new NotFoundError('Game not found');
+    if (!game || !game.isActive) {
+      throw new NotFoundError('Game is not available or currently inactive');
     }
 
     const pkg = await prisma.topUpPackage.findUnique({
@@ -405,6 +405,11 @@ export class TopUpService {
 
     if (!pkg || !pkg.isActive) {
       throw new NotFoundError('Selected top-up package is not available');
+    }
+
+    // Security Guard: Prevent cross-game package exploitation
+    if (pkg.gameId !== game.id) {
+      throw new BadRequestError('Selected package does not belong to the chosen game');
     }
 
     const price = Number(pkg.price);

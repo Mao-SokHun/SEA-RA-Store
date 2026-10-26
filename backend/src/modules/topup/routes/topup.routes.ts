@@ -3,6 +3,12 @@ import { topUpController } from '../controllers/topup.controller';
 import { authenticate, optionalAuth } from '../../../common/middleware/auth';
 import { checkoutLimiter } from '../../../common/middleware/rateLimiter';
 import { preventDoubleSubmit } from '../../../common/middleware/antiDoubleSubmit';
+import { validate } from '../../../common/middleware/validate';
+import {
+  verifyPlayerValidator,
+  createTopUpOrderValidator,
+  topUpOrderParamValidator,
+} from '../validators/topup.validator';
 
 const router = Router();
 
@@ -25,7 +31,12 @@ router.get('/games/:gameId', topUpController.getGameDetails);
  * @desc    Verify player ID and retrieve in-game nickname
  * @access  Public
  */
-router.post('/check-player', topUpController.verifyPlayer);
+router.post(
+  '/check-player',
+  verifyPlayerValidator,
+  validate,
+  topUpController.verifyPlayer
+);
 
 /**
  * @route   POST /api/v1/topup/orders
@@ -37,6 +48,8 @@ router.post(
   optionalAuth,
   preventDoubleSubmit({ windowMs: 3000, message: 'Top-up order is being processed. Please do not submit repeatedly.' }),
   checkoutLimiter,
+  createTopUpOrderValidator,
+  validate,
   topUpController.createOrder
 );
 
@@ -45,14 +58,24 @@ router.post(
  * @desc    Get top-up order status and payment details
  * @access  Public
  */
-router.get('/orders/:orderNumber', topUpController.getOrderStatus);
+router.get(
+  '/orders/:orderNumber',
+  topUpOrderParamValidator,
+  validate,
+  topUpController.getOrderStatus
+);
 
 /**
  * @route   POST /api/v1/topup/orders/:orderNumber/simulate-payment
  * @desc    Simulate Bakong KHQR payment scan and trigger instant in-game credit
  * @access  Public (Dev / Sandbox)
  */
-router.post('/orders/:orderNumber/simulate-payment', topUpController.simulatePayment);
+router.post(
+  '/orders/:orderNumber/simulate-payment',
+  topUpOrderParamValidator,
+  validate,
+  topUpController.simulatePayment
+);
 
 /**
  * @route   GET /api/v1/topup/my-orders

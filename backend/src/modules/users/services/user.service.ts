@@ -21,6 +21,13 @@ export interface UpdateTelegramSettingsDTO {
   isActive?: boolean;
 }
 
+export interface SubmitKYCDTO {
+  idCardNumber: string;
+  idCardFrontUrl: string;
+  idCardBackUrl: string;
+  selfieUrl: string;
+}
+
 export class UserService {
   /**
    * Update basic profile info
@@ -195,6 +202,212 @@ export class UserService {
         notifyOnDispute: updated.notifyOnDispute,
         notifyOnPayout: updated.notifyOnPayout,
       },
+    };
+  }
+
+  /**
+   * Submit or re-submit KYC for Seller verification
+   */
+  async submitKYC(userId: string, data: SubmitKYCDTO) {
+    const userIdBigInt = BigInt(userId);
+
+    const existing = await prisma.sellerKYCVerification.findUnique({
+      where: { userId: userIdBigInt },
+    });
+
+    if (existing && existing.status === 'approved') {
+      throw new BadRequestError('Your KYC identity has already been verified and approved.');
+    }
+
+    const kyc = await prisma.sellerKYCVerification.upsert({
+      where: { userId: userIdBigInt },
+      create: {
+        userId: userIdBigInt,
+        idCardNumber: data.idCardNumber,
+        idCardFrontUrl: data.idCardFrontUrl,
+        idCardBackUrl: data.idCardBackUrl,
+        selfieUrl: data.selfieUrl,
+        status: 'pending',
+        rejectionReason: null,
+      },
+      update: {
+        idCardNumber: data.idCardNumber,
+        idCardFrontUrl: data.idCardFrontUrl,
+        idCardBackUrl: data.idCardBackUrl,
+        selfieUrl: data.selfieUrl,
+        status: 'pending',
+        rejectionReason: null,
+        updatedAt: new Date(),
+      },
+    });
+
+    await prisma.securityAuditLog.create({
+      data: {
+        userId: userIdBigInt,
+        action: 'KYC_SUBMITTED',
+        metadata: JSON.stringify({ id: kyc.id.toString(), idCardNumber: data.idCardNumber }),
+      },
+    });
+
+    return {
+      message: 'KYC documents submitted successfully. Verification will be completed within 24 hours.',
+      kyc: {
+        id: kyc.id.toString(),
+        status: kyc.status,
+        submittedAt: kyc.updatedAt,
+      },
+    };
+  }
+
+  /**
+   * Get current user's KYC verification status
+   */
+  async getMyKYC(userId: string) {
+    const userIdBigInt = BigInt(userId);
+
+    const kyc = await prisma.sellerKYCVerification.findUnique({
+      where: { userId: userIdBigInt },
+    });
+
+    if (!kyc) {
+      return {
+        hasSubmitted: false,
+        status: 'unverified',
+        kyc: null,
+      };
+    }
+
+    return {
+      hasSubmitted: true,
+      status: kyc.status,
+      kyc: {
+        id: kyc.id.toString(),
+        idCardNumber: kyc.idCardNumber,
+        idCardFrontUrl: kyc.idCardFrontUrl,
+        idCardBackUrl: kyc.idCardBackUrl,
+        selfieUrl: kyc.selfieUrl,
+        status: kyc.status,
+        rejectionReason: kyc.rejectionReason,
+        verifiedAt: kyc.verifiedAt,
+        createdAt: kyc.createdAt,
+      },
+    };
+  }
+
+  /**
+   * Admin: List all KYC submissions
+   */
+  async adminListKYC(statusFilter?: string, page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+    const where = statusFilter && statusFilter !== 'all' ? { status: statusFilter } : {};
+
+    const [total, list] = await Promise.all([
+      prisma.sellerKYCVerification.count({ where }),
+      prisma.sellerKYCVerification.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              phone: true,
+              role: true,
+              createdAt: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    return {
+      submissions: list.map((k) => ({
+        id: k.id.toString(),
+        userId: k.userId.toString(),
+        user: {
+          ...k.user,
+          id: k.user.id.toString(),
+        },
+        idCardNumber: k.idCardNumber,
+        idCardFrontUrl: k.idCardFrontUrl,
+        idCardBackUrl: k.idCardBackUrl,
+        selfieUrl: k.selfieUrl,
+        status: k.status,
+        rejectionReason: k.rejectionReason,
+        verifiedAt: k.verifiedAt,
+        createdAt: k.createdAt,
+      })),
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Admin: Review and Approve/Reject KYC
+   */
+  async adminReviewKYC(kycId: string, action: 'approve' | 'reject', reason?: string, adminId?: string) {
+    const kycIdBigInt = BigInt(kycId);
+    const adminIdBigInt = adminId ? BigInt(adminId) : null;
+
+    const kyc = await prisma.sellerKYCVerification.findUnique({
+      where: { id: kycIdBigInt },
+      include: { user: true },
+    });
+
+    if (!kyc) {
+      throw new NotFoundError('KYC record not found');
+    }
+
+    if (action === 'reject' && !reason) {
+      throw new BadRequestError('Rejection reason is required when rejecting KYC verification.');
+    }
+
+    const isApprove = action === 'approve';
+
+    await prisma.$transaction(async (tx) => {
+      // 1. Update KYC record
+      await tx.sellerKYCVerification.update({
+        where: { id: kycIdBigInt },
+        data: {
+          status: isApprove ? 'approved' : 'rejected',
+          rejectionReason: isApprove ? null : reason,
+          verifiedAt: isApprove ? new Date() : null,
+        },
+      });
+
+      // 2. If approved and user was 'buyer', upgrade role to 'seller'
+      if (isApprove && kyc.user.role === 'buyer') {
+        await tx.user.update({
+          where: { id: kyc.userId },
+          data: { role: 'seller' },
+        });
+      }
+
+      // 3. Audit Log
+      await tx.securityAuditLog.create({
+        data: {
+          userId: adminIdBigInt,
+          action: isApprove ? 'KYC_APPROVED' : 'KYC_REJECTED',
+          metadata: JSON.stringify({
+            kycId: kyc.id.toString(),
+            targetUserId: kyc.userId.toString(),
+            action,
+            reason: reason || null,
+          }),
+        },
+      });
+    });
+
+    return {
+      message: `KYC verification has been ${isApprove ? 'approved' : 'rejected'} successfully.`,
+      status: isApprove ? 'approved' : 'rejected',
     };
   }
 }

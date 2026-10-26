@@ -3,6 +3,7 @@ import { createApp } from './app';
 import { config } from './config';
 import { prisma } from './config/database';
 import { initSocketServer } from './common/socket/socketManager';
+import { cronService } from './common/services/cron.service';
 
 async function bootstrap() {
   const app = createApp();
@@ -10,6 +11,11 @@ async function bootstrap() {
 
   // Initialize Socket.IO with JWT Authentication & Order Rooms
   initSocketServer(server);
+
+  // Initialize background Cron jobs (Auto-release expired locks, Escrow auto-release)
+  if (config.nodeEnv !== 'test') {
+    cronService.start();
+  }
 
   // Start HTTP Server
   server.listen(config.port, () => {
@@ -22,6 +28,7 @@ async function bootstrap() {
 📡 API Base             : http://localhost:${config.port}${config.apiPrefix}
 🐘 Database             : Neon Serverless PostgreSQL (Connected)
 ⚙️ Environment          : ${config.nodeEnv}
+⏰ Cron Worker          : Active (1m Reservation lock, 10m Escrow release)
 ======================================================
     `);
   });
@@ -29,6 +36,7 @@ async function bootstrap() {
   // Graceful Shutdown
   const gracefulShutdown = async (signal: string) => {
     console.log(`\n🛑 Received ${signal}. Starting graceful shutdown...`);
+    cronService.stop();
     server.close(async () => {
       console.log('HTTP and WebSocket server closed.');
       await prisma.$disconnect();

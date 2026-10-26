@@ -4,6 +4,7 @@ import { validate } from '../../../common/middleware/validate';
 import { authenticate } from '../../../common/middleware/auth';
 import { authLimiter } from '../../../common/middleware/rateLimiter';
 import { preventDoubleSubmit } from '../../../common/middleware/antiDoubleSubmit';
+import { body } from 'express-validator';
 import {
   registerValidator,
   loginValidator,
@@ -34,6 +35,20 @@ router.post(
  * @access  Public
  */
 router.post('/login', authLimiter, loginValidator, validate, authController.login);
+
+/**
+ * @route   POST /api/v1/auth/google
+ * @desc    Authenticate with Google OAuth 2.0 ID Token
+ * @access  Public
+ */
+router.post(
+  '/google',
+  authLimiter,
+  preventDoubleSubmit({ windowMs: 2000 }),
+  [body('idToken').trim().notEmpty().withMessage('Google ID token is required')],
+  validate,
+  authController.googleLogin
+);
 
 /**
  * @route   POST /api/v1/auth/refresh-token

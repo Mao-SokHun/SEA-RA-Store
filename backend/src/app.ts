@@ -23,6 +23,7 @@ import userRoutes from './modules/users/routes/user.routes';
 import adminRoutes from './modules/admin/routes/admin.routes';
 import topUpRoutes from './modules/topup/routes/topup.routes';
 import uploadRoutes from './modules/uploads/routes/upload.routes';
+import notificationRoutes from './modules/notifications/routes/notification.routes';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import { generalLimiter } from './common/middleware/rateLimiter';
@@ -164,6 +165,7 @@ export function createApp(): Application {
   app.use(`${config.apiPrefix}/admin`, adminRoutes);
   app.use(`${config.apiPrefix}/topup`, topUpRoutes);
   app.use(`${config.apiPrefix}/uploads`, uploadRoutes);
+  app.use(`${config.apiPrefix}/notifications`, notificationRoutes);
 
   // 404 Handler
   app.use(notFoundHandler);

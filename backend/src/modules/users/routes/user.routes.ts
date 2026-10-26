@@ -3,6 +3,7 @@ import { userController } from '../controllers/user.controller';
 import { authenticate } from '../../../common/middleware/auth';
 import { body } from 'express-validator';
 import { validate } from '../../../common/middleware/validate';
+import { submitKYCValidator } from '../validators/kyc.validator';
 import { authLimiter } from '../../../common/middleware/rateLimiter';
 import { preventDoubleSubmit } from '../../../common/middleware/antiDoubleSubmit';
 
@@ -61,6 +62,37 @@ router.patch(
   '/notifications/telegram',
   preventDoubleSubmit({ windowMs: 2000 }),
   userController.updateTelegramSettings
+);
+
+/**
+ * @route   POST /api/v1/users/notifications/telegram/link-token
+ * @desc    Generate a 15-minute token to link Telegram via bot command /start <token>
+ * @access  Private
+ */
+router.post(
+  '/notifications/telegram/link-token',
+  preventDoubleSubmit({ windowMs: 2000 }),
+  userController.getTelegramLinkToken
+);
+
+/**
+ * @route   GET /api/v1/users/kyc
+ * @desc    Get current user's KYC verification status
+ * @access  Private
+ */
+router.get('/kyc', userController.getMyKYC);
+
+/**
+ * @route   POST /api/v1/users/kyc
+ * @desc    Submit ID Card and Selfie for Seller KYC verification
+ * @access  Private
+ */
+router.post(
+  '/kyc',
+  preventDoubleSubmit({ windowMs: 4000 }),
+  submitKYCValidator,
+  validate,
+  userController.submitKYC
 );
 
 export default router;

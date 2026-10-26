@@ -857,6 +857,108 @@ export class OrderService {
       },
     };
   }
+
+  /**
+   * Auto-release Escrow funds for orders in 'in_escrow' or 'paid' whose inspection window
+   * (e.g. 24 or 48 hours) has expired without an active dispute.
+   * Credits the seller wallet and finalizes the order safely.
+   */
+  async autoReleaseEscrow(inspectionHours = 24): Promise<number> {
+    const thresholdDate = new Date(Date.now() - inspectionHours * 3600 * 1000);
+
+    const eligibleOrders = await prisma.order.findMany({
+      where: {
+        status: { in: ['paid', 'in_escrow'] },
+        dispute: null, // No dispute filed
+        createdAt: { lt: thresholdDate },
+      },
+      include: {
+        seller: { include: { wallet: true } },
+        gameAccount: true,
+      },
+    });
+
+    if (eligibleOrders.length === 0) return 0;
+
+    let releasedCount = 0;
+
+    for (const order of eligibleOrders) {
+      try {
+        const netAmount = Number(order.sellerNetAmount);
+        const sellerWallet = order.seller.wallet;
+
+        await prisma.$transaction(async (tx) => {
+          // 1. Mark Order Completed
+          const completeResult = await tx.order.updateMany({
+            where: {
+              id: order.id,
+              status: { in: ['paid', 'in_escrow'] },
+            },
+            data: { status: 'completed' },
+          });
+
+          if (completeResult.count === 0) return;
+
+          // 2. Mark Account Sold
+          await tx.gameAccount.update({
+            where: { id: order.gameAccountId },
+            data: { status: 'sold' },
+          });
+
+          // 3. Release Funds to seller wallet
+          if (sellerWallet && netAmount > 0 && !order.gameAccount.isPlatformOwned) {
+            const updatedWallet = await tx.wallet.update({
+              where: { id: sellerWallet.id },
+              data: { balance: { increment: new Prisma.Decimal(netAmount) } },
+            });
+
+            await tx.walletTransaction.create({
+              data: {
+                walletId: sellerWallet.id,
+                orderId: order.id,
+                transactionType: 'earning',
+                amount: new Prisma.Decimal(netAmount),
+                balanceAfter: updatedWallet.balance,
+              },
+            });
+          }
+
+          // 4. Audit Log
+          await tx.securityAuditLog.create({
+            data: {
+              userId: null,
+              action: 'ESCROW_AUTO_RELEASED',
+              metadata: JSON.stringify({
+                orderNumber: order.orderNumber,
+                creditedAmount: netAmount,
+                sellerId: order.sellerId.toString(),
+                inspectionHours,
+              }),
+            },
+          });
+        });
+
+        // Notifications
+        telegramService.notifyUser(
+          order.sellerId,
+          'payout',
+          `🎉 <b>Escrow Auto-Released!</b>\nInspection period (${inspectionHours}h) expired with no disputes for Order <code>#${order.orderNumber}</code>. $${netAmount.toFixed(2)} has been credited to your wallet.`
+        );
+
+        emitToOrderRoom(order.orderNumber, 'order_completed', {
+          orderNumber: order.orderNumber,
+          status: 'completed',
+          message: `Escrow auto-released after ${inspectionHours}h inspection window.`,
+        });
+
+        releasedCount++;
+      } catch (err) {
+        console.error(`Failed to auto-release escrow for order ${order.orderNumber}:`, err);
+      }
+    }
+
+    return releasedCount;
+  }
 }
 
 export const orderService = new OrderService();

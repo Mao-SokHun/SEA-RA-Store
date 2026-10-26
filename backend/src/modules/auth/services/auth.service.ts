@@ -19,6 +19,7 @@ import {
   signRefreshToken,
   verifyRefreshToken,
 } from '../../../common/utils/jwt';
+import { emailService } from '../../../common/services/email.service';
 
 export interface RegisterDTO {
   username: string;
@@ -485,7 +486,9 @@ export class AuthService {
       },
     });
 
-    // In production, send via email service. For dev/testing, token is returned:
+    // Dispatch password reset email asynchronously
+    emailService.sendPasswordResetEmail(user.email, user.username, resetToken).catch(console.error);
+
     const isDev = config.nodeEnv !== 'production';
     return {
       message: 'If that email address is in our database, we will send a password reset link.',
@@ -624,6 +627,166 @@ export class AuthService {
           sellerOrdersCount: user._count.sellerOrders,
           referralsCount: user._count.referralsMade,
         },
+      },
+    };
+  }
+
+  /**
+   * Google OAuth 2.0 Sign In / Sign Up
+   * Verifies Google ID Token, links or creates user account, generates JWT session.
+   */
+  async googleAuth(idToken: string, ipAddress?: string, userAgent?: string) {
+    if (!idToken) {
+      throw new BadRequestError('Google ID Token is required');
+    }
+
+    // 1. Verify ID Token via Google's tokeninfo API
+    let payload: {
+      sub: string;
+      email: string;
+      name?: string;
+      picture?: string;
+      email_verified?: string;
+    };
+
+    try {
+      const response = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`
+      );
+      if (!response.ok) {
+        throw new Error('Invalid Google ID token');
+      }
+      payload = (await response.json()) as any;
+    } catch {
+      throw new UnauthorizedError('Google authentication failed: Invalid or expired token');
+    }
+
+    const { sub: googleUserId, email, name } = payload;
+    if (!email) {
+      throw new BadRequestError('Email not provided by Google account');
+    }
+
+    // 2. Check if social account is already linked
+    const socialAccount = await prisma.userSocialAccount.findFirst({
+      where: { provider: 'google', providerUserId: googleUserId },
+      include: { user: true },
+    });
+
+    let user: any = socialAccount?.user;
+
+    // 3. If no social account, check if user exists by email
+    if (!user) {
+      user = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (user) {
+        // Link existing user account to Google
+        await prisma.userSocialAccount.create({
+          data: {
+            userId: user.id,
+            provider: 'google',
+            providerUserId: googleUserId,
+            providerEmail: email,
+            rawData: JSON.stringify(payload),
+          },
+        });
+      } else {
+        // Create brand new user
+        const baseUsername = (name || email.split('@')[0])
+          .toLowerCase()
+          .replace(/[^a-z0-9_]/g, '')
+          .slice(0, 20);
+        const uniqueUsername = `${baseUsername || 'user'}_${generateRandomToken(4)}`;
+        const referralCode = generateReferralCode();
+
+        user = await prisma.$transaction(async (tx) => {
+          const newUser = await tx.user.create({
+            data: {
+              username: uniqueUsername,
+              email,
+              referralCode,
+              isEmailVerified: true,
+              role: 'buyer',
+              status: 'active',
+            },
+          });
+
+          await tx.wallet.create({
+            data: {
+              userId: newUser.id,
+              balance: 0,
+            },
+          });
+
+          await tx.userSocialAccount.create({
+            data: {
+              userId: newUser.id,
+              provider: 'google',
+              providerUserId: googleUserId,
+              providerEmail: email,
+              rawData: JSON.stringify(payload),
+            },
+          });
+
+          return newUser;
+        });
+      }
+    }
+
+    if (user.status !== 'active') {
+      throw new ForbiddenError(`Your account is ${user.status}. Please contact support.`);
+    }
+
+    // 4. Issue JWT tokens
+    const jwtPayload = {
+      sub: user.id.toString(),
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    };
+
+    const accessToken = signAccessToken(jwtPayload);
+    const refreshToken = signRefreshToken(jwtPayload);
+
+    const tokenHash = hashToken(refreshToken);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    await prisma.userRefreshToken.create({
+      data: {
+        userId: user.id,
+        tokenHash,
+        expiresAt,
+        ipAddress,
+        deviceInfo: userAgent,
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        lastLoginAt: new Date(),
+        lastLoginIp: ipAddress,
+      },
+    });
+
+    await prisma.securityAuditLog.create({
+      data: {
+        userId: user.id,
+        action: 'GOOGLE_LOGIN_SUCCESS',
+        ipAddress,
+        userAgent,
+      },
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id.toString(),
+        username: user.username,
+        email: user.email,
+        role: user.role,
       },
     };
   }

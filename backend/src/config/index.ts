@@ -78,6 +78,16 @@ interface Config {
     publicUrl: string;
   };
 
+  // Email
+  email: {
+    smtpHost: string;
+    smtpPort: number;
+    smtpUser: string;
+    smtpPass: string;
+    fromEmail: string;
+    fromName: string;
+  };
+
   // Platform
   platform: {
     commissionRate: number;
@@ -158,6 +168,15 @@ const config: Config = {
     secretKey: getEnvVar('S3_SECRET_KEY', ''),
     bucketName: getEnvVar('S3_BUCKET_NAME', 'game-marketplace-assets'),
     publicUrl: getEnvVar('S3_PUBLIC_URL', ''),
+  },
+
+  email: {
+    smtpHost: getEnvVar('SMTP_HOST', ''),
+    smtpPort: parseInt(getEnvVar('SMTP_PORT', '587'), 10),
+    smtpUser: getEnvVar('SMTP_USER', ''),
+    smtpPass: getEnvVar('SMTP_PASS', ''),
+    fromEmail: getEnvVar('FROM_EMAIL', 'noreply@gamemarketplace.com'),
+    fromName: getEnvVar('FROM_NAME', 'Game Marketplace Support'),
   },
 
   platform: {

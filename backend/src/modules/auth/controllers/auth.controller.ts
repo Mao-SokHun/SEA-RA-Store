@@ -79,6 +79,33 @@ export class AuthController {
   };
 
   /**
+   * POST /api/v1/auth/google
+   */
+  googleLogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { idToken } = req.body;
+      const ipAddress = req.ip || req.socket.remoteAddress;
+      const userAgent = req.headers['user-agent'];
+
+      const result = await authService.googleAuth(idToken, ipAddress, userAgent);
+
+      this.setRefreshTokenCookie(res, result.refreshToken);
+
+      sendSuccess(
+        res,
+        {
+          user: result.user,
+          accessToken: result.accessToken,
+          refreshToken: result.refreshToken,
+        },
+        'Google authentication successful'
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
    * POST /api/v1/auth/refresh-token
    */
   refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {

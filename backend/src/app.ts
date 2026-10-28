@@ -10,15 +10,20 @@ import { errorHandler } from './common/middleware/errorHandler';
 import { notFoundHandler } from './common/middleware/notFoundHandler';
 import { sendSuccess } from './common/utils/response';
 import authRoutes from './modules/auth/routes/auth.routes';
-import gameRoutes from './modules/accounts/routes/game.routes';
-import accountRoutes from './modules/accounts/routes/account.routes';
-import orderRoutes from './modules/orders/routes/order.routes';
+// ============================================================
+// FEATURE FLAGS: Only TopUp is active. Sell Account & Rent for Fee are DISABLED.
+// To re-enable, uncomment the relevant import and route below.
+// ============================================================
+
+// [DISABLED - Sell Account] import gameRoutes from './modules/accounts/routes/game.routes';
+// [DISABLED - Sell Account] import accountRoutes from './modules/accounts/routes/account.routes';
+// [DISABLED - Sell Account] import orderRoutes from './modules/orders/routes/order.routes';
 import paymentRoutes from './modules/payments/routes/payment.routes';
 import walletRoutes from './modules/wallet/routes/wallet.routes';
-import chatRoutes from './modules/chat/routes/chat.routes';
-import disputeRoutes from './modules/disputes/routes/dispute.routes';
-import couponRoutes from './modules/coupons/routes/coupon.routes';
-import referralRoutes from './modules/referrals/routes/referral.routes';
+// [DISABLED - Sell Account] import chatRoutes from './modules/chat/routes/chat.routes';
+// [DISABLED - Sell Account] import disputeRoutes from './modules/disputes/routes/dispute.routes';
+// [DISABLED - Sell Account] import couponRoutes from './modules/coupons/routes/coupon.routes';
+// [DISABLED - Sell Account] import referralRoutes from './modules/referrals/routes/referral.routes';
 import userRoutes from './modules/users/routes/user.routes';
 import adminRoutes from './modules/admin/routes/admin.routes';
 import topUpRoutes from './modules/topup/routes/topup.routes';
@@ -112,15 +117,15 @@ export function createApp(): Application {
         health: '/health',
         documentation: '/api/docs',
         auth: `${config.apiPrefix}/auth`,
-        accounts: `${config.apiPrefix}/accounts`,
-        orders: `${config.apiPrefix}/orders`,
+        // [DISABLED - Sell Account] accounts: `${config.apiPrefix}/accounts`,
+        // [DISABLED - Sell Account] orders: `${config.apiPrefix}/orders`,
         payments: `${config.apiPrefix}/payments`,
         wallet: `${config.apiPrefix}/wallet`,
-        chat: `${config.apiPrefix}/chat`,
-        disputes: `${config.apiPrefix}/disputes`,
-        games: `${config.apiPrefix}/games`,
-        coupons: `${config.apiPrefix}/coupons`,
-        referrals: `${config.apiPrefix}/referrals`,
+        // [DISABLED - Sell Account] chat: `${config.apiPrefix}/chat`,
+        // [DISABLED - Sell Account] disputes: `${config.apiPrefix}/disputes`,
+        // [DISABLED - Sell Account] games: `${config.apiPrefix}/games`,
+        // [DISABLED - Sell Account] coupons: `${config.apiPrefix}/coupons`,
+        // [DISABLED - Sell Account] referrals: `${config.apiPrefix}/referrals`,
         users: `${config.apiPrefix}/users`,
         admin: `${config.apiPrefix}/admin`,
         topup: `${config.apiPrefix}/topup`,
@@ -152,15 +157,15 @@ export function createApp(): Application {
 
   // API Routes
   app.use(`${config.apiPrefix}/auth`, authRoutes);
-  app.use(`${config.apiPrefix}/games`, gameRoutes);
-  app.use(`${config.apiPrefix}/accounts`, accountRoutes);
-  app.use(`${config.apiPrefix}/orders`, orderRoutes);
+  // [DISABLED - Sell Account] app.use(`${config.apiPrefix}/games`, gameRoutes);
+  // [DISABLED - Sell Account] app.use(`${config.apiPrefix}/accounts`, accountRoutes);
+  // [DISABLED - Sell Account] app.use(`${config.apiPrefix}/orders`, orderRoutes);
   app.use(`${config.apiPrefix}/payments`, paymentRoutes);
   app.use(`${config.apiPrefix}/wallet`, walletRoutes);
-  app.use(`${config.apiPrefix}/chat`, chatRoutes);
-  app.use(`${config.apiPrefix}/disputes`, disputeRoutes);
-  app.use(`${config.apiPrefix}/coupons`, couponRoutes);
-  app.use(`${config.apiPrefix}/referrals`, referralRoutes);
+  // [DISABLED - Sell Account] app.use(`${config.apiPrefix}/chat`, chatRoutes);
+  // [DISABLED - Sell Account] app.use(`${config.apiPrefix}/disputes`, disputeRoutes);
+  // [DISABLED - Sell Account] app.use(`${config.apiPrefix}/coupons`, couponRoutes);
+  // [DISABLED - Sell Account] app.use(`${config.apiPrefix}/referrals`, referralRoutes);
   app.use(`${config.apiPrefix}/users`, userRoutes);
   app.use(`${config.apiPrefix}/admin`, adminRoutes);
   app.use(`${config.apiPrefix}/topup`, topUpRoutes);

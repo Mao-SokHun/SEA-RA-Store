@@ -33,13 +33,15 @@ export default function Navbar() {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
+  // FEATURE FLAGS: Only TopUp is active. Sell Account & Rent for Fee are DISABLED.
+  // To re-enable, uncomment the relevant nav items below.
   const navLinks = [
-    { label: t('navCatalog'), href: '/catalog', icon: ShoppingBag },
-    { label: t('navTopUp'), href: '/top-up', icon: Zap, badge: '⚡ NEW' },
-    { label: t('navSell'), href: '/sell', icon: PlusCircle },
-    { label: t('navHowItWorks'), href: '/#how-it-works', icon: Sparkles },
-    { label: t('navWarranty'), href: '/warranty', icon: Shield },
-    { label: t('navOrders'), href: '/orders', icon: CheckCircle2 },
+    // [DISABLED - Sell Account] { label: t('navCatalog'), href: '/catalog', icon: ShoppingBag },
+    { label: t('navTopUp'), href: '/top-up', icon: Zap, badge: '⚡' },
+    // [DISABLED - Sell Account] { label: t('navSell'), href: '/sell', icon: PlusCircle },
+    // [DISABLED - Sell Account] { label: t('navHowItWorks'), href: '/#how-it-works', icon: Sparkles },
+    // [DISABLED - Sell Account] { label: t('navWarranty'), href: '/warranty', icon: Shield },
+    // [DISABLED - Sell Account] { label: t('navOrders'), href: '/orders', icon: CheckCircle2 },
     ...(user?.role === 'admin' ? [{ label: t('navAdmin'), href: '/admin', icon: Crown }] : []),
   ];
 
@@ -185,6 +187,7 @@ export default function Navbar() {
                       <p className="text-sm font-bold text-white truncate">{user?.email}</p>
                     </div>
 
+                    {/* [DISABLED - Sell Account]
                     <Link
                       href="/orders"
                       className="flex items-center gap-2.5 px-3 py-2 text-xs text-neutral-300 hover:text-white hover:bg-white/[0.05] rounded-lg transition-colors"
@@ -192,6 +195,7 @@ export default function Navbar() {
                       <ShoppingBag className="w-4 h-4 text-[#00e4f2]" />
                       {t('navOrders')}
                     </Link>
+                    */}
 
                     <Link
                       href="/wallet"
@@ -201,6 +205,7 @@ export default function Navbar() {
                       {t('navWalletVault')}
                     </Link>
 
+                    {/* [DISABLED - Sell Account]
                     <Link
                       href="/sell"
                       className="flex items-center gap-2.5 px-3 py-2 text-xs text-neutral-300 hover:text-white hover:bg-white/[0.05] rounded-lg transition-colors"
@@ -208,6 +213,7 @@ export default function Navbar() {
                       <PlusCircle className="w-4 h-4 text-emerald-400" />
                       {t('navSell')}
                     </Link>
+                    */}
 
                     {user?.role === 'admin' && (
                       <Link

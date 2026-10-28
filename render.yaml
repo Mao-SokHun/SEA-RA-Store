@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: game-marketplace-backend
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm run start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: API_PREFIX
+        value: /api/v1
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_NOe0nzEWkC2m@ep-spring-mouse-b3s31942-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+      - key: JWT_ACCESS_SECRET
+        value: prod-access-secret-game-marketplace-2026-secure
+      - key: JWT_REFRESH_SECRET
+        value: prod-refresh-secret-game-marketplace-2026-secure
+      - key: ENCRYPTION_KEY
+        value: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      - key: FRONTEND_URL
+        value: https://vercel.app
+      - key: TOPUP_PROVIDER
+        value: mock
+      - key: KHQR_PROVIDER
+        value: mock

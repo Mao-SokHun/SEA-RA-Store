@@ -128,11 +128,8 @@ export default function HomePage() {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/catalog?q=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
-      router.push('/catalog');
-    }
+    // [DISABLED - Sell Account] Redirect search to top-up instead of catalog
+    router.push('/top-up');
   };
 
   const displayedAccounts =
@@ -227,7 +224,7 @@ export default function HomePage() {
                 {['Roblox', 'Mobile Legends', 'Free Fire', 'PUBG Mobile', 'Valorant'].map((tag) => (
                   <button
                     key={tag}
-                    onClick={() => router.push(`/catalog?q=${encodeURIComponent(tag)}`)}
+                    onClick={() => router.push(`/top-up`)}
                     className="px-2.5 py-1 rounded-lg bg-[#151a23] hover:bg-[#1f2533] text-neutral-300 hover:text-[#f2ca50] border border-white/[0.06] transition-colors"
                   >
                     {tag}
@@ -292,10 +289,10 @@ export default function HomePage() {
                 </h2>
               </div>
               <Link
-                href="/catalog"
+                href="/top-up"
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#f2ca50] hover:text-white transition-colors"
               >
-                <span>{language === 'kh' ? 'មើលហ្គេមទាំងអស់' : 'View All Games'}</span>
+                <span>{language === 'kh' ? 'Top Up ហ្គេម' : 'Top Up Games'}</span>
                 <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
@@ -305,7 +302,7 @@ export default function HomePage() {
               {POPULAR_GAMES.map((game) => (
                 <div
                   key={game.id}
-                  onClick={() => router.push(`/catalog?game=${game.id}`)}
+                  onClick={() => router.push(`/top-up`)}
                   className={`group relative bg-[#151a23] hover:bg-[#1a202c] rounded-2xl border border-white/[0.08] ${game.borderHover} p-3.5 flex flex-col justify-between cursor-pointer transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-2xl`}
                 >
                   {/* Top Badge */}
@@ -771,13 +768,14 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* View Full Catalog Button */}
+          {/* [DISABLED - Sell Account] View Full Catalog → redirected to Top Up */}
           <div className="mt-12 text-center">
             <Link
-              href="/catalog"
+              href="/top-up"
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-[#151a23] hover:bg-[#1d222e] text-[#f2ca50] hover:text-white border border-[#d4af37]/30 hover:border-[#d4af37] text-xs font-bold uppercase tracking-wider transition-all shadow-lg"
             >
-              <span>{t('ctaExplore')}</span>
+              <Zap className="w-4 h-4" />
+              <span>{language === 'kh' ? 'Top Up ហ្គេម ⚡' : 'Top Up Games ⚡'}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -861,40 +859,40 @@ export default function HomePage() {
         </section>
 
         {/* =========================================================================
-            SECTION 6: TELEGRAM SUPPORT & CALL TO ACTION
+            SECTION 6: CALL TO ACTION — TOP UP FOCUSED
         ========================================================================== */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#151a23] via-[#1c2230] to-[#151a23] border border-[#d4af37]/30 p-10 sm:p-14 text-center shadow-2xl">
             <div className="relative z-10 max-w-2xl mx-auto">
               <span className="text-xs font-bold text-[#f2ca50] uppercase tracking-widest block mb-3">
                 {language === 'kh'
-                  ? 'ចូលរួមជាមួយអ្នកលេងហ្គេមរាប់ពាន់នាក់'
-                  : 'JOIN THOUSANDS OF TRUSTED GAMERS'}
+                  ? 'ជ្រើសរើសហ្គេម • បញ្ចូល ID • ស្កេន KHQR'
+                  : 'SELECT GAME • ENTER ID • SCAN KHQR'}
               </span>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight mb-4">
                 {language === 'kh'
-                  ? 'ត្រៀមខ្លួនទិញ ឬលក់គណនីហ្គេមរបស់អ្នកហើយឬនៅ?'
-                  : 'Ready to Buy or Sell Your Game Account?'}
+                  ? 'Top Up ហ្គេមរបស់អ្នកភ្លាមៗ 🎮⚡'
+                  : 'Top Up Your Game Instantly 🎮⚡'}
               </h2>
               <p className="text-neutral-300 text-xs sm:text-sm mb-8 leading-relaxed">
                 {language === 'kh'
-                  ? 'ស្វែងរកគណនីហ្គេមដែលបានផ្ទៀងផ្ទាត់ត្រឹមត្រូវ ឬដាក់លក់គណនីរបស់អ្នកជាមួយប្រព័ន្ធ Escrow ការពារ ១០០% និងដកប្រាក់បានភ្លាមៗ។'
-                  : 'Browse verified game accounts or list your own account with full escrow protection and instant bank payouts.'}
+                  ? 'Robux, Diamonds, UC, VP — បញ្ចូលចូល ID ផ្ទាល់ក្នុង ៣ វិនាទី។ អត់ចាំបាច់មានគណនី សូម្បី Guest ក៏ Top Up បានដែរ!'
+                  : 'Robux, Diamonds, UC, VP — credited directly to your Player ID in 3 seconds. No account needed, guests welcome!'}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <Link
-                  href="/catalog"
+                  href="/top-up"
                   className="px-8 py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] text-[#0b0e14] shadow-xl hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] transition-all flex items-center gap-2"
                 >
-                  <ShoppingCart className="w-4 h-4" />
-                  <span>{t('ctaExplore')}</span>
+                  <Zap className="w-4 h-4 fill-black" />
+                  <span>{language === 'kh' ? '⚡ ចាប់ផ្ដើម Top Up ឥឡូវ' : '⚡ Start Top Up Now'}</span>
                 </Link>
                 <Link
-                  href="/sell"
+                  href="/wallet"
                   className="px-8 py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-[#0b0e14] text-neutral-200 hover:text-white border border-white/[0.1] hover:border-white/[0.2] transition-all flex items-center gap-2"
                 >
-                  <PlusCircle className="w-4 h-4 text-[#00e4f2]" />
-                  <span>{t('ctaListAsset')}</span>
+                  <CheckCircle2 className="w-4 h-4 text-[#00e4f2]" />
+                  <span>{language === 'kh' ? 'កាបូបប្រាក់ & ប្រវត្តិ' : 'Wallet & History'}</span>
                 </Link>
               </div>
             </div>

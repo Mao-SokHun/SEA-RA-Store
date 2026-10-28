@@ -63,6 +63,7 @@ export default function Footer() {
                   <span>{language === 'kh' ? 'បញ្ចូលលុយ / ពេជ្រ ចូលហ្គេម (Top Up)' : 'Direct Game Top Up (New)'}</span>
                 </Link>
               </li>
+              {/* [DISABLED - Sell Account]
               <li>
                 <Link href="/catalog" className="hover:text-[#f2ca50] transition-colors">
                   {language === 'kh' ? 'គណនីហ្គេមទាំងអស់' : 'All Game Accounts'}
@@ -94,6 +95,7 @@ export default function Footer() {
                   Valorant
                 </Link>
               </li>
+              */}
             </ul>
           </div>
 
@@ -103,32 +105,40 @@ export default function Footer() {
               {language === 'kh' ? 'សេវាកម្ម & ជំនួយ' : 'Services & Help'}
             </h4>
             <ul className="space-y-2 text-sm">
+              {/* [DISABLED - Sell Account]
               <li>
                 <Link href="/sell" className="hover:text-[#f2ca50] transition-colors flex items-center gap-1">
                   <span>{t('navSell')}</span>
                   <ArrowUpRight className="w-3 h-3 text-[#d4af37]" />
                 </Link>
               </li>
+              */}
+              {/* [DISABLED - Sell Account]
               <li>
                 <Link href="/#how-it-works" className="hover:text-[#f2ca50] transition-colors">
                   {t('navHowItWorks')}
                 </Link>
               </li>
+              */}
+              {/* [DISABLED - Sell Account]
               <li>
                 <Link href="/warranty" className="hover:text-[#f2ca50] transition-colors">
                   {t('navWarranty')}
                 </Link>
               </li>
+              */}
               <li>
                 <Link href="/wallet" className="hover:text-[#f2ca50] transition-colors">
-                  {language === 'kh' ? 'កាបូបប្រាក់ & ការដកប្រាក់' : 'Seller Payouts & Wallet'}
+                  {language === 'kh' ? 'កាបូបប្រាក់ & ការដកប្រាក់' : 'Wallet & Balance'}
                 </Link>
               </li>
+              {/* [DISABLED - Sell Account]
               <li>
                 <Link href="/orders" className="hover:text-[#f2ca50] transition-colors">
                   {t('navOrders')}
                 </Link>
               </li>
+              */}
             </ul>
           </div>
 

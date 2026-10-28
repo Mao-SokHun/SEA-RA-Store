@@ -4,6 +4,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import FloatingChatWidget from '@/components/layout/FloatingChatWidget';
 
 export const metadata: Metadata = {
   title: 'NEXUS Cyber-Vault | Elite Game Account Escrow Marketplace',
@@ -47,6 +48,7 @@ export default function RootLayout({
             <Navbar />
             <main className="flex-1 pt-20">{children}</main>
             <Footer />
+            <FloatingChatWidget />
           </AuthProvider>
         </LanguageProvider>
       </body>

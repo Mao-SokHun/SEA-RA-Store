@@ -13,7 +13,7 @@ interface Translations {
 
 export const translations: Translations = {
   // Navigation
-  brandSub: { en: 'Safe Game Account Marketplace', kh: 'ផ្សារទិញ-លក់គណនីហ្គេមសុវត្ថិភាព' },
+  brandSub: { en: 'Direct Game Top Up Platform', kh: 'សេវាកម្មបញ្ចូលលុយហ្គេមរហ័សទាន់ចិត្ត' },
   navCatalog: { en: 'Buy Accounts', kh: 'ទិញគណនី' },
   navTopUp: { en: 'Top Up Game', kh: 'បញ្ចូលលុយហ្គេម' },
   navSell: { en: 'Sell Account', kh: 'ដាក់លក់គណនី' },

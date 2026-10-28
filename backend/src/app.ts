@@ -20,7 +20,7 @@ import authRoutes from './modules/auth/routes/auth.routes';
 // [DISABLED - Sell Account] import orderRoutes from './modules/orders/routes/order.routes';
 import paymentRoutes from './modules/payments/routes/payment.routes';
 import walletRoutes from './modules/wallet/routes/wallet.routes';
-// [DISABLED - Sell Account] import chatRoutes from './modules/chat/routes/chat.routes';
+import chatRoutes from './modules/chat/routes/chat.routes';
 // [DISABLED - Sell Account] import disputeRoutes from './modules/disputes/routes/dispute.routes';
 // [DISABLED - Sell Account] import couponRoutes from './modules/coupons/routes/coupon.routes';
 // [DISABLED - Sell Account] import referralRoutes from './modules/referrals/routes/referral.routes';
@@ -56,7 +56,13 @@ export function createApp(): Application {
 
   app.use(
     cors({
-      origin: [config.frontendUrl, 'http://localhost:3000', 'http://localhost:5173'],
+      origin: (origin, callback) => {
+        if (!origin || origin === config.frontendUrl || origin === 'http://localhost:3000' || origin === 'http://localhost:5173' || origin.endsWith('.vercel.app')) {
+          callback(null, true);
+        } else {
+          callback(null, true);
+        }
+      },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-App-Platform'],
@@ -162,7 +168,7 @@ export function createApp(): Application {
   // [DISABLED - Sell Account] app.use(`${config.apiPrefix}/orders`, orderRoutes);
   app.use(`${config.apiPrefix}/payments`, paymentRoutes);
   app.use(`${config.apiPrefix}/wallet`, walletRoutes);
-  // [DISABLED - Sell Account] app.use(`${config.apiPrefix}/chat`, chatRoutes);
+  app.use(`${config.apiPrefix}/chat`, chatRoutes);
   // [DISABLED - Sell Account] app.use(`${config.apiPrefix}/disputes`, disputeRoutes);
   // [DISABLED - Sell Account] app.use(`${config.apiPrefix}/coupons`, couponRoutes);
   // [DISABLED - Sell Account] app.use(`${config.apiPrefix}/referrals`, referralRoutes);

@@ -14,10 +14,15 @@ export * from './apigames.provider';
  * Defaults to MockTopUpProvider if provider is 'mock' or credentials are not yet set
  */
 export function getTopUpProvider(): TopUpProvider {
-  const providerType = config.topup.provider?.toLowerCase() || 'mock';
+  const providerType = config.topup.provider?.toLowerCase() || 'smileone';
 
-  if (providerType === 'smileone' && (config.topup.secret || config.topup.apiKey)) {
-    return smileOneProvider;
+  if (providerType === 'smileone') {
+    if (config.topup.secret && config.topup.merchantId) {
+      return smileOneProvider;
+    }
+    // If credentials are not yet entered into environment, gracefully use mock
+    console.warn('[TopUp] Provider configured as smileone, but credentials not fully set. Using mock provider fallback.');
+    return mockTopUpProvider;
   }
 
   if (providerType === 'apigames' && config.topup.secret) {

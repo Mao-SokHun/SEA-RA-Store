@@ -27,7 +27,15 @@ services:
       - key: FRONTEND_URL
         value: https://vercel.app
       - key: TOPUP_PROVIDER
-        value: mock
+        value: smileone
+      - key: TOPUP_PROVIDER_MERCHANT_ID
+        sync: false
+      - key: TOPUP_PROVIDER_API_KEY
+        sync: false
+      - key: TOPUP_PROVIDER_SECRET
+        sync: false
+      - key: TOPUP_PROVIDER_BASE_URL
+        value: https://api.smile.one
       - key: KHQR_PROVIDER
         value: mock
 

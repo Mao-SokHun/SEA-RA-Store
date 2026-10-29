@@ -155,7 +155,7 @@ const config: Config = {
   },
 
   topup: {
-    provider: getEnvVar('TOPUP_PROVIDER', 'mock'),
+    provider: getEnvVar('TOPUP_PROVIDER', 'smileone'),
     apiKey: getEnvVar('TOPUP_PROVIDER_API_KEY', ''),
     secret: getEnvVar('TOPUP_PROVIDER_SECRET', ''),
     merchantId: getEnvVar('TOPUP_PROVIDER_MERCHANT_ID', ''),

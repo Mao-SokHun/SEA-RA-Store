@@ -13,7 +13,7 @@ interface Translations {
 
 export const translations: Translations = {
   // Navigation
-  brandSub: { en: 'Direct Game Top Up Platform', kh: 'សេវាកម្មបញ្ចូលលុយហ្គេមរហ័សទាន់ចិត្ត' },
+  brandSub: { en: 'Instant Direct Game Top-Up', kh: 'សេវាកម្មបញ្ចូលលុយហ្គេមស្វ័យប្រវត្តិ ២៤/៧' },
   navCatalog: { en: 'Buy Accounts', kh: 'ទិញគណនី' },
   navTopUp: { en: 'Top Up Game', kh: 'បញ្ចូលលុយហ្គេម' },
   navSell: { en: 'Sell Account', kh: 'ដាក់លក់គណនី' },
@@ -29,6 +29,7 @@ export const translations: Translations = {
   navSignOut: { en: 'Sign Out', kh: 'ចាកចេញ' },
   navWalletVault: { en: 'WALLET', kh: 'កាបូបប្រាក់' },
   navSupport: { en: 'Telegram Support', kh: 'ជំនួយ Telegram' },
+  navNoAccountNotice: { en: 'No Account Needed • 1-Click KHQR', kh: 'មិនបាច់ Login • ស្កេន KHQR ចូលភ្លាម' },
   selectLanguage: { en: 'Select Language', kh: 'ជ្រើសរើសភាសា' },
   languageKhmer: { en: 'ភាសាខ្មែរ (Khmer)', kh: 'ភាសាខ្មែរ (Khmer)' },
   languageEnglish: { en: 'English (English)', kh: 'English (English)' },
@@ -346,7 +347,7 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>('en');
+  const [language, setLanguageState] = useState<Language>('kh');
 
   useEffect(() => {
     const saved = localStorage.getItem('nexus_language') as Language;

@@ -7,20 +7,20 @@ import Footer from '@/components/layout/Footer';
 import FloatingChatWidget from '@/components/layout/FloatingChatWidget';
 
 export const metadata: Metadata = {
-  title: 'NEXUS Cyber-Vault | Elite Game Account Escrow Marketplace',
+  title: 'NEXUS TOP-UP | សេវាកម្មបញ្ចូលលុយហ្គេមស្វ័យប្រវត្តិ 24/7 (Instant Game Top-Up)',
   description:
-    'Trade elite gaming accounts with zero risk. AES-256-GCM zero-knowledge vault, 15-minute Redlock reservation guard, instant Bakong KHQR EMVCo payments, and 100% anti-recall SLA.',
+    'សេវាកម្មបញ្ចូលលុយហ្គេមស្វ័យប្រវត្តិតាម Bakong KHQR លឿនត្រឹម ៣ វិនាទី មិនបាច់ Login មិនបាច់បង្កើត Account។ គាំទ្រ Mobile Legends, Free Fire, PUBG Mobile, Roblox, Genshin Impact, Honor of Kings និង Valorant។',
   keywords: [
-    'game accounts',
-    'buy game account',
-    'sell MLBB account',
-    'Valorant radiant account',
-    'PUBG Mobile mythic',
-    'Genshin Impact whale',
-    'gaming escrow',
-    'KHQR payment',
-    'ទិញគណនីហ្គេម',
-    'លក់គណនី MLBB',
+    'top up game',
+    'game topup cambodia',
+    'បញ្ចូលលុយហ្គេម',
+    'បញ្ចូលពេជ្រ MLBB',
+    'បញ្ចូល Robux',
+    'បញ្ចូល UC PUBG',
+    'Free Fire Diamonds',
+    'Bakong KHQR Top Up',
+    'Smile One Cambodia',
+    'Mobile Legends Top Up',
   ],
 };
 

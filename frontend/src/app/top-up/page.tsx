@@ -17,7 +17,6 @@ import {
   QrCode,
   Wallet,
   ArrowRight,
-  ExternalLink,
   ChevronDown,
   Info,
   RefreshCw,
@@ -27,6 +26,9 @@ import {
   Flame,
   Award,
   Gamepad2,
+  Check,
+  ExternalLink,
+  Smartphone,
 } from 'lucide-react';
 
 export default function TopUpPage() {
@@ -70,8 +72,11 @@ export default function TopUpPage() {
         const gameList = await api.topup.getGames();
         setGames(gameList);
         if (gameList.length > 0) {
-          // Default to Roblox or first game
-          const defaultGame = gameList.find((g) => g.title.toLowerCase().includes('roblox')) || gameList[0];
+          // Default to MLBB or first game
+          const defaultGame =
+            gameList.find((g) => g.title.toLowerCase().includes('mobile legends')) ||
+            gameList.find((g) => g.title.toLowerCase().includes('roblox')) ||
+            gameList[0];
           setSelectedGameId(defaultGame.id);
         }
       } catch (err) {
@@ -93,7 +98,7 @@ export default function TopUpPage() {
         if (details.packages && details.packages.length > 0) {
           setSelectedPackage(details.packages[0]);
         }
-        // Reset player verification
+        // Reset player verification when game changes
         setVerifiedNickname(null);
         setVerificationError(null);
       } catch (err) {
@@ -103,15 +108,18 @@ export default function TopUpPage() {
     loadDetails();
   }, [selectedGameId]);
 
-  // Handle player ID verification
+  // Real-time Check In-Game Nickname
   const handleVerifyPlayer = async () => {
     if (!playerId.trim()) {
-      setVerificationError(language === 'kh' ? 'សូមបញ្ចូល Player ID ឬ Username' : 'Please enter Player ID or Username');
+      setVerificationError(
+        language === 'kh' ? 'សូមបញ្ចូល Player ID របស់អ្នកជាមុនសិន' : 'Please enter your Player ID first'
+      );
       return;
     }
 
     setIsVerifying(true);
     setVerificationError(null);
+    setVerifiedNickname(null);
 
     try {
       const res = await api.topup.verifyPlayer({
@@ -121,24 +129,44 @@ export default function TopUpPage() {
         serverRegion: serverRegion || undefined,
       });
 
-      setVerifiedNickname(res.nickname);
+      if (res.isValid) {
+        setVerifiedNickname(res.nickname);
+      } else {
+        setVerificationError(
+          res.message || (language === 'kh' ? 'រកមិនឃើញតួអង្គនេះទេ' : 'Player account not found')
+        );
+      }
     } catch (err: any) {
-      setVerificationError(err.message || 'Player verification failed. Check your ID.');
-      setVerifiedNickname(null);
+      setVerificationError(
+        err.message || (language === 'kh' ? 'មិនអាចពិនិត្យឈ្មោះតួអង្គបានទេ' : 'Failed to verify player')
+      );
     } finally {
       setIsVerifying(false);
     }
   };
 
-  // Handle Checkout / Top Up submission
+  // Create Top-Up Order (1-Click Guest Checkout)
   const handleCheckout = async () => {
-    if (!playerId.trim()) {
-      setVerificationError(language === 'kh' ? 'សូមបញ្ចូល Player ID របស់អ្នក' : 'Please enter your Player ID');
+    if (!selectedPackage) {
+      setPaymentError(
+        language === 'kh' ? 'សូមជ្រើសរើសកញ្ចប់ពេជ្រដែលអ្នកចង់បញ្ចូល' : 'Please select a top-up package'
+      );
       return;
     }
 
-    if (!selectedPackage) {
-      alert(language === 'kh' ? 'សូមជ្រើសរើសកញ្ចប់ដែលចង់បញ្ចូល' : 'Please select a top-up package');
+    if (!playerId.trim()) {
+      setPaymentError(
+        language === 'kh' ? 'សូមបញ្ចូល Player ID របស់គណនីហ្គេម' : 'Please enter your Player ID'
+      );
+      return;
+    }
+
+    if (paymentMethod === 'wallet' && !isAuthenticated) {
+      setPaymentError(
+        language === 'kh'
+          ? 'សូមចូលគណនីដើម្បីទូទាត់តាមកាបូបលុយ Wallet ឬជ្រើសរើស Bakong KHQR (មិនបាច់ Login)'
+          : 'Please sign in to pay with wallet balance or select Bakong KHQR for instant guest checkout'
+      );
       return;
     }
 
@@ -175,7 +203,7 @@ export default function TopUpPage() {
     }
   };
 
-  // Simulate payment for demo/sandbox testing
+  // Simulate payment for demo/testing
   const handleSimulatePayment = async () => {
     if (!currentOrder) return;
     setIsSimulatingPayment(true);
@@ -206,66 +234,76 @@ export default function TopUpPage() {
   };
 
   // Filter packages by category
-  const filteredPackages = selectedGame?.packages.filter((pkg) => {
-    if (categoryFilter === 'all') return true;
-    return pkg.category === categoryFilter;
-  }) || [];
+  const filteredPackages =
+    selectedGame?.packages.filter((pkg) => {
+      if (categoryFilter === 'all') return true;
+      return pkg.category === categoryFilter;
+    }) || [];
 
   return (
-    <div className="min-h-screen bg-[#0b0e14] text-white pt-24 pb-20 selection:bg-[#d4af37] selection:text-black">
-      {/* Background Decorative Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[450px] bg-gradient-to-b from-[#d4af37]/10 via-[#00e4f2]/5 to-transparent blur-3xl pointer-events-none -z-10" />
+    <div className="min-h-screen bg-[#090c10] text-white pt-20 pb-24 selection:bg-[#d4af37] selection:text-black">
+      {/* Background Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[420px] bg-gradient-to-b from-amber-500/10 via-cyan-500/5 to-transparent blur-3xl pointer-events-none -z-10" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Hero */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500/10 via-yellow-400/10 to-amber-500/10 border border-[#d4af37]/30 text-[#f2ca50] text-xs font-bold tracking-widest uppercase shadow-[0_0_20px_rgba(212,175,55,0.2)]">
-            <Zap className="w-4 h-4 text-amber-400 animate-bounce" />
-            <span>{t('topUpNavBadge')}</span>
-            <span className="text-neutral-500">•</span>
-            <span className="text-white">100% AUTOMATED DELIVERY</span>
+        {/* Simple & Modern Hero Banner */}
+        <div className="text-center max-w-3xl mx-auto pt-4 pb-8 space-y-3">
+          {/* Glowing Guest Top-Up Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/15 via-yellow-400/15 to-amber-500/15 border border-amber-400/30 text-[#f2ca50] text-xs font-bold tracking-wider uppercase shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" />
+            <span>{language === 'kh' ? '✨ មិនបាច់បង្កើត Account • មិនបាច់ Login' : '✨ No Login Required • 100% Guest Checkout'}</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
             {language === 'kh' ? (
               <>
-                បញ្ចូលលុយ <span className="bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] bg-clip-text text-transparent">Robux & ពេជ្រហ្គេម</span> ចូល ID ផ្ទាល់
+                បញ្ចូលលុយ <span className="bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] bg-clip-text text-transparent">ពេជ្រ & កាក់ហ្គេម</span> ចូល ID ផ្ទាល់
               </>
             ) : (
               <>
-                DIRECT IN-GAME <span className="bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] bg-clip-text text-transparent">GAME TOP UP</span>
+                DIRECT IN-GAME <span className="bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] bg-clip-text text-transparent">TOP UP PLATFORM</span>
               </>
             )}
           </h1>
 
-          <p className="text-neutral-400 text-sm sm:text-base leading-relaxed">
-            {t('topUpPageSubtitle')}
+          <p className="text-neutral-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+            {language === 'kh'
+              ? 'ជ្រើសរើសហ្គេម បញ្ចូល Player ID រួចស្កេនបង់ប្រាក់តាម Bakong KHQR ពេជ្រនឹងចូលតួអង្គរបស់អ្នកភ្លាមៗក្នុង ៣ វិនាទី!'
+              : 'Choose your game, enter your Player ID, and scan with Bakong KHQR for instant 3-second delivery.'}
           </p>
 
-          {/* Trust Guarantees */}
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-2 text-xs text-neutral-300">
-            <div className="flex items-center gap-1.5 bg-[#151a23]/70 px-3 py-1.5 rounded-lg border border-white/[0.06]">
+          {/* 4 Trust Highlights */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 max-w-2xl mx-auto text-xs">
+            <div className="bg-[#131822] border border-white/[0.08] rounded-xl px-3 py-2 flex items-center justify-center gap-1.5 text-neutral-300">
               <Clock className="w-3.5 h-3.5 text-amber-400" />
-              <span>{language === 'kh' ? 'ចូលភ្លាមៗក្នុង ៣ វិនាទី' : 'Instant 3s Delivery'}</span>
+              <span>{language === 'kh' ? 'ចូលលឿន (3 វិនាទី)' : 'Instant 3s Delivery'}</span>
             </div>
-            <div className="flex items-center gap-1.5 bg-[#151a23]/70 px-3 py-1.5 rounded-lg border border-white/[0.06]">
+            <div className="bg-[#131822] border border-white/[0.08] rounded-xl px-3 py-2 flex items-center justify-center gap-1.5 text-neutral-300">
               <QrCode className="w-3.5 h-3.5 text-cyan-400" />
-              <span>{language === 'kh' ? 'ស្កេនបង់ Bakong KHQR' : 'Bakong KHQR Supported'}</span>
+              <span>{language === 'kh' ? 'Bakong KHQR' : 'Bakong KHQR'}</span>
             </div>
-            <div className="flex items-center gap-1.5 bg-[#151a23]/70 px-3 py-1.5 rounded-lg border border-white/[0.06]">
+            <div className="bg-[#131822] border border-white/[0.08] rounded-xl px-3 py-2 flex items-center justify-center gap-1.5 text-neutral-300">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>{language === 'kh' ? 'សុវត្ថិភាព មិនប៉ះពាល់ Password' : 'Zero Password Required'}</span>
+              <span>{language === 'kh' ? 'គ្មាន Password' : 'Zero Password'}</span>
+            </div>
+            <div className="bg-[#131822] border border-white/[0.08] rounded-xl px-3 py-2 flex items-center justify-center gap-1.5 text-neutral-300">
+              <Zap className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+              <span>{language === 'kh' ? 'ស្វ័យប្រវត្តិ ២៤/៧' : '24/7 Automated'}</span>
             </div>
           </div>
         </div>
 
-        {/* Game Selector Tabs */}
+        {/* Step 1: Select Game (Visual Carousel Grid) */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
-              <Gamepad2 className="w-4 h-4 text-[#f2ca50]" />
-              <span>{t('topUpSelectGame')}</span>
-            </h2>
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-black font-black text-xs flex items-center justify-center shadow-md">
+                1
+              </span>
+              <h2 className="text-sm font-bold uppercase tracking-wider text-white">
+                {language === 'kh' ? 'ជ្រើសរើសហ្គេមដែលចង់បញ្ចូល' : 'Select Game'}
+              </h2>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
@@ -274,21 +312,22 @@ export default function TopUpPage() {
               return (
                 <button
                   key={g.id}
-                  onClick={() => {
-                    setSelectedGameId(g.id);
-                  }}
-                  className={`relative flex flex-col items-center justify-center p-3 rounded-2xl border transition-all duration-300 text-center group ${
+                  onClick={() => setSelectedGameId(g.id)}
+                  className={`relative flex flex-col items-center justify-center p-3 rounded-2xl border transition-all duration-200 text-center group cursor-pointer ${
                     isSelected
-                      ? 'bg-[#1a2130] border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.25)] scale-[1.02]'
-                      : 'bg-[#12161f] border-white/[0.07] hover:border-white/[0.2] hover:bg-[#161c28]'
+                      ? 'bg-[#1a2232] border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.3)] scale-[1.02]'
+                      : 'bg-[#121620] border-white/[0.06] hover:border-white/[0.2] hover:bg-[#161c28]'
                   }`}
                 >
-                  {/* Active Indicator Top Accent */}
+                  {/* Selected Indicator Pill */}
                   {isSelected && (
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-gradient-to-r from-amber-400 to-yellow-300 rounded-b-full shadow-sm" />
+                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-yellow-300 text-black text-[9px] font-black uppercase px-2 py-0.2 rounded-full shadow-md flex items-center gap-1">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" />
+                      <span>{language === 'kh' ? 'បានជ្រើស' : 'Selected'}</span>
+                    </div>
                   )}
 
-                  <div className="w-14 h-14 rounded-xl overflow-hidden mb-2 relative p-[1px] bg-gradient-to-br from-white/10 to-transparent">
+                  <div className="w-14 h-14 rounded-xl overflow-hidden mb-2 relative p-[1px] bg-gradient-to-br from-white/10 to-transparent mt-1">
                     <img
                       src={g.iconUrl || 'https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=200'}
                       alt={g.title}
@@ -299,7 +338,7 @@ export default function TopUpPage() {
                   <span className="text-xs font-bold text-white line-clamp-1 mb-0.5">
                     {g.title}
                   </span>
-                  <span className="text-[10px] text-amber-400/90 font-medium">
+                  <span className="text-[10px] text-amber-400 font-semibold">
                     {g.currencyName}
                   </span>
                 </button>
@@ -308,68 +347,68 @@ export default function TopUpPage() {
           </div>
         </div>
 
-        {/* Main Top-Up Interactive Board */}
+        {/* Main Interactive Top-Up Board */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Input ID + Packages (8 Columns) */}
+          {/* Left Column: ID Input + Packages + Payment Method (8 Cols) */}
           <div className="lg:col-span-8 space-y-6">
-            {/* Step 1: In-Game Account Identification */}
-            <div className="bg-[#121721] rounded-2xl border border-white/[0.08] p-5 sm:p-6 relative overflow-hidden shadow-xl">
-              <div className="flex items-center justify-between pb-4 border-b border-white/[0.06] mb-5">
+            {/* Step 2: In-Game Identification */}
+            <div className="bg-[#121620] rounded-2xl border border-white/[0.08] p-5 sm:p-6 shadow-xl">
+              <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.06] mb-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#ffe088] to-[#8f6b10] flex items-center justify-center font-black text-black text-sm">
-                    1
-                  </div>
+                  <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-black font-black text-xs flex items-center justify-center shadow-md">
+                    2
+                  </span>
                   <div>
-                    <h3 className="font-bold text-base text-white">
-                      {t('topUpStep1Title')}
+                    <h3 className="font-bold text-sm sm:text-base text-white">
+                      {language === 'kh' ? 'បញ្ចូលលេខសម្គាល់គណនី (Player ID)' : 'Enter In-Game ID'}
                     </h3>
                     <p className="text-xs text-neutral-400">
                       {language === 'kh'
-                        ? 'បញ្ចូលលេខសម្គាល់គណនីរបស់អ្នក ដើម្បីប្រព័ន្ធបញ្ចូលលុយចូលតួអង្គត្រឹមត្រូវ'
-                        : 'Enter your game credentials to receive currencies directly into your character.'}
+                        ? 'បញ្ចូលតែ Player ID ប៉ុណ្ណោះ មិនទាមទារ Password ឡើយ'
+                        : 'Only Player ID is required. Zero password needed.'}
                     </p>
                   </div>
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => setShowGuideModal(true)}
-                  className="flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 font-semibold bg-cyan-500/10 px-3 py-1.5 rounded-lg border border-cyan-500/20 transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 font-bold bg-cyan-500/10 px-3 py-1.5 rounded-lg border border-cyan-500/20 transition-colors cursor-pointer"
                 >
                   <HelpCircle className="w-3.5 h-3.5" />
-                  <span>{t('topUpGuideBtn')}</span>
+                  <span>{language === 'kh' ? 'របៀបមើល ID?' : 'How to find ID?'}</span>
                 </button>
               </div>
 
               {/* Dynamic Inputs for Selected Game */}
-              <div className="space-y-4">
+              <div className="space-y-3.5">
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                  {/* Primary Player ID / Username */}
-                  <div className={selectedGame?.inputConfig?.some((c) => c.key === 'zoneId' || c.key === 'serverRegion') ? 'sm:col-span-8' : 'sm:col-span-9'}>
+                  {/* Primary Player ID Input */}
+                  <div className={selectedGame?.inputConfig?.some((c) => c.key === 'zoneId' || c.key === 'serverRegion') ? 'sm:col-span-5' : 'sm:col-span-8'}>
                     <label className="block text-xs font-bold text-neutral-300 mb-1.5 uppercase tracking-wider">
                       {language === 'kh'
                         ? selectedGame?.inputConfig?.[0]?.labelKh || 'Player ID'
                         : selectedGame?.inputConfig?.[0]?.label || 'Player ID'}
-                      <span className="text-red-400 ml-1">*</span>
+                      <span className="text-amber-400 ml-1">*</span>
                     </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={playerId}
-                        onChange={(e) => {
-                          setPlayerId(e.target.value);
-                          setVerifiedNickname(null);
-                        }}
-                        placeholder={selectedGame?.inputConfig?.[0]?.placeholder || 'Enter ID'}
-                        className="w-full bg-[#181f2c] border border-white/[0.1] rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] transition-all font-mono"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      value={playerId}
+                      onChange={(e) => {
+                        setPlayerId(e.target.value);
+                        setVerifiedNickname(null);
+                        setVerificationError(null);
+                      }}
+                      placeholder={selectedGame?.inputConfig?.[0]?.placeholder || 'Enter ID'}
+                      className="w-full bg-[#171d2b] border border-white/[0.1] rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] transition-all font-mono"
+                    />
                   </div>
 
                   {/* Secondary Input: Zone ID (e.g. MLBB) */}
                   {selectedGame?.inputConfig?.some((c) => c.key === 'zoneId') && (
-                    <div className="sm:col-span-4">
+                    <div className="sm:col-span-3">
                       <label className="block text-xs font-bold text-neutral-300 mb-1.5 uppercase tracking-wider">
-                        Zone ID <span className="text-red-400 ml-1">*</span>
+                        Zone ID <span className="text-amber-400 ml-1">*</span>
                       </label>
                       <input
                         type="text"
@@ -377,23 +416,24 @@ export default function TopUpPage() {
                         onChange={(e) => {
                           setZoneId(e.target.value);
                           setVerifiedNickname(null);
+                          setVerificationError(null);
                         }}
                         placeholder="ឧ. 2026"
-                        className="w-full bg-[#181f2c] border border-white/[0.1] rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] transition-all font-mono"
+                        className="w-full bg-[#171d2b] border border-white/[0.1] rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] transition-all font-mono"
                       />
                     </div>
                   )}
 
                   {/* Secondary Input: Server Region (e.g. Genshin) */}
                   {selectedGame?.inputConfig?.some((c) => c.key === 'serverRegion') && (
-                    <div className="sm:col-span-4">
+                    <div className="sm:col-span-3">
                       <label className="block text-xs font-bold text-neutral-300 mb-1.5 uppercase tracking-wider">
-                        Server <span className="text-red-400 ml-1">*</span>
+                        Server <span className="text-amber-400 ml-1">*</span>
                       </label>
                       <select
                         value={serverRegion}
                         onChange={(e) => setServerRegion(e.target.value)}
-                        className="w-full bg-[#181f2c] border border-white/[0.1] rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-[#d4af37] transition-all"
+                        className="w-full bg-[#171d2b] border border-white/[0.1] rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-[#d4af37] transition-all"
                       >
                         <option value="Asia">Asia (អាស៊ី)</option>
                         <option value="America">America</option>
@@ -403,41 +443,41 @@ export default function TopUpPage() {
                     </div>
                   )}
 
-                  {/* Verify Action Button */}
-                  <div className="sm:col-span-3 flex items-end">
+                  {/* Instant Check Nickname Button */}
+                  <div className="sm:col-span-4 flex items-end">
                     <button
                       type="button"
                       onClick={handleVerifyPlayer}
                       disabled={isVerifying || !playerId.trim()}
-                      className="w-full h-[46px] bg-[#1e2738] hover:bg-[#253147] disabled:opacity-50 text-white rounded-xl text-xs font-bold tracking-wider transition-all border border-white/[0.1] flex items-center justify-center gap-1.5 shadow-sm"
+                      className="w-full h-[46px] bg-[#1d2536] hover:bg-[#253046] disabled:opacity-50 text-white rounded-xl text-xs font-bold tracking-wider transition-all border border-white/[0.1] flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                     >
                       {isVerifying ? (
                         <>
                           <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-400" />
-                          <span>{t('topUpVerifying')}</span>
+                          <span>{language === 'kh' ? 'កំពុងពិនិត្យ...' : 'Checking...'}</span>
                         </>
                       ) : (
                         <>
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>{t('topUpVerifyBtn')}</span>
+                          <span>{language === 'kh' ? 'ពិនិត្យឈ្មោះតួអង្គ' : 'Check Nickname'}</span>
                         </>
                       )}
                     </button>
                   </div>
                 </div>
 
-                {/* Verified Nickname Banner */}
+                {/* Nickname Verified Badge */}
                 {verifiedNickname && (
                   <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 flex items-center justify-between animate-in fade-in">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                      <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
                         <CheckCircle2 className="w-4 h-4" />
                       </div>
                       <div>
-                        <span className="text-[11px] text-emerald-300 uppercase tracking-widest font-bold">
-                          {t('topUpVerifiedSuccess')}
+                        <span className="text-[10px] text-emerald-400 uppercase tracking-widest font-black">
+                          {language === 'kh' ? '✅ ឈ្មោះតួអង្គត្រឹមត្រូវ (Verified)' : '✅ Verified Nickname'}
                         </span>
-                        <div className="text-sm font-bold text-white flex items-center gap-2">
+                        <div className="text-sm font-black text-white flex items-center gap-2">
                           <span>{verifiedNickname}</span>
                           <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">
                             ID: {playerId} {zoneId ? `(${zoneId})` : ''}
@@ -445,7 +485,7 @@ export default function TopUpPage() {
                         </div>
                       </div>
                     </div>
-                    <span className="text-xs text-neutral-400 hidden sm:inline">
+                    <span className="text-xs text-emerald-400 font-semibold hidden sm:inline">
                       {language === 'kh' ? 'រួចរាល់សម្រាប់បញ្ចូល' : 'Ready to receive'}
                     </span>
                   </div>
@@ -461,30 +501,31 @@ export default function TopUpPage() {
               </div>
             </div>
 
-            {/* Step 2: Denomination Selection */}
-            <div className="bg-[#121721] rounded-2xl border border-white/[0.08] p-5 sm:p-6 shadow-xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-white/[0.06] mb-5 gap-3">
+            {/* Step 3: Select Package */}
+            <div className="bg-[#121620] rounded-2xl border border-white/[0.08] p-5 sm:p-6 shadow-xl">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 border-b border-white/[0.06] mb-5 gap-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#ffe088] to-[#8f6b10] flex items-center justify-center font-black text-black text-sm">
-                    2
-                  </div>
+                  <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-black font-black text-xs flex items-center justify-center shadow-md">
+                    3
+                  </span>
                   <div>
-                    <h3 className="font-bold text-base text-white">
-                      {t('topUpStep2Title')}
+                    <h3 className="font-bold text-sm sm:text-base text-white">
+                      {language === 'kh' ? 'ជ្រើសរើសកញ្ចប់ពេជ្រ / កាក់' : 'Select Package'}
                     </h3>
                     <p className="text-xs text-neutral-400">
                       {language === 'kh'
-                        ? 'ជ្រើសរើសបរិមាណទឹកប្រាក់ ឬកញ្ចប់ Pass ដែលអ្នកចង់បញ្ចូល'
-                        : 'Choose the amount of currency or passes you wish to reload.'}
+                        ? 'ជ្រើសរើសចំនួនពេជ្រ ឬកញ្ចប់ Pass ដែលអ្នកពេញចិត្ត'
+                        : 'Choose diamond tier or bundle pass.'}
                     </p>
                   </div>
                 </div>
 
-                {/* Category Filters */}
-                <div className="flex items-center gap-1.5 bg-[#181f2c] p-1 rounded-xl border border-white/[0.06] text-xs">
+                {/* Category Filter Pills */}
+                <div className="flex items-center gap-1.5 bg-[#171d2b] p-1 rounded-xl border border-white/[0.06] text-xs">
                   <button
+                    type="button"
                     onClick={() => setCategoryFilter('all')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                    className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                       categoryFilter === 'all'
                         ? 'bg-[#d4af37] text-black shadow-sm'
                         : 'text-neutral-400 hover:text-white'
@@ -493,18 +534,20 @@ export default function TopUpPage() {
                     {language === 'kh' ? 'ទាំងអស់' : 'All'}
                   </button>
                   <button
+                    type="button"
                     onClick={() => setCategoryFilter('currency')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                    className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                       categoryFilter === 'currency'
                         ? 'bg-[#d4af37] text-black shadow-sm'
                         : 'text-neutral-400 hover:text-white'
                     }`}
                   >
-                    {selectedGame?.currencyName || 'Currency'}
+                    {selectedGame?.currencyName || 'Diamonds'}
                   </button>
                   <button
+                    type="button"
                     onClick={() => setCategoryFilter('pass')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                    className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                       categoryFilter === 'pass'
                         ? 'bg-[#d4af37] text-black shadow-sm'
                         : 'text-neutral-400 hover:text-white'
@@ -515,7 +558,7 @@ export default function TopUpPage() {
                 </div>
               </div>
 
-              {/* Packages Grid */}
+              {/* Packages Cards Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
                 {filteredPackages.map((pkg) => {
                   const isSelected = selectedPackage?.id === pkg.id;
@@ -523,25 +566,23 @@ export default function TopUpPage() {
                     <div
                       key={pkg.id}
                       onClick={() => setSelectedPackage(pkg)}
-                      className={`relative cursor-pointer rounded-2xl p-4 border transition-all duration-200 flex flex-col justify-between ${
+                      className={`relative cursor-pointer rounded-2xl p-4 border transition-all duration-200 flex flex-col justify-between group ${
                         isSelected
-                          ? 'bg-gradient-to-b from-[#1c2434] to-[#161c28] border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.22)] scale-[1.02]'
-                          : 'bg-[#151a24] border-white/[0.08] hover:border-white/[0.2] hover:bg-[#181f2c]'
+                          ? 'bg-[#1a2232] border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.3)] scale-[1.02]'
+                          : 'bg-[#161c28] border-white/[0.06] hover:border-white/[0.2] hover:bg-[#1b2230]'
                       }`}
                     >
-                      {/* Badge if present */}
+                      {/* Popular / Hot Deal Badge */}
                       {pkg.badge && (
-                        <div className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase bg-gradient-to-r from-amber-500 to-yellow-400 text-black shadow-md flex items-center gap-1">
-                          {pkg.badge.includes('HOT') && <Flame className="w-2.5 h-2.5" />}
-                          <span>{pkg.badge}</span>
+                        <div className="absolute -top-2.5 right-3 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
+                          {pkg.badge}
                         </div>
                       )}
 
                       <div>
-                        {/* Currency Icon & Name */}
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl">{selectedGame?.currencyIcon || '⚡'}</span>
-                          <span className="font-black text-sm text-white line-clamp-1">
+                          <span className="text-xl">{selectedGame?.currencyIcon || '💎'}</span>
+                          <span className="font-black text-sm text-white group-hover:text-amber-300 transition-colors">
                             {pkg.name}
                           </span>
                         </div>
@@ -556,7 +597,7 @@ export default function TopUpPage() {
                       <div className="pt-3 border-t border-white/[0.06] flex items-end justify-between">
                         <div>
                           {pkg.originalPrice && pkg.originalPrice > pkg.price && (
-                            <span className="text-[11px] text-neutral-500 line-through block">
+                            <span className="text-[10px] text-neutral-500 line-through block">
                               ${Number(pkg.originalPrice).toFixed(2)}
                             </span>
                           )}
@@ -573,7 +614,7 @@ export default function TopUpPage() {
                       {/* Selected Indicator Checkmark */}
                       {isSelected && (
                         <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#d4af37] rounded-tl-lg rounded-br-2xl flex items-center justify-center">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-black" />
+                          <Check className="w-3.5 h-3.5 text-black stroke-[3]" />
                         </div>
                       )}
                     </div>
@@ -582,32 +623,32 @@ export default function TopUpPage() {
               </div>
             </div>
 
-            {/* Step 3: Payment Method Selection */}
-            <div className="bg-[#121721] rounded-2xl border border-white/[0.08] p-5 sm:p-6 shadow-xl">
-              <div className="flex items-center gap-2.5 pb-4 border-b border-white/[0.06] mb-5">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#ffe088] to-[#8f6b10] flex items-center justify-center font-black text-black text-sm">
-                  3
-                </div>
+            {/* Step 4: Payment Method (Default: 100% Instant Guest KHQR) */}
+            <div className="bg-[#121620] rounded-2xl border border-white/[0.08] p-5 sm:p-6 shadow-xl">
+              <div className="flex items-center gap-2.5 pb-3.5 border-b border-white/[0.06] mb-4">
+                <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-black font-black text-xs flex items-center justify-center shadow-md">
+                  4
+                </span>
                 <div>
-                  <h3 className="font-bold text-base text-white">
-                    {t('topUpStep3Title')}
+                  <h3 className="font-bold text-sm sm:text-base text-white">
+                    {language === 'kh' ? 'វិធីសាស្ត្រទូទាត់ប្រាក់' : 'Payment Method'}
                   </h3>
                   <p className="text-xs text-neutral-400">
                     {language === 'kh'
-                      ? 'ជ្រើសរើសវិធីសាស្ត្របង់ប្រាក់តាម KHQR គ្រប់ធនាគារ ឬកាបូបប្រាក់'
-                      : 'Choose to pay seamlessly with Bakong KHQR or your platform wallet.'}
+                      ? 'ស្កេនទូទាត់ភ្លាមៗតាម Bakong KHQR គ្រប់ធនាគារ (មិនបាច់ Login)'
+                      : 'Scan & pay with Bakong KHQR across any Cambodian bank.'}
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Option 1: Bakong KHQR */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {/* Option 1: Bakong KHQR (Primary - Guest Checkout) */}
                 <div
                   onClick={() => setPaymentMethod('bakong_khqr')}
-                  className={`cursor-pointer rounded-2xl p-4 border transition-all flex items-start gap-3.5 ${
+                  className={`cursor-pointer rounded-2xl p-4 border transition-all flex items-start gap-3 ${
                     paymentMethod === 'bakong_khqr'
-                      ? 'bg-[#1b2230] border-[#00e4f2] shadow-[0_0_20px_rgba(0,228,242,0.2)]'
-                      : 'bg-[#151a24] border-white/[0.08] hover:border-white/[0.2]'
+                      ? 'bg-[#1a2232] border-[#00e4f2] shadow-[0_0_20px_rgba(0,228,242,0.2)]'
+                      : 'bg-[#161c28] border-white/[0.06] hover:border-white/[0.2]'
                   }`}
                 >
                   <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-400 shrink-0">
@@ -616,27 +657,27 @@ export default function TopUpPage() {
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-sm text-white">
-                        Bakong KHQR (All Banks)
+                        Bakong KHQR
                       </span>
-                      <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                        INSTANT
+                      <span className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                        NO LOGIN
                       </span>
                     </div>
-                    <p className="text-xs text-neutral-400 mt-1">
+                    <p className="text-[11px] text-neutral-400 mt-1">
                       {language === 'kh'
-                        ? 'ស្កេនទូទាត់ភ្លាមៗជាមួយ ABA, Wing, Bakong, ACLEDA, Sathapana...'
-                        : 'Scan & pay with any Cambodian banking app instantly.'}
+                        ? 'ABA, Wing, ACLEDA, Bakong, Canadia...'
+                        : 'Instant scan with all banking apps'}
                     </p>
                   </div>
                 </div>
 
-                {/* Option 2: NEXUS Wallet */}
+                {/* Option 2: Platform Wallet (Only for logged in users) */}
                 <div
                   onClick={() => setPaymentMethod('wallet')}
-                  className={`cursor-pointer rounded-2xl p-4 border transition-all flex items-start gap-3.5 ${
+                  className={`cursor-pointer rounded-2xl p-4 border transition-all flex items-start gap-3 ${
                     paymentMethod === 'wallet'
-                      ? 'bg-[#1b2230] border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.2)]'
-                      : 'bg-[#151a24] border-white/[0.08] hover:border-white/[0.2]'
+                      ? 'bg-[#1a2232] border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.2)]'
+                      : 'bg-[#161c28] border-white/[0.06] hover:border-white/[0.2]'
                   }`}
                 >
                   <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
@@ -653,78 +694,76 @@ export default function TopUpPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-neutral-400 mt-1">
+                    <p className="text-[11px] text-neutral-400 mt-1">
                       {isAuthenticated
                         ? language === 'kh'
-                          ? 'កាត់ប្រាក់ចេញពីកាបូបរបស់អ្នកដោយផ្ទាល់'
-                          : 'Deduct directly from your platform balance.'
+                          ? 'កាត់ចេញពីកាបូបលុយរបស់អ្នក'
+                          : 'Deduct from platform balance'
                         : language === 'kh'
-                        ? 'សូមចូលគណនីដើម្បីបង់តាម Wallet'
-                        : 'Sign in to use your wallet balance.'}
+                        ? 'សម្រាប់អ្នកមាន Account (ស្រេចចិត្ត)'
+                        : 'Optional for registered accounts'}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Optional Phone/Telegram field for receipt */}
+              {/* Optional Phone / Telegram receipt */}
               <div className="mt-4 pt-4 border-t border-white/[0.06]">
                 <label className="block text-xs font-medium text-neutral-400 mb-1">
                   {language === 'kh'
                     ? 'លេខទូរស័ព្ទ ឬ Telegram (ស្រេចចិត្ត - សម្រាប់ទទួលវិក្កយបត្រ)'
-                    : 'Phone or Telegram (Optional - for order notification)'}
+                    : 'Phone or Telegram (Optional - for receipt delivery)'}
                 </label>
                 <input
                   type="text"
                   value={contactPhone}
                   onChange={(e) => setContactPhone(e.target.value)}
                   placeholder="e.g. 012 345 678 / @telegram_username"
-                  className="w-full bg-[#181f2c] border border-white/[0.08] rounded-xl px-4 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37]"
+                  className="w-full bg-[#171d2b] border border-white/[0.08] rounded-xl px-4 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37]"
                 />
               </div>
             </div>
           </div>
 
-          {/* Right Column: Checkout Summary & Sticky Action (4 Columns) */}
-          <div className="lg:col-span-4 space-y-5 sticky top-28">
-            <div className="bg-[#121721] rounded-2xl border border-white/[0.1] p-5 sm:p-6 shadow-2xl relative overflow-hidden">
-              {/* Gold Top Light */}
+          {/* Right Column: Checkout Summary (4 Cols - Sticky) */}
+          <div className="lg:col-span-4 space-y-4 sticky top-24">
+            <div className="bg-[#121620] rounded-2xl border border-white/[0.1] p-5 sm:p-6 shadow-2xl relative overflow-hidden">
+              {/* Gold Top Light Bar */}
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600" />
 
-              <h3 className="font-bold text-base text-white mb-4 flex items-center justify-between">
-                <span>{t('topUpOrderSummary')}</span>
-                <span className="text-[10px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20 font-mono">
-                  LIVE CHECKOUT
+              <h3 className="font-black text-sm uppercase tracking-wider text-white mb-4 flex items-center justify-between">
+                <span>{language === 'kh' ? 'សេចក្តីសង្ខេបការបញ្ជាទិញ' : 'Order Summary'}</span>
+                <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 font-bold">
+                  GUEST CHECKOUT
                 </span>
               </h3>
 
-              {/* Selected Game & Package Snapshot */}
-              <div className="bg-[#181f2c] rounded-xl p-3.5 mb-4 border border-white/[0.06] space-y-2.5">
-                <div className="flex items-center justify-between text-xs">
+              {/* Selected Game & Package Detail Box */}
+              <div className="bg-[#171d2b] rounded-xl p-3.5 mb-4 border border-white/[0.06] space-y-2 text-xs">
+                <div className="flex items-center justify-between">
                   <span className="text-neutral-400">{language === 'kh' ? 'ហ្គេម' : 'Game'}:</span>
-                  <span className="font-bold text-white flex items-center gap-1.5">
-                    <span>{selectedGame?.title}</span>
-                  </span>
+                  <span className="font-bold text-white">{selectedGame?.title}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center justify-between">
                   <span className="text-neutral-400">{language === 'kh' ? 'កញ្ចប់' : 'Package'}:</span>
                   <span className="font-black text-amber-400">
                     {selectedPackage ? selectedPackage.name : '—'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center justify-between">
                   <span className="text-neutral-400">Player ID:</span>
-                  <span className="font-mono text-white">
+                  <span className="font-mono text-white font-bold">
                     {playerId || '—'} {zoneId ? `(${zoneId})` : ''}
                   </span>
                 </div>
 
                 {verifiedNickname && (
-                  <div className="flex items-center justify-between text-xs pt-1 border-t border-white/[0.06]">
+                  <div className="flex items-center justify-between pt-1 border-t border-white/[0.06]">
                     <span className="text-neutral-400">{language === 'kh' ? 'ឈ្មោះតួអង្គ' : 'Nickname'}:</span>
                     <span className="font-bold text-emerald-400 flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" />
+                      <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>{verifiedNickname}</span>
                     </span>
                   </div>
@@ -738,22 +777,22 @@ export default function TopUpPage() {
                   <span>${selectedPackage ? Number(selectedPackage.price).toFixed(2) : '0.00'}</span>
                 </div>
                 <div className="flex justify-between text-neutral-400">
-                  <span>{language === 'kh' ? 'ថ្លៃសេវាប្រព័ន្ធ' : 'Platform Fee'}</span>
-                  <span className="text-emerald-400 font-bold">{language === 'kh' ? 'ឥតគិតថ្លៃ ($0.00)' : 'FREE ($0.00)'}</span>
+                  <span>{language === 'kh' ? 'ថ្លៃសេវា' : 'Platform Fee'}</span>
+                  <span className="text-emerald-400 font-bold">{language === 'kh' ? 'ឥតគិតថ្លៃ ($0.00)' : 'FREE'}</span>
                 </div>
                 <div className="flex justify-between text-neutral-400">
-                  <span>{language === 'kh' ? 'វិធីសាស្ត្របង់ប្រាក់' : 'Payment Method'}</span>
-                  <span className="font-semibold text-white capitalize">
+                  <span>{language === 'kh' ? 'វិធីទូទាត់' : 'Payment'}</span>
+                  <span className="font-semibold text-white">
                     {paymentMethod === 'bakong_khqr' ? 'Bakong KHQR' : 'NEXUS Wallet'}
                   </span>
                 </div>
               </div>
 
               {/* Total Due */}
-              <div className="pt-4 mb-5">
+              <div className="pt-3 mb-5">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-sm font-bold text-white uppercase tracking-wider">
-                    {language === 'kh' ? 'ទឹកប្រាក់សរុប' : 'Total Due'}
+                  <span className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
+                    {language === 'kh' ? 'ទឹកប្រាក់ត្រូវបង់' : 'Total Due'}
                   </span>
                   <div className="text-right">
                     <span className="text-2xl font-black text-[#f2ca50]">
@@ -766,13 +805,7 @@ export default function TopUpPage() {
                 </div>
               </div>
 
-              {/* Notice */}
-              <div className="bg-[#181f2c] rounded-xl p-3 mb-5 text-[11px] text-neutral-400 leading-relaxed border border-white/[0.06] flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <span>{t('topUpInstantNotice')}</span>
-              </div>
-
-              {/* Error message */}
+              {/* Error Alert */}
               {paymentError && (
                 <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-4 text-xs text-red-300 flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
@@ -780,36 +813,45 @@ export default function TopUpPage() {
                 </div>
               )}
 
-              {/* Submit Button */}
+              {/* 1-Click CTA Button */}
               <button
                 type="button"
                 onClick={handleCheckout}
                 disabled={isSubmitting || !selectedPackage || !playerId.trim()}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] hover:brightness-110 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none text-[#0b0e14] font-black text-sm tracking-wider uppercase transition-all shadow-[0_0_25px_rgba(212,175,55,0.35)] flex items-center justify-center gap-2 group cursor-pointer"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] hover:brightness-110 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none text-[#0b0e14] font-black text-sm tracking-wider uppercase transition-all shadow-[0_0_20px_rgba(212,175,55,0.35)] flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isSubmitting ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin text-black" />
-                    <span>{language === 'kh' ? 'កំពុងដំណើរការ...' : 'Processing...'}</span>
+                    <span>{language === 'kh' ? 'កំពុងបង្កើតវិក្កយបត្រ...' : 'Processing...'}</span>
                   </>
                 ) : (
                   <>
                     <Zap className="w-4 h-4 text-black fill-black" />
-                    <span>{t('topUpSubmitBtn')}</span>
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    <span>
+                      {language === 'kh'
+                        ? `ស្កេន KHQR បញ្ចូលឥឡូវ ($${selectedPackage ? Number(selectedPackage.price).toFixed(2) : '0.00'})`
+                        : `Scan KHQR to Top Up ($${selectedPackage ? Number(selectedPackage.price).toFixed(2) : '0.00'})`}
+                    </span>
+                    <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>
+
+              <p className="text-[10px] text-center text-neutral-400 mt-3 flex items-center justify-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>{language === 'kh' ? 'ទូទាត់សុវត្ថិភាព ១០០% • មិនបាច់បង្កើត Account' : '100% Safe • Zero Login Required'}</span>
+              </p>
             </div>
 
-            {/* Support info */}
+            {/* Telegram 24/7 Support Pill */}
             <div className="text-center">
               <Link
                 href="https://t.me/nexus_support_kh"
                 target="_blank"
                 className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors"
               >
-                <span>{language === 'kh' ? 'ត្រូវការជំនួយបន្ទាន់?' : 'Need instant support?'}</span>
+                <span>{language === 'kh' ? 'ត្រូវការជំនួយ?' : 'Need instant support?'}</span>
                 <span className="text-cyan-400 underline font-semibold">Telegram @nexus_support_kh</span>
               </Link>
             </div>
@@ -817,13 +859,14 @@ export default function TopUpPage() {
         </div>
       </div>
 
-      {/* Payment KHQR Modal */}
+      {/* Bakong KHQR Payment Modal */}
       {showPaymentModal && currentOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-[#121721] rounded-3xl border border-white/[0.12] w-full max-w-md p-6 relative shadow-2xl overflow-hidden animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in">
+          <div className="bg-[#121620] rounded-3xl border border-white/[0.12] w-full max-w-md p-6 relative shadow-2xl overflow-hidden animate-in zoom-in-95">
             {/* Top Accent Line */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-cyan-400 via-amber-400 to-yellow-300" />
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500" />
 
+            {/* Header */}
             <div className="text-center mb-4">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold mb-2">
                 <CheckCircle2 className="w-3.5 h-3.5" />
@@ -833,7 +876,7 @@ export default function TopUpPage() {
                       ? 'ជោគជ័យ! បានបញ្ចូលរួចរាល់'
                       : 'SUCCESS! TOP UP COMPLETED'
                     : language === 'kh'
-                    ? 'រង់ចាំការបង់ប្រាក់ KHQR'
+                    ? 'រង់ចាំការស្កេនបង់ប្រាក់ KHQR'
                     : 'Awaiting KHQR Payment'}
                 </span>
               </div>
@@ -845,129 +888,125 @@ export default function TopUpPage() {
               </p>
             </div>
 
-            {/* If Payment is Pending: Show KHQR Card */}
+            {/* Pending Payment State: Display KHQR */}
             {currentOrder.paymentStatus === 'pending' && currentOrder.qrImage && (
               <div className="space-y-4">
-                {/* QR Code Container */}
-                <div className="bg-white p-4 rounded-2xl shadow-inner flex flex-col items-center justify-center relative">
-                  <div className="w-56 h-56 relative flex items-center justify-center">
-                    <img
-                      src={currentOrder.qrImage}
-                      alt="Bakong KHQR"
-                      className="w-full h-full object-contain"
-                    />
+                <div className="bg-white p-4 rounded-2xl mx-auto w-64 h-64 flex items-center justify-center shadow-lg relative">
+                  <img
+                    src={currentOrder.qrImage}
+                    alt="Bakong KHQR Code"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+
+                <div className="text-center">
+                  <div className="text-2xl font-black text-[#f2ca50]">
+                    ${Number(currentOrder.totalAmount).toFixed(2)}
                   </div>
-                  <div className="mt-2 text-center">
-                    <span className="text-xs font-black text-red-600 tracking-wider uppercase">
-                      KHQR • SCAN WITH ANY BANK
-                    </span>
+                  <div className="text-xs text-neutral-400">
+                    ≈ {toKHR(Number(currentOrder.totalAmount))}
                   </div>
                 </div>
 
-                {/* Amount Due Details */}
-                <div className="bg-[#181f2c] rounded-xl p-3 border border-white/[0.08] flex items-center justify-between text-xs">
-                  <span className="text-neutral-400">{language === 'kh' ? 'ទឹកប្រាក់ត្រូវបង់' : 'Amount Due'}:</span>
-                  <div className="text-right">
-                    <span className="font-black text-base text-[#f2ca50]">
-                      ${Number(currentOrder.totalAmount).toFixed(2)}
-                    </span>
-                    <span className="block text-[10px] text-neutral-400">
-                      ≈ {toKHR(Number(currentOrder.totalAmount))}
-                    </span>
-                  </div>
+                {/* KHQR Actions */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <a
+                    href={currentOrder.qrImage}
+                    download={`KHQR-${currentOrder.orderNumber}.png`}
+                    className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#1a2232] border border-white/[0.08] hover:bg-[#20293d] text-white font-bold transition-all"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>{language === 'kh' ? 'ទាញយក QR' : 'Save QR'}</span>
+                  </a>
+
+                  {currentOrder.deepLink ? (
+                    <a
+                      href={currentOrder.deepLink}
+                      className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-red-600/20 border border-red-500/30 hover:bg-red-600/30 text-red-300 font-bold transition-all"
+                    >
+                      <Smartphone className="w-3.5 h-3.5" />
+                      <span>{language === 'kh' ? 'បើក App ធនាគារ' : 'Open Bank App'}</span>
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(currentOrder.orderNumber);
+                        setCopiedOrder(true);
+                        setTimeout(() => setCopiedOrder(false), 2000);
+                      }}
+                      className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#1a2232] border border-white/[0.08] text-white font-bold"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>{copiedOrder ? 'បានចម្លង!' : 'ចម្លងលេខ Order'}</span>
+                    </button>
+                  )}
                 </div>
 
-                {/* Receiver Info */}
-                <div className="bg-[#181f2c] rounded-xl p-3 border border-white/[0.08] text-xs space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-neutral-400">Player Target:</span>
-                    <span className="font-bold text-white">
-                      {currentOrder.playerNickname || currentOrder.playerId}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-neutral-400">Delivery SLA:</span>
-                    <span className="text-emerald-400 font-bold">
-                      3-10 Seconds Automatic
-                    </span>
-                  </div>
+                {/* Instant Sandbox Payment Simulator (Allows one-click live testing) */}
+                <div className="pt-2 border-t border-white/[0.08]">
+                  <button
+                    type="button"
+                    onClick={handleSimulatePayment}
+                    disabled={isSimulatingPayment}
+                    className="w-full py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    {isSimulatingPayment ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>{language === 'kh' ? 'កំពុងផ្ទៀងផ្ទាត់...' : 'Verifying simulated payment...'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>{language === 'kh' ? '🧪 សាកល្បងបង់ប្រាក់ភ្លាមៗ (Test Simulate)' : '🧪 Test Simulate Payment'}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Paid State: Success Confirmation */}
+            {currentOrder.paymentStatus === 'paid' && (
+              <div className="space-y-4 text-center py-2">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400">
+                  <Check className="w-8 h-8 stroke-[3]" />
                 </div>
 
-                {/* Sandbox / Testing Simulator Button */}
+                <div>
+                  <h4 className="text-base font-black text-white">
+                    {language === 'kh' ? 'បញ្ចូលពេជ្រជោគជ័យ ១០០%!' : 'Top-Up Fulfilled Successfully!'}
+                  </h4>
+                  <p className="text-xs text-neutral-400 mt-1">
+                    {language === 'kh'
+                      ? `ពេជ្រ/កាក់ត្រូវបានបញ្ចូលទៅក្នុងគណនី ${currentOrder.playerNickname || currentOrder.playerId} រួចរាល់។`
+                      : `Currencies have been directly credited to ${currentOrder.playerNickname || currentOrder.playerId}.`}
+                  </p>
+                </div>
+
+                {currentOrder.deliveryProof && (
+                  <div className="bg-[#171d2b] p-3 rounded-xl border border-white/[0.06] text-left text-xs font-mono text-neutral-300">
+                    <span className="text-[10px] text-neutral-500 uppercase block mb-1">
+                      Delivery Proof Reference:
+                    </span>
+                    <span className="text-emerald-400 break-all">{currentOrder.deliveryProof}</span>
+                  </div>
+                )}
+
                 <button
                   type="button"
-                  onClick={handleSimulatePayment}
-                  disabled={isSimulatingPayment}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:brightness-110 text-black font-black text-xs tracking-wider uppercase transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={() => setShowPaymentModal(false)}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-black font-black text-xs uppercase tracking-wider cursor-pointer"
                 >
-                  {isSimulatingPayment ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <CheckCircle2 className="w-4 h-4" />
-                  )}
-                  <span>
-                    {language === 'kh'
-                      ? '⚡ ធ្វើតេស្តស្កេនបង់ប្រាក់ (Simulate Payment Scan)'
-                      : '⚡ Simulate KHQR Payment (Test Instant Delivery)'}
-                  </span>
+                  {language === 'kh' ? 'បិទផ្ទាំង (រួចរាល់)' : 'Close & Done'}
                 </button>
               </div>
             )}
 
-            {/* If Payment is Paid & Delivered */}
-            {currentOrder.paymentStatus === 'paid' && (
-              <div className="space-y-4 text-center py-4">
-                <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 mx-auto flex items-center justify-center animate-bounce">
-                  <CheckCircle2 className="w-8 h-8" />
-                </div>
-
-                <div className="space-y-1">
-                  <h4 className="text-xl font-black text-white">
-                    {language === 'kh' ? 'បញ្ចូលរួចរាល់ដោយជោគជ័យ!' : 'Top Up Successful!'}
-                  </h4>
-                  <p className="text-xs text-neutral-300">
-                    {language === 'kh'
-                      ? `ទឹកប្រាក់ ${currentOrder.packageName} ត្រូវបានបញ្ចូលចូលក្នុងគណនី ${currentOrder.playerNickname || currentOrder.playerId} រួចរាល់។`
-                      : `${currentOrder.packageName} has been directly credited to ${currentOrder.playerNickname || currentOrder.playerId}.`}
-                  </p>
-                </div>
-
-                {/* Proof Reference */}
-                {currentOrder.deliveryProof && (
-                  <div className="bg-[#181f2c] rounded-xl p-3 border border-emerald-500/30 text-left text-xs font-mono text-emerald-300 space-y-1">
-                    <span className="text-[10px] text-neutral-400 block uppercase font-sans font-bold">
-                      Delivery Proof Reference:
-                    </span>
-                    <span className="break-all">{currentOrder.deliveryProof}</span>
-                  </div>
-                )}
-
-                <div className="pt-2 flex gap-3">
-                  <button
-                    onClick={() => {
-                      setShowPaymentModal(false);
-                      // Clear form
-                      setPlayerId('');
-                      setVerifiedNickname(null);
-                    }}
-                    className="flex-1 py-3 rounded-xl bg-[#1e2738] hover:bg-[#28354c] text-white font-bold text-xs uppercase tracking-wider transition-all"
-                  >
-                    {language === 'kh' ? 'បញ្ចូលបន្តទៀត' : 'Top Up Another'}
-                  </button>
-
-                  <Link
-                    href={`/top-up/orders/${currentOrder.orderNumber}`}
-                    className="flex-1 py-3 rounded-xl bg-[#d4af37] text-black font-black text-xs uppercase tracking-wider hover:brightness-110 flex items-center justify-center gap-1"
-                  >
-                    <span>{language === 'kh' ? 'មើលវិក្កយបត្រ' : 'View Receipt'}</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {/* Close Button Top Right */}
+            {/* Close Modal Button */}
             <button
+              type="button"
               onClick={() => setShowPaymentModal(false)}
               className="absolute top-4 right-4 text-neutral-400 hover:text-white p-1 rounded-lg"
             >
@@ -977,54 +1016,23 @@ export default function TopUpPage() {
         </div>
       )}
 
-      {/* Guide Modal: Where to find Player ID */}
+      {/* Guide Modal: Where to find ID */}
       {showGuideModal && selectedGame && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-[#121721] rounded-3xl border border-white/[0.12] w-full max-w-lg p-6 relative shadow-2xl">
-            <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-cyan-400" />
-              <span>
-                {language === 'kh' ? selectedGame.guideTitleKh : selectedGame.guideTitle}
-              </span>
+          <div className="bg-[#121620] rounded-3xl border border-white/[0.12] w-full max-w-md p-6 relative shadow-2xl">
+            <h3 className="text-base font-black text-white mb-2 flex items-center gap-2">
+              <HelpCircle className="w-5 h-5 text-amber-400" />
+              <span>{language === 'kh' ? selectedGame.guideTitleKh : selectedGame.guideTitle}</span>
             </h3>
-
-            <p className="text-xs text-neutral-300 leading-relaxed mb-4">
+            <p className="text-xs text-neutral-300 leading-relaxed bg-[#171d2b] p-4 rounded-xl border border-white/[0.06] mb-4">
               {language === 'kh' ? selectedGame.guideDescriptionKh : selectedGame.guideDescription}
             </p>
-
-            {/* Visual Guide Box */}
-            <div className="bg-[#181f2c] rounded-2xl p-4 border border-white/[0.08] space-y-3">
-              <div className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-                {language === 'kh' ? 'ឧទាហរណ៍ជាក់ស្តែង' : 'Practical Example'}:
-              </div>
-              <div className="space-y-2 text-xs font-mono text-neutral-300">
-                {selectedGame.inputConfig.map((cfg) => (
-                  <div key={cfg.key} className="bg-[#10141d] p-2.5 rounded-lg border border-white/[0.05]">
-                    <span className="text-cyan-400 font-bold block mb-1">
-                      {language === 'kh' ? cfg.labelKh : cfg.label}:
-                    </span>
-                    <span className="text-neutral-400 text-[11px] block">
-                      {language === 'kh' ? cfg.helpTextKh : cfg.helpText}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-5 text-right">
-              <button
-                onClick={() => setShowGuideModal(false)}
-                className="px-5 py-2.5 rounded-xl bg-[#d4af37] text-black font-bold text-xs uppercase tracking-wider hover:brightness-110"
-              >
-                {language === 'kh' ? 'យល់ព្រម' : 'Got it'}
-              </button>
-            </div>
-
             <button
+              type="button"
               onClick={() => setShowGuideModal(false)}
-              className="absolute top-4 right-4 text-neutral-400 hover:text-white p-1 rounded-lg"
+              className="w-full py-2.5 rounded-xl bg-[#1a2232] hover:bg-[#20293d] border border-white/[0.08] text-white font-bold text-xs cursor-pointer"
             >
-              ✕
+              {language === 'kh' ? 'យល់ព្រម' : 'Got it'}
             </button>
           </div>
         </div>

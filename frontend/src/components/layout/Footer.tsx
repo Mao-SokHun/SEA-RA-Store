@@ -2,179 +2,144 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Shield, Lock, CheckCircle2, Zap, ArrowUpRight, Crown } from 'lucide-react';
+import { Zap, ShieldCheck, Clock, QrCode, Headphones, CheckCircle2, Heart } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function Footer() {
   const { t, language } = useLanguage();
 
   return (
-    <footer className="relative bg-[#0b0e14] border-t border-white/[0.08] text-neutral-400 overflow-hidden">
-      {/* Ambient background glow */}
+    <footer className="relative bg-[#090c10] border-t border-white/[0.08] text-neutral-400 overflow-hidden">
+      {/* Background ambient lighting */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute bottom-0 left-1/3 w-[600px] h-[300px] bg-[#d4af37]/5 rounded-full blur-[140px]" />
-        <div className="absolute top-0 right-10 w-[400px] h-[200px] bg-[#00e4f2]/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 left-1/4 w-[500px] h-[250px] bg-amber-500/5 rounded-full blur-[140px]" />
+        <div className="absolute top-0 right-10 w-[400px] h-[200px] bg-cyan-500/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
-          {/* Brand Column */}
-          <div className="lg:col-span-2 space-y-4">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ffe088] via-[#d4af37] to-[#8f6b10] p-[1.5px] shadow-[0_0_15px_rgba(212,175,55,0.25)]">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+          {/* Brand & Value Proposition */}
+          <div className="space-y-3.5">
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#ffe088] via-[#d4af37] to-[#8f6b10] p-[1.5px] shadow-[0_0_15px_rgba(212,175,55,0.25)]">
                 <div className="w-full h-full bg-[#0b0e14] rounded-[10px] flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-[#f2ca50]" />
+                  <Zap className="w-4 h-4 text-[#f2ca50] fill-[#f2ca50]" />
                 </div>
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-lg text-[#f2ca50] tracking-wider">NEXUS</span>
-                <span className="text-[10px] font-semibold text-[#00e4f2] tracking-widest uppercase">
-                  {t('brandSub')}
+                <div className="flex items-center gap-1.5">
+                  <span className="font-black text-base text-[#f2ca50] tracking-wider">NEXUS</span>
+                  <span className="text-[9px] uppercase font-bold tracking-widest px-1.5 py-0.2 rounded bg-amber-400/10 text-amber-300 border border-amber-400/30">
+                    TOP-UP
+                  </span>
+                </div>
+                <span className="text-[10px] text-neutral-400">
+                  {language === 'kh' ? 'សេវាកម្មបញ្ចូលលុយហ្គេមរហ័សទាន់ចិត្ត' : 'Direct Game Top Up Platform'}
                 </span>
               </div>
             </Link>
 
-            <p className="text-sm text-neutral-400 max-w-sm leading-relaxed">
+            <p className="text-xs text-neutral-400 leading-relaxed">
               {language === 'kh'
-                ? 'ផ្សារទិញ-លក់គណនីហ្គេមឈានមុខគេ ជាមួយប្រព័ន្ធ Escrow ការពារ ១០០% ផ្ទៀងផ្ទាត់ត្រឹមត្រូវ ទទួលគណនីភ្លាមៗ និងបង់ប្រាក់ស្រួលតាម KHQR។'
-                : 'The premier trusted escrow marketplace for game accounts. Instant automated delivery, 100% anti-scam protection, and seamless KHQR payments.'}
+                ? 'វេទិកាបញ្ចូលពេជ្រ និងកាក់ហ្គេមស្វ័យប្រវត្តិតាម Bakong KHQR លឿនត្រឹម ៣ វិនាទី មិនបាច់ Login មិនប៉ះពាល់ Password សុវត្ថិភាព ១០០%។'
+                : 'Instant 24/7 automated in-game currency reload via Bakong KHQR. Zero login required, zero password needed, 100% safe & trusted.'}
             </p>
 
-            {/* Live Status Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#151a23] border border-white/[0.08]">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#151a23] border border-white/[0.08] text-[11px] text-emerald-400 font-semibold">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span className="text-xs font-semibold text-emerald-300">
-                {language === 'kh' ? 'ប្រព័ន្ធការពារ Escrow សកម្ម' : 'Escrow Protection Online'}
-              </span>
-              <span className="text-neutral-500">•</span>
-              <span className="text-[11px] text-neutral-400">{language === 'kh' ? 'សុវត្ថិភាព ១០០%' : '100% Safe'}</span>
+              <span>{language === 'kh' ? 'ប្រព័ន្ធ API ដំណើរការ ២៤/៧' : 'API Systems 100% Operational'}</span>
             </div>
           </div>
 
-          {/* Column 2: Marketplace */}
+          {/* Supported Popular Games */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-widest">
-              {language === 'kh' ? 'ទីផ្សារហ្គេម' : 'Marketplace'}
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              {language === 'kh' ? 'ហ្គេមពេញនិយម' : 'Supported Games'}
             </h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/top-up" className="hover:text-[#f2ca50] transition-colors flex items-center gap-1.5 text-amber-400 font-bold">
-                  <span>⚡</span>
-                  <span>{language === 'kh' ? 'បញ្ចូលលុយ / ពេជ្រ ចូលហ្គេម (Top Up)' : 'Direct Game Top Up (New)'}</span>
-                </Link>
+            <ul className="space-y-1.5 text-xs text-neutral-400">
+              <li className="flex items-center gap-1.5 hover:text-white transition-colors">
+                <span>💎</span>
+                <span>Mobile Legends: Bang Bang (Diamonds & Pass)</span>
               </li>
-              {/* [DISABLED - Sell Account]
-              <li>
-                <Link href="/catalog" className="hover:text-[#f2ca50] transition-colors">
-                  {language === 'kh' ? 'គណនីហ្គេមទាំងអស់' : 'All Game Accounts'}
-                </Link>
+              <li className="flex items-center gap-1.5 hover:text-white transition-colors">
+                <span>🔥</span>
+                <span>Free Fire & Free Fire Max (Diamonds)</span>
               </li>
-              <li>
-                <Link href="/catalog?q=roblox" className="hover:text-[#f2ca50] transition-colors flex items-center gap-1.5 text-white font-medium">
-                  <span>🧱</span>
-                  <span>Roblox (Blox Fruits / Robux)</span>
-                </Link>
+              <li className="flex items-center gap-1.5 hover:text-white transition-colors">
+                <span>🪙</span>
+                <span>PUBG Mobile (Unknown Cash - UC)</span>
               </li>
-              <li>
-                <Link href="/catalog?game=mlbb" className="hover:text-[#f2ca50] transition-colors">
-                  Mobile Legends: Bang Bang
-                </Link>
+              <li className="flex items-center gap-1.5 hover:text-white transition-colors">
+                <span>⚡</span>
+                <span>Roblox (Robux Direct)</span>
               </li>
-              <li>
-                <Link href="/catalog?game=pubg" className="hover:text-[#f2ca50] transition-colors">
-                  PUBG Mobile
-                </Link>
+              <li className="flex items-center gap-1.5 hover:text-white transition-colors">
+                <span>✨</span>
+                <span>Genshin Impact & Honor of Kings</span>
               </li>
-              <li>
-                <Link href="/catalog?game=freefire" className="hover:text-[#f2ca50] transition-colors">
-                  Free Fire
-                </Link>
-              </li>
-              <li>
-                <Link href="/catalog?game=valorant" className="hover:text-[#f2ca50] transition-colors">
-                  Valorant
-                </Link>
-              </li>
-              */}
             </ul>
           </div>
 
-          {/* Column 3: Platform Services */}
+          {/* Payment Methods */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-widest">
-              {language === 'kh' ? 'សេវាកម្ម & ជំនួយ' : 'Services & Help'}
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              {language === 'kh' ? 'វិធីសាស្ត្របង់ប្រាក់' : 'Payment Gateways'}
             </h4>
-            <ul className="space-y-2 text-sm">
-              {/* [DISABLED - Sell Account]
-              <li>
-                <Link href="/sell" className="hover:text-[#f2ca50] transition-colors flex items-center gap-1">
-                  <span>{t('navSell')}</span>
-                  <ArrowUpRight className="w-3 h-3 text-[#d4af37]" />
-                </Link>
-              </li>
-              */}
-              {/* [DISABLED - Sell Account]
-              <li>
-                <Link href="/#how-it-works" className="hover:text-[#f2ca50] transition-colors">
-                  {t('navHowItWorks')}
-                </Link>
-              </li>
-              */}
-              {/* [DISABLED - Sell Account]
-              <li>
-                <Link href="/warranty" className="hover:text-[#f2ca50] transition-colors">
-                  {t('navWarranty')}
-                </Link>
-              </li>
-              */}
-              <li>
-                <Link href="/wallet" className="hover:text-[#f2ca50] transition-colors">
-                  {language === 'kh' ? 'កាបូបប្រាក់ & ការដកប្រាក់' : 'Wallet & Balance'}
-                </Link>
-              </li>
-              {/* [DISABLED - Sell Account]
-              <li>
-                <Link href="/orders" className="hover:text-[#f2ca50] transition-colors">
-                  {t('navOrders')}
-                </Link>
-              </li>
-              */}
-            </ul>
+            <p className="text-xs text-neutral-400">
+              {language === 'kh'
+                ? 'គាំទ្រការស្កេនបង់ប្រាក់តាម Bakong KHQR គ្រប់ធនាគារក្នុងប្រទេសកម្ពុជា៖'
+                : 'Supports one-click Bakong KHQR scans from all major Cambodian banks:'}
+            </p>
+            <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold text-neutral-300">
+              <div className="bg-[#151a23] px-2.5 py-1.5 rounded-lg border border-white/[0.06] flex items-center gap-1.5">
+                <span className="text-red-400 font-black">KHQR</span>
+                <span>Bakong Pay</span>
+              </div>
+              <div className="bg-[#151a23] px-2.5 py-1.5 rounded-lg border border-white/[0.06] flex items-center gap-1.5">
+                <span className="text-cyan-400 font-bold">ABA</span>
+                <span>ABA Mobile</span>
+              </div>
+              <div className="bg-[#151a23] px-2.5 py-1.5 rounded-lg border border-white/[0.06] flex items-center gap-1.5">
+                <span className="text-lime-400 font-bold">WING</span>
+                <span>Wing Bank</span>
+              </div>
+              <div className="bg-[#151a23] px-2.5 py-1.5 rounded-lg border border-white/[0.06] flex items-center gap-1.5">
+                <span className="text-blue-400 font-bold">ACLEDA</span>
+                <span>ACLEDA Pay</span>
+              </div>
+            </div>
           </div>
 
-          {/* Column 4: Security Guarantees */}
+          {/* 24/7 Support & Guarantees */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-widest">
-              {language === 'kh' ? 'ការធានាសុវត្ថិភាព' : 'Safety Guarantees'}
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              {language === 'kh' ? 'ជំនួយអតិថិជន ២៤/៧' : 'Customer Support'}
             </h4>
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-[#151a23]/60 border border-white/[0.04]">
-                <Shield className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{language === 'kh' ? 'ប្រព័ន្ធ Escrow ការពារ ១០០%' : '100% Escrow Protection'}</span>
-              </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-[#151a23]/60 border border-white/[0.04]">
-                <Zap className="w-4 h-4 text-[#f2ca50] shrink-0" />
-                <span>{language === 'kh' ? 'ផ្ទេរគណនីស្វ័យប្រវត្តិក្នង ៣ វិនាទី' : 'Instant Account Reveal'}</span>
-              </div>
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-[#151a23]/60 border border-white/[0.04]">
-                <CheckCircle2 className="w-4 h-4 text-[#00e4f2] shrink-0" />
-                <span>{language === 'kh' ? 'បង់ប្រាក់តាម Bakong KHQR' : 'Bakong KHQR Local Banking'}</span>
-              </div>
+            <p className="text-xs text-neutral-400">
+              {language === 'kh'
+                ? 'មានបញ្ហា ឬត្រូវការជំនួយបន្ទាន់? ក្រុមការងារយើងខ្ញុំប្រចាំការរង់ចាំឆ្លើយតបរហ័សទាន់ចិត្ត ២៤ ម៉ោង។'
+                : 'Got questions or need urgent top-up assistance? Our dedicated support team is available 24/7.'}
+            </p>
+            <div className="space-y-2">
+              <Link
+                href="https://t.me/nexus_support_kh"
+                target="_blank"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0088cc]/15 hover:bg-[#0088cc]/25 border border-[#0088cc]/30 text-[#00e4f2] text-xs font-bold transition-all"
+              >
+                <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                </svg>
+                <span>Telegram: @nexus_support_kh</span>
+              </Link>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-          <p>© {new Date().getFullYear()} NEXUS Gaming Marketplace. {language === 'kh' ? 'រក្សាសិទ្ធិគ្រប់យ៉ាង។' : 'All rights reserved.'}</p>
-          <div className="flex items-center gap-6">
-            <span className="hover:text-white transition-colors cursor-pointer">Bakong KHQR</span>
-            <Link href="/warranty" className="hover:text-white transition-colors">
-              {language === 'kh' ? 'គោលការណ៍ធានា' : 'Warranty Terms'}
-            </Link>
-            <Link href="/#how-it-works" className="hover:text-white transition-colors">
-              {language === 'kh' ? 'របៀបប្រើប្រាស់' : 'How It Works'}
-            </Link>
+        {/* Bottom Copyright */}
+        <div className="pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500">
+          <p>© {new Date().getFullYear()} NEXUS TOP-UP. All rights reserved. Automated Gaming Aggregator.</p>
+          <div className="flex items-center gap-1.5 text-neutral-400">
+            <span>Powered by Official Direct Reload API</span>
           </div>
         </div>
       </div>

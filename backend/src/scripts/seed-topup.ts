@@ -48,6 +48,24 @@ async function seedTopUpPackages() {
       iconUrl: 'https://images.unsplash.com/photo-1612287233207-6b22998a445b?w=200',
       isActive: true,
     },
+    {
+      title: 'Call of Duty: Mobile',
+      platform: 'Mobile',
+      iconUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200',
+      isActive: true,
+    },
+    {
+      title: 'League of Legends: Wild Rift',
+      platform: 'Mobile',
+      iconUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200',
+      isActive: true,
+    },
+    {
+      title: 'Blood Strike',
+      platform: 'Mobile',
+      iconUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=200',
+      isActive: true,
+    },
   ];
 
   for (const g of gamesData) {
@@ -67,6 +85,9 @@ async function seedTopUpPackages() {
   const genshin = getGame('Genshin');
   const valorant = getGame('Valorant');
   const hok = getGame('Honor of Kings');
+  const codm = getGame('Call of Duty') || getGame('CODM');
+  const wildRift = getGame('Wild Rift');
+  const bloodStrike = getGame('Blood Strike');
 
   const packages: Array<{
     gameId?: bigint;
@@ -160,6 +181,40 @@ async function seedTopUpPackages() {
       { gameId: hok.id, name: '400 Tokens', category: 'currency', currencyAmount: 400, bonusAmount: 0, price: 4.50, originalPrice: 5.20, badge: 'HOT 🔥', sortOrder: 3 },
       { gameId: hok.id, name: '800 Tokens', category: 'currency', currencyAmount: 800, bonusAmount: 0, price: 8.90, originalPrice: 10.50, badge: 'BEST VALUE', sortOrder: 4 },
       { gameId: hok.id, name: 'Weekly Card', category: 'pass', currencyAmount: 100, bonusAmount: 0, price: 1.99, originalPrice: 2.50, badge: 'PASS', sortOrder: 5 }
+    );
+  }
+
+  // 8. Call of Duty: Mobile (CP)
+  if (codm) {
+    packages.push(
+      { gameId: codm.id, name: '80 CP', category: 'currency', currencyAmount: 80, bonusAmount: 0, price: 0.99, originalPrice: 1.25, badge: 'STARTER', sortOrder: 1 },
+      { gameId: codm.id, name: '420 CP', category: 'currency', currencyAmount: 420, bonusAmount: 20, price: 4.90, originalPrice: 5.80, badge: 'POPULAR', sortOrder: 2 },
+      { gameId: codm.id, name: '880 CP', category: 'currency', currencyAmount: 880, bonusAmount: 80, price: 9.50, originalPrice: 11.00, badge: 'HOT 🔥', sortOrder: 3 },
+      { gameId: codm.id, name: '2,400 CP', category: 'currency', currencyAmount: 2400, bonusAmount: 400, price: 24.00, originalPrice: 28.50, badge: 'BEST VALUE', sortOrder: 4 },
+      { gameId: codm.id, name: '5,000 CP', category: 'currency', currencyAmount: 5000, bonusAmount: 1000, price: 48.00, originalPrice: 58.00, badge: 'WHALE', sortOrder: 5 },
+      { gameId: codm.id, name: 'Premium Battle Pass', category: 'pass', currencyAmount: 560, bonusAmount: 0, price: 4.50, originalPrice: 5.99, badge: 'SEASON PASS', sortOrder: 6 }
+    );
+  }
+
+  // 9. League of Legends: Wild Rift (Wild Cores)
+  if (wildRift) {
+    packages.push(
+      { gameId: wildRift.id, name: '425 Wild Cores', category: 'currency', currencyAmount: 425, bonusAmount: 0, price: 4.50, originalPrice: 5.20, badge: 'POPULAR', sortOrder: 1 },
+      { gameId: wildRift.id, name: '1,000 Wild Cores', category: 'currency', currencyAmount: 1000, bonusAmount: 50, price: 9.80, originalPrice: 11.50, badge: 'HOT 🔥', sortOrder: 2 },
+      { gameId: wildRift.id, name: '2,050 Wild Cores', category: 'currency', currencyAmount: 2050, bonusAmount: 150, price: 19.50, originalPrice: 23.00, badge: 'BEST VALUE', sortOrder: 3 },
+      { gameId: wildRift.id, name: '3,650 Wild Cores', category: 'currency', currencyAmount: 3650, bonusAmount: 350, price: 34.00, originalPrice: 40.00, badge: 'WHALE', sortOrder: 4 },
+      { gameId: wildRift.id, name: 'Wild Pass Premium', category: 'pass', currencyAmount: 990, bonusAmount: 0, price: 6.00, originalPrice: 7.50, badge: 'WILD PASS', sortOrder: 5 }
+    );
+  }
+
+  // 10. Blood Strike (Gold)
+  if (bloodStrike) {
+    packages.push(
+      { gameId: bloodStrike.id, name: '100 Gold', category: 'currency', currencyAmount: 100, bonusAmount: 0, price: 0.95, originalPrice: 1.20, badge: 'FAST', sortOrder: 1 },
+      { gameId: bloodStrike.id, name: '500 Gold', category: 'currency', currencyAmount: 500, bonusAmount: 30, price: 4.50, originalPrice: 5.30, badge: 'POPULAR', sortOrder: 2 },
+      { gameId: bloodStrike.id, name: '1,000 Gold', category: 'currency', currencyAmount: 1000, bonusAmount: 100, price: 8.90, originalPrice: 10.50, badge: 'HOT 🔥', sortOrder: 3 },
+      { gameId: bloodStrike.id, name: '2,100 Gold', category: 'currency', currencyAmount: 2100, bonusAmount: 300, price: 18.00, originalPrice: 22.00, badge: 'BEST VALUE', sortOrder: 4 },
+      { gameId: bloodStrike.id, name: 'Strike Pass Elite', category: 'pass', currencyAmount: 520, bonusAmount: 0, price: 3.99, originalPrice: 5.00, badge: 'PASS', sortOrder: 5 }
     );
   }
 

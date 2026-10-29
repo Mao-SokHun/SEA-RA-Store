@@ -94,6 +94,22 @@ export class TopUpController {
       next(error);
     }
   };
+
+  /**
+   * GET /api/v1/topup/track-orders
+   * Public guest lookup by orderNumber, playerId, or contactPhone
+   */
+  trackGuestOrders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const query = (req.query.query as string) || '';
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = Math.min(parseInt(req.query.limit as string, 10) || 20, 50);
+      const result = await topUpService.trackGuestOrders(query, page, limit);
+      sendSuccess(res, result, 'Top-up orders tracked successfully');
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export const topUpController = new TopUpController();

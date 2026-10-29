@@ -135,6 +135,30 @@ const GAME_POSTERS: Record<string, {
     rating: '4.9 ★★★★★',
     popularLabel: 'Points for Weapon Skins',
   },
+  'Call of Duty: Mobile': {
+    poster: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80',
+    badge: '🪙 FAST CP',
+    badgeColor: 'from-amber-500 to-yellow-600 text-black',
+    publisher: 'Activision',
+    rating: '4.9 ★★★★★',
+    popularLabel: 'CP & Battle Pass',
+  },
+  'League of Legends: Wild Rift': {
+    poster: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80',
+    badge: '💎 WILD CORES',
+    badgeColor: 'from-sky-500 to-indigo-600 text-white',
+    publisher: 'Riot Games',
+    rating: '4.9 ★★★★★',
+    popularLabel: 'Wild Cores & Pass',
+  },
+  'Blood Strike': {
+    poster: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=600&q=80',
+    badge: '⚡ HOT FPS',
+    badgeColor: 'from-red-500 to-rose-600 text-white',
+    publisher: 'NetEase Games',
+    rating: '4.8 ★★★★★',
+    popularLabel: 'Gold & Strike Pass',
+  },
 };
 
 // Live Recent Activity Ticker (Smile.One style)
@@ -323,6 +347,46 @@ export default function TopUpPage() {
 
       setCurrentOrder(order);
       setShowPaymentModal(true);
+
+      // Persist order number & user credentials locally for Guest tracking
+      if (typeof window !== 'undefined') {
+        try {
+          const raw = localStorage.getItem('nexus_guest_orders');
+          const list = raw ? JSON.parse(raw) : [];
+          const updated = [
+            {
+              orderNumber: order.orderNumber,
+              gameTitle: selectedGame?.title,
+              packageName: selectedPackage.name,
+              totalAmount: order.totalAmount,
+              playerId: playerId.trim(),
+              zoneId: zoneId.trim() || undefined,
+              playerNickname: verifiedNickname || playerId.trim(),
+              createdAt: new Date().toISOString(),
+            },
+            ...list.filter((item: any) => item.orderNumber !== order.orderNumber),
+          ].slice(0, 30);
+          localStorage.setItem('nexus_guest_orders', JSON.stringify(updated));
+
+          // Save player ID for 1-click reorder
+          const savedPlayersRaw = localStorage.getItem('nexus_saved_players');
+          const savedPlayers = savedPlayersRaw ? JSON.parse(savedPlayersRaw) : [];
+          const updatedPlayers = [
+            {
+              gameTitle: selectedGame?.title,
+              playerId: playerId.trim(),
+              zoneId: zoneId.trim() || undefined,
+              serverRegion: serverRegion || undefined,
+              playerNickname: verifiedNickname || playerId.trim(),
+              lastUsedAt: new Date().toISOString(),
+            },
+            ...savedPlayers.filter((p: any) => !(p.gameTitle === selectedGame?.title && p.playerId === playerId.trim())),
+          ].slice(0, 10);
+          localStorage.setItem('nexus_saved_players', JSON.stringify(updatedPlayers));
+        } catch (e) {
+          console.warn('Could not save order to local storage', e);
+        }
+      }
 
       if (order.paymentStatus === 'paid') {
         confetti({

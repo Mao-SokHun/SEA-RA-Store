@@ -17,6 +17,7 @@ import {
   X,
   Sparkles,
   HelpCircle,
+  Receipt,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -64,8 +65,22 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Right Section: Telegram Support, Language Toggle & User Menu */}
-        <div className="flex items-center gap-2.5">
+        {/* Right Section: Orders, Telegram Support, Language Toggle & User Menu */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Track Orders Link for Guests & Users */}
+          <Link
+            href="/orders"
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition-all shadow-sm ${
+              pathname === '/orders'
+                ? 'bg-[#f2ca50]/15 text-[#f2ca50] border-[#f2ca50]/40 shadow-[0_0_12px_rgba(242,202,80,0.2)]'
+                : 'bg-[#151a23] hover:bg-[#1d2026] text-neutral-300 hover:text-[#f2ca50] border-white/[0.08]'
+            }`}
+          >
+            <Receipt className="w-3.5 h-3.5 text-[#f2ca50]" />
+            <span className="hidden sm:inline">{language === 'kh' ? 'តាមដានការកុម្ម៉ង់' : 'Track Orders'}</span>
+            <span className="sm:hidden">{language === 'kh' ? 'វិក្កយបត្រ' : 'Orders'}</span>
+          </Link>
+
           {/* Telegram Support Link */}
           <Link
             href="https://t.me/nexus_support_kh"
@@ -201,10 +216,10 @@ export default function Navbar() {
               </div>
             </>
           ) : (
-            /* Subtle, non-intrusive access icon for admin/wallet holders without forcing regular guests */
+            /* Profile & Saved IDs access icon */
             <Link
-              href="/auth/login"
-              title={language === 'kh' ? 'ចូលគណនី (ស្រេចចិត្ត)' : 'Admin / Wallet Login'}
+              href="/profile"
+              title={language === 'kh' ? 'គណនី និងការកំណត់' : 'Profile & Settings'}
               className="p-2.5 rounded-xl text-neutral-400 hover:text-white bg-[#151a23] hover:bg-[#1d2026] border border-white/[0.08] transition-all flex items-center justify-center group"
             >
               <UserIcon className="w-4 h-4 text-neutral-400 group-hover:text-[#f2ca50] transition-colors" />
@@ -235,6 +250,15 @@ export default function Navbar() {
                 : 'Simply choose game, enter Player ID, and scan KHQR to get instant delivery!'}
             </p>
           </div>
+
+          <Link
+            href="/orders"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[#171f2c] border border-white/[0.08] text-white hover:text-[#f2ca50] font-bold text-xs"
+          >
+            <Receipt className="w-4 h-4 text-[#f2ca50]" />
+            <span>{language === 'kh' ? '🧾 ពិនិត្យប្រវត្តិបញ្ជាទិញ (Track Orders)' : '🧾 Track Orders / History'}</span>
+          </Link>
 
           <Link
             href="https://t.me/nexus_support_kh"

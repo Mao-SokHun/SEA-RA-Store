@@ -191,6 +191,69 @@ export const GAME_TOPUP_CONFIGS: Record<string, GameTopUpMeta> = {
     guideDescription: 'Tap avatar top-left > Settings > View User ID number.',
     guideDescriptionKh: 'ចុចលើ Avatar ជ្រុងខាងឆ្វេង > Settings > មើលលេខ User ID។',
   },
+  'Call of Duty: Mobile': {
+    currencyName: 'CP (COD Points)',
+    currencyNameKh: 'CP (ស៊ីភី)',
+    currencyIcon: '🪙',
+    inputConfig: [
+      {
+        key: 'playerId',
+        label: 'Player UID / OpenID',
+        labelKh: 'Player UID / OpenID',
+        placeholder: 'ឧ. 6749182348123',
+        type: 'text',
+        required: true,
+        helpText: 'Your 13-19 digit CODM UID in Basic Info.',
+        helpTextKh: 'លេខ UID គណនី CODM របស់អ្នកក្នុង Basic Info។',
+      },
+    ],
+    guideTitle: 'How to find CODM Player UID',
+    guideTitleKh: 'របៀបមើល UID ក្នុង Call of Duty: Mobile',
+    guideDescription: 'Tap avatar at top-left > Tap PLAYER PROFILE tab > Copy the numeric UID under your avatar.',
+    guideDescriptionKh: 'ចុចលើ Avatar ជ្រុងខាងឆ្វេង > ចូល PLAYER PROFILE > ចម្លងលេខ UID នៅក្រោមរូប Avatar។',
+  },
+  'League of Legends: Wild Rift': {
+    currencyName: 'Wild Cores',
+    currencyNameKh: 'Wild Cores (វ៉ាយខ័រ)',
+    currencyIcon: '💎',
+    inputConfig: [
+      {
+        key: 'playerId',
+        label: 'Riot ID & Tagline',
+        labelKh: 'Riot ID & Tagline (ឈ្មោះ #Tag)',
+        placeholder: 'ឧ. Yasuo#KH1',
+        type: 'text',
+        required: true,
+        helpText: 'Enter your Riot ID and Tagline (e.g., Faker#SEA).',
+        helpTextKh: 'បញ្ចូល Riot ID និង Tagline របស់អ្នក ឧ. Faker#SEA។',
+      },
+    ],
+    guideTitle: 'How to find Wild Rift Riot ID',
+    guideTitleKh: 'របៀបមើល Riot ID ក្នុង Wild Rift',
+    guideDescription: 'Open Wild Rift > Tap profile avatar top-left > Copy your Riot ID with the hashtag #.',
+    guideDescriptionKh: 'បើកហ្គេម Wild Rift > ចុចលើ Profile ជ្រុងឆ្វេង > ចម្លងឈ្មោះ Riot ID រួមជាមួយសញ្ញា #។',
+  },
+  'Blood Strike': {
+    currencyName: 'Gold',
+    currencyNameKh: 'Gold (មាស)',
+    currencyIcon: '💰',
+    inputConfig: [
+      {
+        key: 'playerId',
+        label: 'User ID',
+        labelKh: 'User ID (លេខសម្គាល់)',
+        placeholder: 'ឧ. 19827361',
+        type: 'number',
+        required: true,
+        helpText: 'Your 8-10 digit Blood Strike User ID.',
+        helpTextKh: 'លេខ User ID គណនី Blood Strike របស់អ្នក។',
+      },
+    ],
+    guideTitle: 'How to find Blood Strike User ID',
+    guideTitleKh: 'របៀបមើល User ID ក្នុង Blood Strike',
+    guideDescription: 'Tap profile picture at top-left of the lobby > Copy User ID displayed below your avatar.',
+    guideDescriptionKh: 'ចុចលើ Profile ជ្រុងឆ្វេងលើនៃ Lobby > ចម្លង User ID ដែលបង្ហាញនៅខាងក្រោម Avatar។',
+  },
 };
 
 export interface CreateTopUpOrderDTO {
@@ -701,6 +764,74 @@ export class TopUpService {
         zoneId: o.zoneId,
         playerNickname: o.playerNickname,
         totalAmount: Number(o.totalAmount),
+        paymentMethod: o.paymentMethod,
+        paymentStatus: o.paymentStatus,
+        deliveryStatus: o.deliveryStatus,
+        deliveryProof: o.deliveryProof,
+        createdAt: o.createdAt,
+      })),
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Track / Search orders for Guest Users without requiring login
+   * Search by:
+   * 1. Order Number (TU-xxxxxx)
+   * 2. Player ID / UID
+   * 3. Contact Phone Number
+   */
+  async trackGuestOrders(query: string, page = 1, limit = 20) {
+    const trimmed = (query || '').trim();
+    if (!trimmed || trimmed.length < 3) {
+      throw new BadRequestError('Please provide at least 3 characters to search (Order Number, Player ID, or Phone)');
+    }
+
+    const skip = (page - 1) * limit;
+
+    const whereClause: Prisma.TopUpOrderWhereInput = {
+      OR: [
+        { orderNumber: { contains: trimmed, mode: 'insensitive' } },
+        { playerId: { contains: trimmed, mode: 'insensitive' } },
+        { contactPhone: { contains: trimmed } },
+      ],
+    };
+
+    const [orders, total] = await Promise.all([
+      prisma.topUpOrder.findMany({
+        where: whereClause,
+        include: {
+          game: true,
+          package: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      prisma.topUpOrder.count({ where: whereClause }),
+    ]);
+
+    return {
+      query: trimmed,
+      orders: orders.map((o) => ({
+        id: o.id.toString(),
+        orderNumber: o.orderNumber,
+        gameTitle: o.game.title,
+        gameIcon: o.game.iconUrl,
+        packageName: o.package.name,
+        packageCategory: o.package.category,
+        currencyAmount: o.package.currencyAmount,
+        totalAmount: Number(o.totalAmount),
+        playerId: o.playerId,
+        zoneId: o.zoneId,
+        serverRegion: o.serverRegion,
+        playerNickname: o.playerNickname,
+        contactPhone: o.contactPhone ? o.contactPhone.replace(/(\d{3})\d+(\d{3})/, '$1***$2') : null,
         paymentMethod: o.paymentMethod,
         paymentStatus: o.paymentStatus,
         deliveryStatus: o.deliveryStatus,

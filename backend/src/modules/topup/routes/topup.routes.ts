@@ -54,6 +54,13 @@ router.post(
 );
 
 /**
+ * @route   GET /api/v1/topup/track-orders
+ * @desc    Track & search orders for guest users by Phone, Player ID, or Order Number
+ * @access  Public
+ */
+router.get('/track-orders', topUpController.trackGuestOrders);
+
+/**
  * @route   GET /api/v1/topup/orders/:orderNumber
  * @desc    Get top-up order status and payment details
  * @access  Public

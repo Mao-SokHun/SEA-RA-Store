@@ -5,11 +5,12 @@ import { LanguageProvider } from '@/context/LanguageContext';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import FloatingChatWidget from '@/components/layout/FloatingChatWidget';
+import MobileBottomNav from '@/components/layout/MobileBottomNav';
 
 export const metadata: Metadata = {
   title: 'NEXUS TOP-UP | សេវាកម្មបញ្ចូលលុយហ្គេមស្វ័យប្រវត្តិ 24/7 (Instant Game Top-Up)',
   description:
-    'សេវាកម្មបញ្ចូលលុយហ្គេមស្វ័យប្រវត្តិតាម Bakong KHQR លឿនត្រឹម ៣ វិនាទី មិនបាច់ Login មិនបាច់បង្កើត Account។ គាំទ្រ Mobile Legends, Free Fire, PUBG Mobile, Roblox, Genshin Impact, Honor of Kings និង Valorant។',
+    'សេវាកម្មបញ្ចូលលុយហ្គេមស្វ័យប្រវត្តិតាម Bakong KHQR លឿនត្រឹម ៣ វិនាទី មិនបាច់ Login មិនបាច់បង្កើត Account។ គាំទ្រ Mobile Legends, Free Fire, PUBG Mobile, Roblox, Genshin Impact, Honor of Kings, Valorant, CODM, Wild Rift និង Blood Strike។',
   keywords: [
     'top up game',
     'game topup cambodia',
@@ -21,6 +22,9 @@ export const metadata: Metadata = {
     'Bakong KHQR Top Up',
     'Smile One Cambodia',
     'Mobile Legends Top Up',
+    'CODM CP Top Up',
+    'Wild Rift Wild Cores',
+    'Blood Strike Gold',
   ],
 };
 
@@ -48,6 +52,7 @@ export default function RootLayout({
             <Navbar />
             <main className="flex-1 pt-20">{children}</main>
             <Footer />
+            <MobileBottomNav />
             <FloatingChatWidget />
           </AuthProvider>
         </LanguageProvider>

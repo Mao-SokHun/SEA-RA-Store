@@ -75,7 +75,17 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-1.5 hover:text-white transition-colors">
                 <span>✨</span>
-                <span>Genshin Impact & Honor of Kings</span>
+                <span>Genshin Impact, Valorant & Honor of Kings</span>
+              </li>
+              <li className="flex items-center gap-1.5 hover:text-white transition-colors">
+                <span>🎯</span>
+                <span>CODM, Wild Rift & Blood Strike</span>
+              </li>
+              <li className="pt-1.5">
+                <Link href="/orders" className="text-[#f2ca50] hover:underline font-bold flex items-center gap-1">
+                  <span>🧾</span>
+                  <span>{language === 'kh' ? 'ពិនិត្យប្រវត្តិបញ្ជាទិញ (Track Orders)' : 'Track Orders & Receipts'}</span>
+                </Link>
               </li>
             </ul>
           </div>

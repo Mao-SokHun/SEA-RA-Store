@@ -57,6 +57,14 @@ export class MockTopUpProvider implements TopUpProvider {
         throw new BadRequestError('Genshin Impact UID must be exactly 9 digits');
       }
       nickname = `Traveler_Lvl${(parseInt(cleanPlayerId.slice(-2)) % 30) + 30}`;
+    } else if (gameTitle.includes('Duty') || gameTitle.includes('CODM')) {
+      nickname = `Ghost_Operator_${cleanPlayerId.slice(-4)}`;
+    } else if (gameTitle.includes('Wild Rift') || gameTitle.includes('League')) {
+      nickname = cleanPlayerId.includes('#') ? cleanPlayerId.split('#')[0] : cleanPlayerId;
+    } else if (gameTitle.includes('Blood Strike')) {
+      nickname = `Striker_KH_${cleanPlayerId.slice(-4)}`;
+    } else if (gameTitle.includes('Honor of Kings')) {
+      nickname = `Hero_King_${cleanPlayerId.slice(-4)}`;
     } else {
       nickname = cleanPlayerId;
     }

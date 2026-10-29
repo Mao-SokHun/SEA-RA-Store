@@ -479,5 +479,12 @@ export const api = {
       );
       return res.data;
     },
+
+    async trackGuestOrders(query: string, page = 1, limit = 20): Promise<{ query: string; orders: TopUpOrder[]; meta: any }> {
+      const res = await request<{ query: string; orders: TopUpOrder[]; meta: any }>(
+        `/topup/track-orders?query=${encodeURIComponent(query)}&page=${page}&limit=${limit}`
+      );
+      return res.data;
+    },
   },
 };

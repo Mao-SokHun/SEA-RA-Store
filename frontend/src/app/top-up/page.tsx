@@ -27,55 +27,124 @@ import {
   AlertCircle,
   Flame,
   Gamepad2,
-  Copy,
   TrendingUp,
-  Award,
+  Star,
+  Shield,
+  Headphones,
+  CheckCheck,
+  ExternalLink,
+  ChevronDown,
 } from 'lucide-react';
 
-// Hero promotional banners (Smile.One style carousel)
-const PROMO_BANNERS = [
+// Hero Promotional Carousel Banners (Smile.One style)
+const PROMO_SLIDES = [
   {
     id: 1,
     title: 'Mobile Legends: Bang Bang',
-    subtitle: 'Weekly Diamond Pass & 86-2195 Diamonds',
-    tag: '⚡ HOT EVENT',
-    discount: '+10% Bonus Diamonds',
-    bgGradient: 'from-amber-600/30 via-yellow-500/10 to-transparent',
-    borderColor: 'border-amber-500/30',
-    image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800',
-    gameTitleMatch: 'Mobile Legends',
+    subtitle: 'Weekly Diamond Pass & 86 - 2,195 Diamonds',
+    tag: '🔥 HOT PROMOTION',
+    badge: '10% EXTRA BONUS',
+    image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80',
+    gameMatch: 'Mobile Legends',
+    buttonText: 'បញ្ចូលពេជ្រឥឡូវនេះ',
   },
   {
     id: 2,
     title: 'Roblox Robux & Blox Fruits',
-    subtitle: 'Direct In-Game Crediting into @Username',
-    tag: '🔥 BESTSELLER',
-    discount: 'Instant Automated 3s',
-    bgGradient: 'from-cyan-600/30 via-blue-500/10 to-transparent',
-    borderColor: 'border-cyan-500/30',
-    image: 'https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=800',
-    gameTitleMatch: 'Roblox',
+    subtitle: 'បញ្ចូលផ្ទាល់ចូល @Username មិនបាច់ Password',
+    tag: '⚡ 100% AUTOMATED',
+    badge: 'INSTANT 3 SECONDS',
+    image: 'https://images.unsplash.com/photo-1598550476439-6847785fcea6?auto=format&fit=crop&w=1200&q=80',
+    gameMatch: 'Roblox',
+    buttonText: 'បញ្ចូល Robux ឥឡូវនេះ',
   },
   {
     id: 3,
     title: 'Free Fire & PUBG Mobile',
-    subtitle: 'Diamonds & Unknown Cash (UC) Reload',
-    tag: '👑 100% OFFICIAL',
-    discount: 'Bakong KHQR Zero Fee',
-    bgGradient: 'from-rose-600/30 via-orange-500/10 to-transparent',
-    borderColor: 'border-rose-500/30',
-    image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800',
-    gameTitleMatch: 'Free Fire',
+    subtitle: 'Diamonds & UC Reload ស្កេនបង់តាម Bakong KHQR',
+    tag: '👑 OFFICIAL PARTNER',
+    badge: 'ZERO PLATFORM FEE',
+    image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80',
+    gameMatch: 'Free Fire',
+    buttonText: 'បញ្ចូលលុយភ្លាមៗ',
   },
 ];
 
-// Live recent transaction ticker (Smile.One style social proof)
-const LIVE_RELOADS = [
+// Rich Curated Game Poster Metadata (Smile.One Game Catalog)
+const GAME_POSTERS: Record<string, {
+  poster: string;
+  badge: string;
+  badgeColor: string;
+  publisher: string;
+  rating: string;
+  popularLabel: string;
+}> = {
+  'Mobile Legends: Bang Bang': {
+    poster: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80',
+    badge: '🔥 BESTSELLER',
+    badgeColor: 'from-amber-500 to-yellow-400 text-black',
+    publisher: 'Moonton Official',
+    rating: '4.9 ★★★★★',
+    popularLabel: 'Weekly Pass & Diamonds',
+  },
+  'Free Fire': {
+    poster: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=600&q=80',
+    badge: '⚡ FLASH SALE',
+    badgeColor: 'from-orange-500 to-red-500 text-white',
+    publisher: 'Garena Official',
+    rating: '4.8 ★★★★★',
+    popularLabel: '100 - 2,180 Diamonds',
+  },
+  'PUBG Mobile': {
+    poster: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=600&q=80',
+    badge: '🪙 INSTANT UC',
+    badgeColor: 'from-yellow-500 to-amber-600 text-black',
+    publisher: 'Tencent Games',
+    rating: '4.9 ★★★★★',
+    popularLabel: 'Royale Pass & UC Packs',
+  },
+  'Roblox': {
+    poster: 'https://images.unsplash.com/photo-1598550476439-6847785fcea6?auto=format&fit=crop&w=600&q=80',
+    badge: '✨ NO PASSWORD',
+    badgeColor: 'from-cyan-500 to-blue-500 text-white',
+    publisher: 'Roblox Corporation',
+    rating: '4.9 ★★★★★',
+    popularLabel: '80 - 4,500 Robux Direct',
+  },
+  'Genshin Impact': {
+    poster: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80',
+    badge: '✨ CRYSTALS',
+    badgeColor: 'from-purple-500 to-indigo-500 text-white',
+    publisher: 'HoYoverse',
+    rating: '4.8 ★★★★★',
+    popularLabel: 'Welkin Moon & Genesis',
+  },
+  'Honor of Kings': {
+    poster: 'https://images.unsplash.com/photo-1612287233207-6b22998a445b?auto=format&fit=crop&w=600&q=80',
+    badge: '👑 TOKENS',
+    badgeColor: 'from-amber-400 to-orange-500 text-black',
+    publisher: 'Level Infinite',
+    rating: '4.8 ★★★★★',
+    popularLabel: 'Tokens Direct Top-Up',
+  },
+  'Valorant': {
+    poster: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80',
+    badge: '🎯 RIOT POINTS',
+    badgeColor: 'from-rose-500 to-red-600 text-white',
+    publisher: 'Riot Games',
+    rating: '4.9 ★★★★★',
+    popularLabel: 'Points for Weapon Skins',
+  },
+};
+
+// Live Recent Activity Ticker (Smile.One style)
+const RECENT_TRANSACTIONS = [
   { id: '1', user: '012***48', game: 'MLBB', item: 'Weekly Diamond Pass', time: 'ទើបតែបញ្ជាទិញ' },
   { id: '2', user: '098***12', game: 'Roblox', item: '800 Robux', time: '1 នាទីមុន' },
   { id: '3', user: '070***95', game: 'Free Fire', item: '520 Diamonds', time: '2 នាទីមុន' },
-  { id: '4', user: '085***33', game: 'PUBG', item: '660 UC', time: '3 នាទីមុន' },
+  { id: '4', user: '085***33', game: 'PUBG Mobile', item: '660 UC', time: '3 នាទីមុន' },
   { id: '5', user: '016***77', game: 'MLBB', item: '257 Diamonds', time: '4 នាទីមុន' },
+  { id: '6', user: '069***21', game: 'Genshin Impact', item: 'Blessing of Welkin Moon', time: '5 នាទីមុន' },
 ];
 
 export default function TopUpPage() {
@@ -90,8 +159,8 @@ export default function TopUpPage() {
   const [selectedPackage, setSelectedPackage] = useState<TopUpPackage | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  // Carousel banner state
-  const [activeBannerIndex, setActiveBannerIndex] = useState<number>(0);
+  // Carousel slide index
+  const [currentSlide, setCurrentSlide] = useState<number>(0);
 
   // Input states
   const [playerId, setPlayerId] = useState<string>('');
@@ -112,19 +181,22 @@ export default function TopUpPage() {
   const [isSimulatingPayment, setIsSimulatingPayment] = useState<boolean>(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
-  // Guide modal state
+  // Modals
   const [showGuideModal, setShowGuideModal] = useState<boolean>(false);
   const [copiedOrder, setCopiedOrder] = useState<boolean>(false);
 
-  // Auto-scroll banner timer
+  // Cockpit scroll reference
+  const cockpitRef = useRef<HTMLDivElement>(null);
+
+  // Auto carousel slide timer
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveBannerIndex((prev) => (prev + 1) % PROMO_BANNERS.length);
-    }, 5000);
+      setCurrentSlide((prev) => (prev + 1) % PROMO_SLIDES.length);
+    }, 5500);
     return () => clearInterval(timer);
   }, []);
 
-  // Load games list
+  // Load games from backend
   useEffect(() => {
     async function loadGames() {
       try {
@@ -164,7 +236,15 @@ export default function TopUpPage() {
     loadDetails();
   }, [selectedGameId]);
 
-  // Check In-Game Nickname via Provider
+  // Handle Game Selection with Smooth Scroll to Cockpit
+  const handleSelectGame = (gameId: string) => {
+    setSelectedGameId(gameId);
+    if (cockpitRef.current) {
+      cockpitRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Check In-Game Nickname
   const handleVerifyPlayer = async () => {
     if (!playerId.trim()) {
       setVerificationError(
@@ -258,7 +338,7 @@ export default function TopUpPage() {
     }
   };
 
-  // Test Simulate Payment in Demo
+  // Test Simulate Payment for Demo
   const handleSimulatePayment = async () => {
     if (!currentOrder) return;
     setIsSimulatingPayment(true);
@@ -270,8 +350,8 @@ export default function TopUpPage() {
         setCurrentOrder(updated);
 
         confetti({
-          particleCount: 140,
-          spread: 80,
+          particleCount: 150,
+          spread: 85,
           origin: { y: 0.6 },
         });
       }
@@ -282,12 +362,12 @@ export default function TopUpPage() {
     }
   };
 
-  // Format currency in Khmer Riel
+  // Convert USD to Khmer Riel
   const toKHR = (usd: number) => {
     return (usd * 4100).toLocaleString('km-KH') + ' ៛';
   };
 
-  // Filtered games based on search
+  // Filtered games
   const filteredGames = games.filter((g) =>
     g.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -300,72 +380,71 @@ export default function TopUpPage() {
     }) || [];
 
   return (
-    <div className="min-h-screen bg-[#080b11] text-white pt-20 pb-24 selection:bg-[#d4af37] selection:text-black">
-      {/* Ambient Cyber-Gold Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[450px] bg-gradient-to-b from-amber-500/10 via-cyan-500/5 to-transparent blur-3xl pointer-events-none -z-10" />
+    <div className="min-h-screen bg-[#07090e] text-white pt-20 pb-28 selection:bg-[#d4af37] selection:text-black font-sans">
+      {/* Background Ambient Cyber-Gold Glows */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[550px] bg-gradient-to-b from-[#d4af37]/8 via-[#00e4f2]/4 to-transparent blur-3xl pointer-events-none -z-10" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* ============================================================== */}
-        {/* 1. CREATIVE PROMOTIONAL BANNER CAROUSEL (Smile.One Inspired)  */}
-        {/* ============================================================== */}
-        <div className="pt-3 pb-6">
-          <div className="relative rounded-3xl overflow-hidden border border-white/[0.1] bg-[#10141e] shadow-2xl">
-            {/* Banner Content */}
-            <div className="relative h-48 sm:h-64 lg:h-72 w-full overflow-hidden">
-              {PROMO_BANNERS.map((banner, index) => {
-                const isActive = index === activeBannerIndex;
+        {/* ========================================================================= */}
+        {/* SECTION 1: PROMOTIONAL EVENT BANNER CAROUSEL (Smile.One Signature Style)  */}
+        {/* ========================================================================= */}
+        <section className="pt-4 pb-6">
+          <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] bg-[#0d111a] shadow-[0_10px_40px_rgba(0,0,0,0.6)]">
+            <div className="relative h-56 sm:h-72 lg:h-80 w-full overflow-hidden">
+              {PROMO_SLIDES.map((slide, index) => {
+                const isActive = index === currentSlide;
                 return (
                   <div
-                    key={banner.id}
-                    className={`absolute inset-0 transition-opacity duration-700 flex items-center justify-between p-6 sm:p-10 ${
-                      isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                    key={slide.id}
+                    className={`absolute inset-0 transition-all duration-700 ease-in-out flex items-center justify-between p-6 sm:p-12 ${
+                      isActive ? 'opacity-100 scale-100 z-10' : 'opacity-0 scale-98 z-0 pointer-events-none'
                     }`}
                   >
-                    {/* Background Artwork with Overlay */}
+                    {/* Background Hero Artwork */}
                     <img
-                      src={banner.image}
-                      alt={banner.title}
-                      className="absolute inset-0 w-full h-full object-cover object-center opacity-30 filter brightness-75 scale-105 transition-transform duration-1000"
+                      src={slide.image}
+                      alt={slide.title}
+                      className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.45] scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#080b11] via-[#080b11]/80 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#07090e] via-[#07090e]/85 to-transparent" />
 
-                    {/* Text & Call-To-Action */}
-                    <div className="relative z-10 max-w-xl space-y-2.5">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-[11px] font-black uppercase tracking-wider">
-                        <Flame className="w-3.5 h-3.5 text-amber-400 animate-bounce" />
-                        <span>{banner.tag}</span>
+                    {/* Banner Copy & CTA */}
+                    <div className="relative z-10 max-w-2xl space-y-3">
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400/15 border border-amber-400/35 text-amber-300 text-xs font-black uppercase tracking-wider shadow-sm">
+                        <Flame className="w-4 h-4 text-amber-400 animate-bounce" />
+                        <span>{slide.tag}</span>
                         <span className="text-white/40">•</span>
-                        <span className="text-white">{banner.discount}</span>
+                        <span className="text-white">{slide.badge}</span>
                       </div>
 
-                      <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-                        {banner.title}
-                      </h2>
+                      <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight drop-shadow-md">
+                        {slide.title}
+                      </h1>
 
-                      <p className="text-xs sm:text-sm text-neutral-300 line-clamp-2">
-                        {banner.subtitle}
+                      <p className="text-xs sm:text-base text-neutral-300 font-medium max-w-lg">
+                        {slide.subtitle}
                       </p>
 
-                      <div className="pt-2 flex items-center gap-3">
+                      <div className="pt-2 flex flex-wrap items-center gap-3">
                         <button
                           type="button"
                           onClick={() => {
-                            const found = games.find((g) =>
-                              g.title.toLowerCase().includes(banner.gameTitleMatch.toLowerCase())
+                            const match = games.find((g) =>
+                              g.title.toLowerCase().includes(slide.gameMatch.toLowerCase())
                             );
-                            if (found) setSelectedGameId(found.id);
+                            if (match) handleSelectGame(match.id);
                           }}
-                          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] hover:brightness-110 text-black font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all cursor-pointer"
+                          className="px-6 py-3 rounded-2xl bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] hover:brightness-110 active:scale-95 text-black font-black text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 shadow-[0_0_25px_rgba(212,175,55,0.45)] transition-all cursor-pointer"
                         >
-                          <Zap className="w-3.5 h-3.5 fill-black" />
-                          <span>{language === 'kh' ? 'បញ្ចូលលុយភ្លាម' : 'Top Up Now'}</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
+                          <Zap className="w-4 h-4 fill-black text-black" />
+                          <span>{slide.buttonText}</span>
+                          <ArrowRight className="w-4 h-4" />
                         </button>
 
-                        <span className="text-[11px] text-emerald-400 font-bold hidden sm:inline flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>{language === 'kh' ? 'មិនបាច់ Login' : 'No Account Needed'}</span>
-                        </span>
+                        <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3.5 py-2.5 rounded-xl border border-emerald-500/25">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          <span>{language === 'kh' ? 'មិនបាច់បង្កើត Account' : 'No Account Needed'}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -373,88 +452,86 @@ export default function TopUpPage() {
               })}
             </div>
 
-            {/* Banner Navigation Controls */}
-            <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/[0.1]">
+            {/* Carousel Navigation Dots & Arrows */}
+            <div className="absolute bottom-5 right-5 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/[0.1]">
               <button
                 type="button"
                 onClick={() =>
-                  setActiveBannerIndex(
-                    (prev) => (prev - 1 + PROMO_BANNERS.length) % PROMO_BANNERS.length
-                  )
+                  setCurrentSlide((prev) => (prev - 1 + PROMO_SLIDES.length) % PROMO_SLIDES.length)
                 }
-                className="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                className="text-neutral-400 hover:text-white transition-colors cursor-pointer p-0.5"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <div className="flex items-center gap-1.5 px-1">
-                {PROMO_BANNERS.map((_, i) => (
+              <div className="flex items-center gap-1.5 px-1.5">
+                {PROMO_SLIDES.map((_, i) => (
                   <button
                     key={i}
-                    onClick={() => setActiveBannerIndex(i)}
+                    onClick={() => setCurrentSlide(i)}
                     className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                      i === activeBannerIndex ? 'w-5 bg-amber-400' : 'w-1.5 bg-white/30'
+                      i === currentSlide ? 'w-6 bg-amber-400 shadow-[0_0_10px_rgba(212,175,55,0.8)]' : 'w-2 bg-white/30'
                     }`}
                   />
                 ))}
               </div>
               <button
                 type="button"
-                onClick={() =>
-                  setActiveBannerIndex((prev) => (prev + 1) % PROMO_BANNERS.length)
-                }
-                className="text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                onClick={() => setCurrentSlide((prev) => (prev + 1) % PROMO_SLIDES.length)}
+                className="text-neutral-400 hover:text-white transition-colors cursor-pointer p-0.5"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* ============================================================== */}
-        {/* 2. LIVE RECENT TOP-UP ACTIVITY TICKER (Smile.One Social Proof) */}
-        {/* ============================================================== */}
-        <div className="mb-6 bg-[#10141e]/80 border border-white/[0.06] rounded-2xl p-2.5 px-4 flex items-center justify-between text-xs overflow-hidden">
+        {/* ========================================================================= */}
+        {/* SECTION 2: LIVE RECENT TOP-UP ACTIVITY TICKER (Smile.One Social Proof)   */}
+        {/* ========================================================================= */}
+        <div className="mb-8 bg-[#0d111a] border border-white/[0.08] rounded-2xl p-3 px-5 flex items-center justify-between text-xs overflow-hidden shadow-sm">
           <div className="flex items-center gap-2 text-amber-300 font-bold shrink-0">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="hidden sm:inline">⚡ {language === 'kh' ? 'ប្រតិបត្តិការផ្ទាល់' : 'Live Reloads'}:</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+            <span className="font-black text-amber-400 uppercase tracking-wider">
+              ⚡ {language === 'kh' ? 'ប្រតិបត្តិការផ្ទាល់' : 'Live Reloads'}:
+            </span>
           </div>
 
-          <div className="flex items-center gap-6 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap text-[11px] text-neutral-300 px-2">
-            {LIVE_RELOADS.map((item) => (
-              <div key={item.id} className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-6 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap text-xs text-neutral-300 px-3">
+            {RECENT_TRANSACTIONS.map((item) => (
+              <div key={item.id} className="flex items-center gap-2 shrink-0 bg-[#141b28] px-3 py-1 rounded-xl border border-white/[0.04]">
                 <span className="font-mono text-neutral-400">{item.user}</span>
                 <span className="text-white font-bold">{item.game}</span>
-                <span className="text-amber-400 font-medium">({item.item})</span>
-                <span className="text-emerald-400 text-[10px]">✓ {item.time}</span>
+                <span className="text-amber-400 font-semibold">{item.item}</span>
+                <span className="text-emerald-400 font-bold text-[10px]">✓ {item.time}</span>
               </div>
             ))}
           </div>
 
-          <div className="hidden md:flex items-center gap-1 text-[11px] text-neutral-400 shrink-0">
+          <div className="hidden lg:flex items-center gap-1.5 text-xs text-neutral-400 shrink-0 font-medium">
             <span>Powered by</span>
-            <span className="text-amber-400 font-black">Smile.One API</span>
+            <span className="text-amber-400 font-black tracking-wide">Smile.One API</span>
           </div>
         </div>
 
-        {/* ============================================================== */}
-        {/* 3. SEARCH BAR & TRENDING GAMES TICKER                          */}
-        {/* ============================================================== */}
-        <div className="mb-6 flex flex-col md:flex-row items-center justify-between gap-3">
+        {/* ========================================================================= */}
+        {/* SECTION 3: SEARCH BAR & TRENDING TAGS BAR                                 */}
+        {/* ========================================================================= */}
+        <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-4 bg-[#0d111a] p-4 rounded-3xl border border-white/[0.08]">
           {/* Live Search Input */}
-          <div className="relative w-full md:w-80">
-            <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <div className="relative w-full md:w-96">
+            <Search className="w-4 h-4 text-amber-400 absolute left-4 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={language === 'kh' ? 'ស្វែងរកហ្គេម (MLBB, Roblox, FF...)' : 'Search game title...'}
-              className="w-full bg-[#121620] border border-white/[0.08] rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37] transition-all"
+              placeholder={language === 'kh' ? 'ស្វែងរកហ្គេម (MLBB, Roblox, Free Fire...)' : 'Search game title...'}
+              className="w-full bg-[#141926] border border-white/[0.1] rounded-2xl pl-11 pr-4 py-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] transition-all"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400 hover:text-white"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-neutral-400 hover:text-white"
               >
                 ✕
               </button>
@@ -462,20 +539,20 @@ export default function TopUpPage() {
           </div>
 
           {/* Quick Trending Game Tags */}
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto text-xs pb-1 md:pb-0">
-            <span className="text-[11px] text-neutral-500 font-semibold shrink-0 flex items-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5 text-amber-400" />
-              <span>{language === 'kh' ? 'ពេញនិយម' : 'Trending'}:</span>
+          <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto text-xs pb-1 md:pb-0">
+            <span className="text-xs text-neutral-400 font-bold shrink-0 flex items-center gap-1.5">
+              <TrendingUp className="w-4 h-4 text-amber-400" />
+              <span>{language === 'kh' ? 'ហ្គេមពេញនិយម' : 'Trending'}:</span>
             </span>
-            {['Mobile Legends', 'Roblox', 'Free Fire', 'PUBG Mobile', 'Genshin'].map((tag) => (
+            {['Mobile Legends', 'Roblox', 'Free Fire', 'PUBG Mobile', 'Genshin Impact'].map((tag) => (
               <button
                 key={tag}
                 type="button"
                 onClick={() => {
                   const match = games.find((g) => g.title.toLowerCase().includes(tag.toLowerCase()));
-                  if (match) setSelectedGameId(match.id);
+                  if (match) handleSelectGame(match.id);
                 }}
-                className="px-2.5 py-1 rounded-lg bg-[#141924] hover:bg-[#1c2333] border border-white/[0.06] text-neutral-300 hover:text-white font-medium text-[11px] transition-colors shrink-0 cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl bg-[#141926] hover:bg-[#1f273b] border border-white/[0.08] text-neutral-200 hover:text-amber-300 font-bold text-xs transition-all shrink-0 cursor-pointer"
               >
                 {tag}
               </button>
@@ -483,605 +560,758 @@ export default function TopUpPage() {
           </div>
         </div>
 
-        {/* ============================================================== */}
-        {/* 4. STEP 1: GAME SELECTION GRID (Smile.One Catalog Style)       */}
-        {/* ============================================================== */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-3.5">
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-black font-black text-xs flex items-center justify-center shadow-md">
-                1
-              </span>
-              <h2 className="text-sm font-black uppercase tracking-wider text-white">
-                {language === 'kh' ? 'ជ្រើសរើសហ្គេមដែលចង់បញ្ចូល' : 'Select Game'}
-              </h2>
+        {/* ========================================================================= */}
+        {/* SECTION 4: HOT GAMES CATALOG (Smile.One Rich Poster Cards)                 */}
+        {/* ========================================================================= */}
+        <section className="mb-14">
+          <div className="flex items-center justify-between mb-6">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Flame className="w-5 h-5 text-amber-400 fill-amber-400" />
+                <h2 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-white">
+                  {language === 'kh' ? '🔥 ហ្គេមពេញនិយមបំផុត (Hot Games)' : '🔥 Hot Games'}
+                </h2>
+              </div>
+              <p className="text-xs text-neutral-400">
+                {language === 'kh'
+                  ? 'ចុចលើហ្គេមដែលអ្នកចង់បញ្ចូល ដើម្បីមើលកញ្ចប់ពេជ្រ និងតម្លៃពិសេស'
+                  : 'Click on any game to start instant top-up with zero login required.'}
+              </p>
             </div>
-            <span className="text-[11px] text-neutral-400 font-medium">
-              {filteredGames.length} {language === 'kh' ? 'ហ្គេមគាំទ្រ' : 'Games Available'}
+
+            <span className="text-xs text-amber-400 font-bold bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/25">
+              {filteredGames.length} {language === 'kh' ? 'ហ្គេម' : 'Titles'}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
+          {/* High-Resolution Game Poster Cards Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {filteredGames.map((g) => {
               const isSelected = g.id === selectedGameId;
+              const meta = GAME_POSTERS[g.title] || {
+                poster: g.iconUrl || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600',
+                badge: '⚡ INSTANT',
+                badgeColor: 'from-amber-400 to-yellow-400 text-black',
+                publisher: 'Official Partner',
+                rating: '4.9 ★★★★★',
+                popularLabel: g.currencyName,
+              };
+
               return (
-                <button
+                <div
                   key={g.id}
-                  onClick={() => setSelectedGameId(g.id)}
-                  className={`relative flex flex-col items-center justify-center p-3 rounded-2xl border transition-all duration-200 text-center group cursor-pointer ${
+                  onClick={() => handleSelectGame(g.id)}
+                  className={`group relative rounded-3xl overflow-hidden border transition-all duration-300 cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-[#182030] border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.35)] scale-[1.02]'
-                      : 'bg-[#11151e] border-white/[0.06] hover:border-white/[0.2] hover:bg-[#151a26]'
+                      ? 'border-[#d4af37] bg-[#141b2a] shadow-[0_0_35px_rgba(212,175,55,0.4)] scale-[1.03] ring-2 ring-[#d4af37]/50'
+                      : 'border-white/[0.08] bg-[#0d111a] hover:border-white/[0.25] hover:bg-[#121724] hover:shadow-2xl hover:scale-[1.02]'
                   }`}
                 >
-                  {/* Selected Indicator Pill */}
+                  {/* Top Floating Badge */}
+                  <div className="absolute top-3 left-3 z-10">
+                    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${meta.badgeColor} shadow-md`}>
+                      {meta.badge}
+                    </span>
+                  </div>
+
+                  {/* Selected Indicator Checkmark */}
                   {isSelected && (
-                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-yellow-300 text-black text-[9px] font-black uppercase px-2 py-0.2 rounded-full shadow-md flex items-center gap-1">
-                      <Check className="w-2.5 h-2.5 stroke-[3]" />
-                      <span>{language === 'kh' ? 'បានជ្រើស' : 'Selected'}</span>
+                    <div className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-[#d4af37] text-black flex items-center justify-center font-black shadow-lg animate-in zoom-in-50">
+                      <Check className="w-4 h-4 stroke-[3]" />
                     </div>
                   )}
 
-                  <div className="w-14 h-14 rounded-xl overflow-hidden mb-2 relative p-[1px] bg-gradient-to-br from-white/10 to-transparent mt-1">
+                  {/* Poster Image Container */}
+                  <div className="relative h-56 sm:h-64 w-full overflow-hidden bg-black/40">
                     <img
-                      src={g.iconUrl || 'https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=200'}
+                      src={meta.poster}
                       alt={g.title}
-                      className="w-full h-full object-cover rounded-[10px] group-hover:scale-105 transition-transform"
+                      className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d111a] via-[#0d111a]/40 to-transparent" />
                   </div>
 
-                  <span className="text-xs font-bold text-white line-clamp-1 mb-0.5">
-                    {g.title}
-                  </span>
-                  <span className="text-[10px] text-amber-400 font-semibold">
-                    {g.currencyName}
-                  </span>
-                </button>
+                  {/* Card Content & Action Button */}
+                  <div className="p-4 sm:p-5 space-y-3 relative z-10 -mt-6 bg-[#0d111a] rounded-t-3xl border-t border-white/[0.04]">
+                    <div>
+                      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-0.5">
+                        {meta.publisher}
+                      </span>
+                      <h3 className="text-sm sm:text-base font-black text-white group-hover:text-amber-300 transition-colors line-clamp-1">
+                        {g.title}
+                      </h3>
+                      <p className="text-[11px] text-amber-400/90 font-semibold line-clamp-1 mt-0.5">
+                        {meta.popularLabel}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between">
+                      <div className="text-[11px] text-neutral-400 font-semibold flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>3s Direct Credit</span>
+                      </div>
+
+                      <button
+                        type="button"
+                        className={`px-3 py-1.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer ${
+                          isSelected
+                            ? 'bg-[#d4af37] text-black shadow-md'
+                            : 'bg-[#182030] text-amber-300 group-hover:bg-[#d4af37] group-hover:text-black'
+                        }`}
+                      >
+                        <span>{language === 'kh' ? 'បញ្ចូល' : 'Top Up'}</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>
-        </div>
+        </section>
 
-        {/* ============================================================== */}
-        {/* 5. MAIN INTERACTIVE TOP-UP COCKPIT (Steps 2, 3, 4)             */}
-        {/* ============================================================== */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column (8 Cols): Input ID + Select Package + Payment Method */}
-          <div className="lg:col-span-8 space-y-6">
-            {/* ------------------------------------------------------------ */}
-            {/* Step 2: Account Identification (Player ID / Zone ID)        */}
-            {/* ------------------------------------------------------------ */}
-            <div className="bg-[#11151e] rounded-3xl border border-white/[0.08] p-5 sm:p-6 shadow-xl relative overflow-hidden">
-              <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.06] mb-4">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-black font-black text-xs flex items-center justify-center shadow-md">
-                    2
-                  </span>
-                  <div>
-                    <h3 className="font-bold text-sm sm:text-base text-white">
-                      {language === 'kh' ? 'បញ្ចូលលេខសម្គាល់គណនី (Player ID)' : 'Enter Account Details'}
-                    </h3>
-                    <p className="text-xs text-neutral-400">
-                      {language === 'kh'
-                        ? 'បញ្ចូលតែ Player ID ប៉ុណ្ណោះ មិនទាមទារ Password ឡើយ'
-                        : 'Only in-game ID is required. Zero password needed.'}
-                    </p>
+        {/* ========================================================================= */}
+        {/* SECTION 5: STEP-BY-STEP TOP-UP COCKPIT (Smile.One 3-Step Flow)            */}
+        {/* ========================================================================= */}
+        <section ref={cockpitRef} className="pt-6 mb-16 scroll-mt-24">
+          {/* Active Game Header Ribbon */}
+          <div className="bg-[#0f1422] rounded-3xl border border-white/[0.1] p-5 sm:p-6 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 bottom-0 w-2 bg-gradient-to-b from-amber-400 to-yellow-500" />
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden p-0.5 bg-gradient-to-br from-amber-400 to-yellow-500 shadow-md shrink-0">
+                <img
+                  src={selectedGame?.iconUrl || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200'}
+                  alt={selectedGame?.title || 'Game'}
+                  className="w-full h-full object-cover rounded-[14px]"
+                />
+              </div>
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-400/15 text-amber-300 text-[10px] font-black uppercase tracking-wider mb-1">
+                  <span>⚡ 100% AUTOMATED RELOAD</span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-black text-white">
+                  {selectedGame?.title}
+                </h2>
+                <p className="text-xs text-neutral-400">
+                  {language === 'kh'
+                    ? `បញ្ចូល ${selectedGame?.currencyName} ផ្ទាល់ចូលក្នុង ID តួអង្គក្នុងហ្គេមរបស់អ្នក`
+                    : `Direct in-game ${selectedGame?.currencyName} reload`}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowGuideModal(true)}
+                className="px-4 py-2 rounded-xl bg-[#182030] hover:bg-[#202b40] border border-white/[0.1] text-xs font-bold text-cyan-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <HelpCircle className="w-4 h-4 text-cyan-400" />
+                <span>{language === 'kh' ? 'របៀបមើល ID?' : 'How to find ID?'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 3-Step Grid Board */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left 8 Columns: Steps 1, 2, 3 */}
+            <div className="lg:col-span-8 space-y-6">
+              {/* ------------------------------------------------------------------- */}
+              {/* STEP 1: ENTER USER INFORMATION (Smile.One Step 1)                   */}
+              {/* ------------------------------------------------------------------- */}
+              <div className="bg-[#0d111a] rounded-3xl border border-white/[0.08] p-6 shadow-xl relative">
+                <div className="flex items-center justify-between pb-4 border-b border-white/[0.06] mb-5">
+                  <div className="flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-black font-black text-sm flex items-center justify-center shadow-md">
+                      1
+                    </span>
+                    <div>
+                      <h3 className="font-black text-base text-white">
+                        {language === 'kh' ? 'បញ្ចូលលេខសម្គាល់គណនី (Enter User ID)' : 'Step 1: Enter User Info'}
+                      </h3>
+                      <p className="text-xs text-neutral-400">
+                        {language === 'kh'
+                          ? 'បញ្ចូលតែ Player ID ត្រឹមត្រូវ ពេជ្រនឹងចូលតួអង្គនោះភ្លាម (គ្មាន Password)'
+                          : 'Zero password required. Only enter your public in-game Player ID.'}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setShowGuideModal(true)}
-                  className="flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 font-bold bg-cyan-500/10 px-3 py-1.5 rounded-lg border border-cyan-500/20 transition-colors cursor-pointer"
-                >
-                  <HelpCircle className="w-3.5 h-3.5" />
-                  <span>{language === 'kh' ? 'របៀបមើល ID?' : 'How to find ID?'}</span>
-                </button>
-              </div>
-
-              {/* Dynamic Inputs for Selected Game */}
-              <div className="space-y-3.5">
-                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                  {/* Primary Player ID */}
-                  <div
-                    className={
-                      selectedGame?.inputConfig?.some(
-                        (c) => c.key === 'zoneId' || c.key === 'serverRegion'
-                      )
-                        ? 'sm:col-span-5'
-                        : 'sm:col-span-8'
-                    }
-                  >
-                    <label className="block text-xs font-bold text-neutral-300 mb-1.5 uppercase tracking-wider">
-                      {language === 'kh'
-                        ? selectedGame?.inputConfig?.[0]?.labelKh || 'Player ID'
-                        : selectedGame?.inputConfig?.[0]?.label || 'Player ID'}
-                      <span className="text-amber-400 ml-1">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={playerId}
-                      onChange={(e) => {
-                        setPlayerId(e.target.value);
-                        setVerifiedNickname(null);
-                        setVerificationError(null);
-                      }}
-                      placeholder={selectedGame?.inputConfig?.[0]?.placeholder || 'Enter ID'}
-                      className="w-full bg-[#161c28] border border-white/[0.1] rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] transition-all font-mono"
-                    />
-                  </div>
-
-                  {/* Secondary Input: Zone ID (e.g. MLBB) */}
-                  {selectedGame?.inputConfig?.some((c) => c.key === 'zoneId') && (
-                    <div className="sm:col-span-3">
+                {/* Input Fields */}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
+                    {/* Primary Player ID */}
+                    <div
+                      className={
+                        selectedGame?.inputConfig?.some(
+                          (c) => c.key === 'zoneId' || c.key === 'serverRegion'
+                        )
+                          ? 'sm:col-span-5'
+                          : 'sm:col-span-8'
+                      }
+                    >
                       <label className="block text-xs font-bold text-neutral-300 mb-1.5 uppercase tracking-wider">
-                        Zone ID <span className="text-amber-400 ml-1">*</span>
+                        {language === 'kh'
+                          ? selectedGame?.inputConfig?.[0]?.labelKh || 'Player ID'
+                          : selectedGame?.inputConfig?.[0]?.label || 'Player ID'}
+                        <span className="text-amber-400 ml-1">*</span>
                       </label>
                       <input
                         type="text"
-                        value={zoneId}
+                        value={playerId}
                         onChange={(e) => {
-                          setZoneId(e.target.value);
+                          setPlayerId(e.target.value);
                           setVerifiedNickname(null);
                           setVerificationError(null);
                         }}
-                        placeholder="ឧ. 2026"
-                        className="w-full bg-[#161c28] border border-white/[0.1] rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] transition-all font-mono"
+                        placeholder={selectedGame?.inputConfig?.[0]?.placeholder || 'Enter ID'}
+                        className="w-full bg-[#141926] border border-white/[0.1] rounded-2xl px-4 py-3.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] transition-all font-mono shadow-inner"
                       />
                     </div>
-                  )}
 
-                  {/* Secondary Input: Server Region (e.g. Genshin) */}
-                  {selectedGame?.inputConfig?.some((c) => c.key === 'serverRegion') && (
-                    <div className="sm:col-span-3">
-                      <label className="block text-xs font-bold text-neutral-300 mb-1.5 uppercase tracking-wider">
-                        Server <span className="text-amber-400 ml-1">*</span>
-                      </label>
-                      <select
-                        value={serverRegion}
-                        onChange={(e) => setServerRegion(e.target.value)}
-                        className="w-full bg-[#161c28] border border-white/[0.1] rounded-xl px-3 py-3 text-sm text-white focus:outline-none focus:border-[#d4af37] transition-all"
+                    {/* Zone ID for MLBB */}
+                    {selectedGame?.inputConfig?.some((c) => c.key === 'zoneId') && (
+                      <div className="sm:col-span-3">
+                        <label className="block text-xs font-bold text-neutral-300 mb-1.5 uppercase tracking-wider">
+                          Zone ID <span className="text-amber-400 ml-1">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={zoneId}
+                          onChange={(e) => {
+                            setZoneId(e.target.value);
+                            setVerifiedNickname(null);
+                            setVerificationError(null);
+                          }}
+                          placeholder="ឧ. 2026"
+                          className="w-full bg-[#141926] border border-white/[0.1] rounded-2xl px-4 py-3.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] transition-all font-mono shadow-inner"
+                        />
+                      </div>
+                    )}
+
+                    {/* Server Region for Genshin */}
+                    {selectedGame?.inputConfig?.some((c) => c.key === 'serverRegion') && (
+                      <div className="sm:col-span-3">
+                        <label className="block text-xs font-bold text-neutral-300 mb-1.5 uppercase tracking-wider">
+                          Server <span className="text-amber-400 ml-1">*</span>
+                        </label>
+                        <select
+                          value={serverRegion}
+                          onChange={(e) => setServerRegion(e.target.value)}
+                          className="w-full bg-[#141926] border border-white/[0.1] rounded-2xl px-3 py-3.5 text-sm text-white focus:outline-none focus:border-[#d4af37] transition-all shadow-inner"
+                        >
+                          <option value="Asia">Asia (អាស៊ី)</option>
+                          <option value="America">America</option>
+                          <option value="Europe">Europe</option>
+                          <option value="TW_HK_MO">TW / HK / MO</option>
+                        </select>
+                      </div>
+                    )}
+
+                    {/* Check Nickname CTA */}
+                    <div className="sm:col-span-4 flex items-end">
+                      <button
+                        type="button"
+                        onClick={handleVerifyPlayer}
+                        disabled={isVerifying || !playerId.trim()}
+                        className="w-full h-[50px] bg-[#1a2234] hover:bg-[#232e47] disabled:opacity-50 text-white rounded-2xl text-xs font-bold tracking-wider transition-all border border-white/[0.1] flex items-center justify-center gap-2 shadow-sm cursor-pointer"
                       >
-                        <option value="Asia">Asia (អាស៊ី)</option>
-                        <option value="America">America</option>
-                        <option value="Europe">Europe</option>
-                        <option value="TW_HK_MO">TW / HK / MO</option>
-                      </select>
+                        {isVerifying ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 animate-spin text-amber-400" />
+                            <span>{language === 'kh' ? 'កំពុងពិនិត្យ...' : 'Checking...'}</span>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                            <span>{language === 'kh' ? 'ពិនិត្យឈ្មោះតួអង្គ' : 'Check Nickname'}</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Nickname Verified Confirmation Pill */}
+                  {verifiedNickname && (
+                    <div className="bg-emerald-500/10 border border-emerald-500/35 rounded-2xl p-4 flex items-center justify-between animate-in fade-in">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                          <CheckCircle2 className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-emerald-400 uppercase tracking-widest font-black">
+                            {language === 'kh' ? '✅ ឈ្មោះតួអង្គត្រឹមត្រូវ (Verified IGN)' : '✅ Verified Nickname'}
+                          </span>
+                          <div className="text-base font-black text-white flex items-center gap-2">
+                            <span>{verifiedNickname}</span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 font-mono">
+                              ID: {playerId} {zoneId ? `(${zoneId})` : ''}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-xs text-emerald-400 font-bold hidden sm:inline">
+                        {language === 'kh' ? 'រួចរាល់សម្រាប់បញ្ចូល' : 'Ready to reload'}
+                      </span>
                     </div>
                   )}
 
-                  {/* Real-time Check Nickname Button */}
-                  <div className="sm:col-span-4 flex items-end">
+                  {/* Verification Error Notice */}
+                  {verificationError && (
+                    <div className="bg-red-500/10 border border-red-500/35 rounded-2xl p-3.5 flex items-center gap-2.5 text-xs text-red-300">
+                      <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                      <span>{verificationError}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* ------------------------------------------------------------------- */}
+              {/* STEP 2: SELECT RECHARGE DENOMINATION (Smile.One Step 2)             */}
+              {/* ------------------------------------------------------------------- */}
+              <div className="bg-[#0d111a] rounded-3xl border border-white/[0.08] p-6 shadow-xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-white/[0.06] mb-5 gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-black font-black text-sm flex items-center justify-center shadow-md">
+                      2
+                    </span>
+                    <div>
+                      <h3 className="font-black text-base text-white">
+                        {language === 'kh' ? 'ជ្រើសរើសចំនួនពេជ្រ / កញ្ចប់ (Select Package)' : 'Step 2: Choose Product'}
+                      </h3>
+                      <p className="text-xs text-neutral-400">
+                        {language === 'kh'
+                          ? 'ជ្រើសរើសចំនួនពេជ្រ ឬ Pass ដែលអ្នកចង់បញ្ចូល'
+                          : 'Select diamond pack, tokens, or passes.'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Category Filter Pills */}
+                  <div className="flex items-center gap-1.5 bg-[#141926] p-1.5 rounded-2xl border border-white/[0.06] text-xs">
                     <button
                       type="button"
-                      onClick={handleVerifyPlayer}
-                      disabled={isVerifying || !playerId.trim()}
-                      className="w-full h-[46px] bg-[#1a2232] hover:bg-[#222c42] disabled:opacity-50 text-white rounded-xl text-xs font-bold tracking-wider transition-all border border-white/[0.1] flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                      onClick={() => setCategoryFilter('all')}
+                      className={`px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+                        categoryFilter === 'all'
+                          ? 'bg-[#d4af37] text-black shadow-md'
+                          : 'text-neutral-400 hover:text-white'
+                      }`}
                     >
-                      {isVerifying ? (
-                        <>
-                          <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-400" />
-                          <span>{language === 'kh' ? 'កំពុងពិនិត្យ...' : 'Checking...'}</span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>{language === 'kh' ? 'ពិនិត្យឈ្មោះតួអង្គ' : 'Check Nickname'}</span>
-                        </>
-                      )}
+                      {language === 'kh' ? 'ទាំងអស់' : 'All'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCategoryFilter('currency')}
+                      className={`px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+                        categoryFilter === 'currency'
+                          ? 'bg-[#d4af37] text-black shadow-md'
+                          : 'text-neutral-400 hover:text-white'
+                      }`}
+                    >
+                      {selectedGame?.currencyName || 'Diamonds'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCategoryFilter('pass')}
+                      className={`px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+                        categoryFilter === 'pass'
+                          ? 'bg-[#d4af37] text-black shadow-md'
+                          : 'text-neutral-400 hover:text-white'
+                      }`}
+                    >
+                      Pass & Bundles
                     </button>
                   </div>
                 </div>
 
-                {/* Nickname Verified Badge */}
-                {verifiedNickname && (
-                  <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-3 flex items-center justify-between animate-in fade-in">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
-                        <CheckCircle2 className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-emerald-400 uppercase tracking-widest font-black">
-                          {language === 'kh' ? '✅ ឈ្មោះតួអង្គត្រឹមត្រូវ (Verified)' : '✅ Verified Nickname'}
-                        </span>
-                        <div className="text-sm font-black text-white flex items-center gap-2">
-                          <span>{verifiedNickname}</span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">
-                            ID: {playerId} {zoneId ? `(${zoneId})` : ''}
-                          </span>
+                {/* Package Cards Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {filteredPackages.map((pkg) => {
+                    const isSelected = selectedPackage?.id === pkg.id;
+                    return (
+                      <div
+                        key={pkg.id}
+                        onClick={() => setSelectedPackage(pkg)}
+                        className={`relative cursor-pointer rounded-2xl p-4.5 border transition-all duration-200 flex flex-col justify-between group ${
+                          isSelected
+                            ? 'bg-[#182030] border-[#d4af37] shadow-[0_0_25px_rgba(212,175,55,0.4)] scale-[1.02] ring-1 ring-[#d4af37]'
+                            : 'bg-[#121622] border-white/[0.06] hover:border-white/[0.25] hover:bg-[#161c2b]'
+                        }`}
+                      >
+                        {/* Hot Deal / Bonus Ribbon */}
+                        {pkg.badge && (
+                          <div className="absolute -top-2.5 right-3 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md">
+                            {pkg.badge}
+                          </div>
+                        )}
+
+                        <div className="space-y-1.5 mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl">{selectedGame?.currencyIcon || '💎'}</span>
+                            <span className="font-black text-sm text-white group-hover:text-amber-300 transition-colors">
+                              {pkg.name}
+                            </span>
+                          </div>
+
+                          {pkg.bonusAmount > 0 && (
+                            <div className="text-[11px] text-emerald-400 font-bold flex items-center gap-1">
+                              <span>+ {pkg.bonusAmount} Bonus Included</span>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    </div>
-                    <span className="text-xs text-emerald-400 font-semibold hidden sm:inline">
-                      {language === 'kh' ? 'រួចរាល់សម្រាប់បញ្ចូល' : 'Ready to credit'}
-                    </span>
-                  </div>
-                )}
 
-                {/* Error Notice */}
-                {verificationError && (
-                  <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-3 flex items-center gap-2 text-xs text-red-300">
-                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-                    <span>{verificationError}</span>
-                  </div>
-                )}
-              </div>
-            </div>
+                        <div className="pt-3 border-t border-white/[0.06] flex items-end justify-between">
+                          <div>
+                            {pkg.originalPrice && pkg.originalPrice > pkg.price && (
+                              <span className="text-[10px] text-neutral-500 line-through block">
+                                ${Number(pkg.originalPrice).toFixed(2)}
+                              </span>
+                            )}
+                            <span className="text-lg font-black text-[#f2ca50]">
+                              ${Number(pkg.price).toFixed(2)}
+                            </span>
+                          </div>
 
-            {/* ------------------------------------------------------------ */}
-            {/* Step 3: Select Package Denomination (Smile.One Cards)       */}
-            {/* ------------------------------------------------------------ */}
-            <div className="bg-[#11151e] rounded-3xl border border-white/[0.08] p-5 sm:p-6 shadow-xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 border-b border-white/[0.06] mb-5 gap-3">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-black font-black text-xs flex items-center justify-center shadow-md">
-                    3
-                  </span>
-                  <div>
-                    <h3 className="font-bold text-sm sm:text-base text-white">
-                      {language === 'kh' ? 'ជ្រើសរើសកញ្ចប់ពេជ្រ / កាក់' : 'Select Package'}
-                    </h3>
-                    <p className="text-xs text-neutral-400">
-                      {language === 'kh'
-                        ? 'ជ្រើសរើសចំនួនពេជ្រ ឬកញ្ចប់ Pass ដែលអ្នកពេញចិត្ត'
-                        : 'Choose diamond tier or bundle pass.'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Category Filter Pills */}
-                <div className="flex items-center gap-1.5 bg-[#161c28] p-1 rounded-xl border border-white/[0.06] text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setCategoryFilter('all')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                      categoryFilter === 'all'
-                        ? 'bg-[#d4af37] text-black shadow-sm'
-                        : 'text-neutral-400 hover:text-white'
-                    }`}
-                  >
-                    {language === 'kh' ? 'ទាំងអស់' : 'All'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCategoryFilter('currency')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                      categoryFilter === 'currency'
-                        ? 'bg-[#d4af37] text-black shadow-sm'
-                        : 'text-neutral-400 hover:text-white'
-                    }`}
-                  >
-                    {selectedGame?.currencyName || 'Diamonds'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCategoryFilter('pass')}
-                    className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                      categoryFilter === 'pass'
-                        ? 'bg-[#d4af37] text-black shadow-sm'
-                        : 'text-neutral-400 hover:text-white'
-                    }`}
-                  >
-                    Pass & Bundles
-                  </button>
-                </div>
-              </div>
-
-              {/* Package Tiles Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
-                {filteredPackages.map((pkg) => {
-                  const isSelected = selectedPackage?.id === pkg.id;
-                  return (
-                    <div
-                      key={pkg.id}
-                      onClick={() => setSelectedPackage(pkg)}
-                      className={`relative cursor-pointer rounded-2xl p-4 border transition-all duration-200 flex flex-col justify-between group ${
-                        isSelected
-                          ? 'bg-[#182030] border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.35)] scale-[1.02]'
-                          : 'bg-[#151a26] border-white/[0.06] hover:border-white/[0.2] hover:bg-[#1a2232]'
-                      }`}
-                    >
-                      {/* Popular / Best Deal Badge */}
-                      {pkg.badge && (
-                        <div className="absolute -top-2.5 right-3 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
-                          {pkg.badge}
-                        </div>
-                      )}
-
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xl">{selectedGame?.currencyIcon || '💎'}</span>
-                          <span className="font-black text-sm text-white group-hover:text-amber-300 transition-colors">
-                            {pkg.name}
+                          <span className="text-[11px] text-neutral-400 font-semibold">
+                            {toKHR(Number(pkg.price))}
                           </span>
                         </div>
 
-                        {pkg.bonusAmount > 0 && (
-                          <div className="text-[11px] text-emerald-400 font-semibold mb-2">
-                            +{pkg.bonusAmount} Bonus Included
+                        {/* Selected Checkmark Corner */}
+                        {isSelected && (
+                          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#d4af37] rounded-tl-xl rounded-br-2xl flex items-center justify-center shadow-md">
+                            <Check className="w-3.5 h-3.5 text-black stroke-[3]" />
                           </div>
                         )}
                       </div>
+                    );
+                  })}
+                </div>
+              </div>
 
-                      <div className="pt-3 border-t border-white/[0.06] flex items-end justify-between">
-                        <div>
-                          {pkg.originalPrice && pkg.originalPrice > pkg.price && (
-                            <span className="text-[10px] text-neutral-500 line-through block">
-                              ${Number(pkg.originalPrice).toFixed(2)}
-                            </span>
-                          )}
-                          <span className="text-base font-black text-[#f2ca50]">
-                            ${Number(pkg.price).toFixed(2)}
-                          </span>
-                        </div>
+              {/* ------------------------------------------------------------------- */}
+              {/* STEP 3: PAYMENT METHOD (Smile.One Step 3 - Bakong KHQR)             */}
+              {/* ------------------------------------------------------------------- */}
+              <div className="bg-[#0d111a] rounded-3xl border border-white/[0.08] p-6 shadow-xl">
+                <div className="flex items-center gap-3 pb-4 border-b border-white/[0.06] mb-5">
+                  <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-black font-black text-sm flex items-center justify-center shadow-md">
+                    3
+                  </span>
+                  <div>
+                    <h3 className="font-black text-base text-white">
+                      {language === 'kh' ? 'ជ្រើសរើសវិធីសាស្ត្រទូទាត់ប្រាក់ (Payment Method)' : 'Step 3: Select Payment Channel'}
+                    </h3>
+                    <p className="text-xs text-neutral-400">
+                      {language === 'kh'
+                        ? 'ស្កេនទូទាត់តាម Bakong KHQR គ្រប់ធនាគារក្នុងស្រុក (មិនបាច់ Login)'
+                        : 'Instant QR code scan across all Cambodian mobile banking apps.'}
+                    </p>
+                  </div>
+                </div>
 
-                        <span className="text-[10px] text-neutral-400 font-medium">
-                          {toKHR(Number(pkg.price))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Bakong KHQR Card */}
+                  <div
+                    onClick={() => setPaymentMethod('bakong_khqr')}
+                    className={`cursor-pointer rounded-2xl p-4.5 border transition-all flex items-start gap-4 ${
+                      paymentMethod === 'bakong_khqr'
+                        ? 'bg-[#182030] border-[#00e4f2] shadow-[0_0_25px_rgba(0,228,242,0.25)] ring-1 ring-[#00e4f2]'
+                        : 'bg-[#121622] border-white/[0.06] hover:border-white/[0.2]'
+                    }`}
+                  >
+                    <div className="w-12 h-12 rounded-2xl bg-red-600/20 border border-red-500/35 flex items-center justify-center text-red-400 shrink-0 font-black">
+                      <QrCode className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-black text-sm text-white">
+                          Bakong KHQR
+                        </span>
+                        <span className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                          NO LOGIN
                         </span>
                       </div>
-
-                      {/* Selected Indicator Checkmark */}
-                      {isSelected && (
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#d4af37] rounded-tl-lg rounded-br-2xl flex items-center justify-center">
-                          <Check className="w-3.5 h-3.5 text-black stroke-[3]" />
-                        </div>
-                      )}
+                      <p className="text-xs text-neutral-400">
+                        ABA Mobile, Wing Bank, ACLEDA, Bakong, Canadia...
+                      </p>
                     </div>
-                  );
-                })}
+                  </div>
+
+                  {/* Wallet Card */}
+                  <div
+                    onClick={() => setPaymentMethod('wallet')}
+                    className={`cursor-pointer rounded-2xl p-4.5 border transition-all flex items-start gap-4 ${
+                      paymentMethod === 'wallet'
+                        ? 'bg-[#182030] border-[#d4af37] shadow-[0_0_25px_rgba(212,175,55,0.25)] ring-1 ring-[#d4af37]'
+                        : 'bg-[#121622] border-white/[0.06] hover:border-white/[0.2]'
+                    }`}
+                  >
+                    <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/35 flex items-center justify-center text-amber-400 shrink-0 font-black">
+                      <Wallet className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-black text-sm text-white">
+                          NEXUS Wallet
+                        </span>
+                        {isAuthenticated && user?.wallet && (
+                          <span className="text-xs font-mono font-bold text-[#f2ca50]">
+                            ${Number(user.wallet.balance || 0).toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-neutral-400">
+                        {isAuthenticated
+                          ? language === 'kh'
+                            ? 'កាត់ចេញពីកាបូបលុយរបស់អ្នក'
+                            : 'Deduct from platform balance'
+                          : language === 'kh'
+                          ? 'សម្រាប់អ្នកមាន Account (ស្រេចចិត្ត)'
+                          : 'Optional for registered accounts'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Optional Phone / Telegram notification */}
+                <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                  <label className="block text-xs font-medium text-neutral-400 mb-1.5">
+                    {language === 'kh'
+                      ? 'លេខទូរស័ព្ទ ឬ Telegram (ស្រេចចិត្ត - សម្រាប់ទទួលវិក្កយបត្រ)'
+                      : 'Phone or Telegram Handle (Optional - for receipt delivery)'}
+                  </label>
+                  <input
+                    type="text"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    placeholder="e.g. 012 345 678 / @telegram_username"
+                    className="w-full bg-[#141926] border border-white/[0.08] rounded-2xl px-4 py-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37]"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* ------------------------------------------------------------ */}
-            {/* Step 4: Payment Channel (Bakong KHQR - 100% Guest Scan)     */}
-            {/* ------------------------------------------------------------ */}
-            <div className="bg-[#11151e] rounded-3xl border border-white/[0.08] p-5 sm:p-6 shadow-xl">
-              <div className="flex items-center gap-2.5 pb-3.5 border-b border-white/[0.06] mb-4">
-                <span className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-black font-black text-xs flex items-center justify-center shadow-md">
-                  4
-                </span>
-                <div>
-                  <h3 className="font-bold text-sm sm:text-base text-white">
-                    {language === 'kh' ? 'វិធីសាស្ត្រទូទាត់ប្រាក់' : 'Payment Method'}
+            {/* Right 4 Columns: Sticky Order Checkout Cockpit */}
+            <div className="lg:col-span-4 space-y-5 sticky top-24">
+              <div className="bg-[#0d111a] rounded-3xl border border-white/[0.1] p-6 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500" />
+
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-black text-sm uppercase tracking-wider text-white">
+                    {language === 'kh' ? 'សេចក្តីសង្ខេបការបញ្ជាទិញ' : 'Order Summary'}
                   </h3>
-                  <p className="text-xs text-neutral-400">
-                    {language === 'kh'
-                      ? 'ស្កេនទូទាត់ភ្លាមៗតាម Bakong KHQR គ្រប់ធនាគារ (មិនបាច់ Login)'
-                      : 'Scan & pay with Bakong KHQR across any Cambodian bank.'}
-                  </p>
+                  <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 font-bold">
+                    1-CLICK GUEST SCAN
+                  </span>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {/* Option 1: Bakong KHQR (Primary - Guest Checkout) */}
-                <div
-                  onClick={() => setPaymentMethod('bakong_khqr')}
-                  className={`cursor-pointer rounded-2xl p-4 border transition-all flex items-start gap-3 ${
-                    paymentMethod === 'bakong_khqr'
-                      ? 'bg-[#182030] border-[#00e4f2] shadow-[0_0_20px_rgba(0,228,242,0.2)]'
-                      : 'bg-[#151a26] border-white/[0.06] hover:border-white/[0.2]'
-                  }`}
-                >
-                  <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-400 shrink-0">
-                    <QrCode className="w-5 h-5" />
+                {/* Summary Box */}
+                <div className="bg-[#141926] rounded-2xl p-4 mb-4 border border-white/[0.06] space-y-2.5 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-400">{language === 'kh' ? 'ហ្គេម' : 'Game'}:</span>
+                    <span className="font-bold text-white">{selectedGame?.title}</span>
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-sm text-white">
-                        Bakong KHQR
-                      </span>
-                      <span className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                        NO LOGIN
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-400">{language === 'kh' ? 'កញ្ចប់' : 'Package'}:</span>
+                    <span className="font-black text-amber-400">
+                      {selectedPackage ? selectedPackage.name : '—'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-400">Player ID:</span>
+                    <span className="font-mono text-white font-bold">
+                      {playerId || '—'} {zoneId ? `(${zoneId})` : ''}
+                    </span>
+                  </div>
+
+                  {verifiedNickname && (
+                    <div className="flex items-center justify-between pt-1 border-t border-white/[0.06]">
+                      <span className="text-neutral-400">{language === 'kh' ? 'ឈ្មោះតួអង្គ' : 'Nickname'}:</span>
+                      <span className="font-bold text-emerald-400 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>{verifiedNickname}</span>
                       </span>
                     </div>
-                    <p className="text-[11px] text-neutral-400 mt-1">
-                      {language === 'kh'
-                        ? 'ABA, Wing, ACLEDA, Bakong, Canadia...'
-                        : 'Instant scan with all banking apps'}
-                    </p>
+                  )}
+                </div>
+
+                {/* Price Breakdown */}
+                <div className="space-y-2 py-3 border-t border-b border-white/[0.06] text-xs">
+                  <div className="flex justify-between text-neutral-400">
+                    <span>{language === 'kh' ? 'តម្លៃដើម' : 'Subtotal'}</span>
+                    <span>${selectedPackage ? Number(selectedPackage.price).toFixed(2) : '0.00'}</span>
+                  </div>
+                  <div className="flex justify-between text-neutral-400">
+                    <span>{language === 'kh' ? 'កម្រៃសេវា' : 'Platform Fee'}</span>
+                    <span className="text-emerald-400 font-bold">{language === 'kh' ? 'ឥតគិតថ្លៃ ($0.00)' : 'FREE'}</span>
+                  </div>
+                  <div className="flex justify-between text-neutral-400">
+                    <span>{language === 'kh' ? 'វិធីទូទាត់' : 'Payment Channel'}</span>
+                    <span className="font-semibold text-white">
+                      {paymentMethod === 'bakong_khqr' ? 'Bakong KHQR' : 'NEXUS Wallet'}
+                    </span>
                   </div>
                 </div>
 
-                {/* Option 2: Platform Wallet (Only for logged in users) */}
-                <div
-                  onClick={() => setPaymentMethod('wallet')}
-                  className={`cursor-pointer rounded-2xl p-4 border transition-all flex items-start gap-3 ${
-                    paymentMethod === 'wallet'
-                      ? 'bg-[#182030] border-[#d4af37] shadow-[0_0_20px_rgba(212,175,55,0.2)]'
-                      : 'bg-[#151a26] border-white/[0.06] hover:border-white/[0.2]'
-                  }`}
-                >
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
-                    <Wallet className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-sm text-white">
-                        NEXUS Wallet
+                {/* Total Price */}
+                <div className="pt-3 mb-5">
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
+                      {language === 'kh' ? 'ទឹកប្រាក់ត្រូវបង់' : 'Total Due'}
+                    </span>
+                    <div className="text-right">
+                      <span className="text-2xl font-black text-[#f2ca50]">
+                        ${selectedPackage ? Number(selectedPackage.price).toFixed(2) : '0.00'}
                       </span>
-                      {isAuthenticated && user?.wallet && (
-                        <span className="text-xs font-mono font-bold text-[#f2ca50]">
-                          ${Number(user.wallet.balance || 0).toFixed(2)}
-                        </span>
-                      )}
+                      <span className="block text-xs text-neutral-400 font-medium">
+                        ≈ {toKHR(selectedPackage ? Number(selectedPackage.price) : 0)}
+                      </span>
                     </div>
-                    <p className="text-[11px] text-neutral-400 mt-1">
-                      {isAuthenticated
-                        ? language === 'kh'
-                          ? 'កាត់ចេញពីកាបូបលុយរបស់អ្នក'
-                          : 'Deduct from platform balance'
-                        : language === 'kh'
-                        ? 'សម្រាប់អ្នកមាន Account (ស្រេចចិត្ត)'
-                        : 'Optional for registered accounts'}
-                    </p>
                   </div>
                 </div>
+
+                {/* Error Banner */}
+                {paymentError && (
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-3 mb-4 text-xs text-red-300 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                    <span>{paymentError}</span>
+                  </div>
+                )}
+
+                {/* Main Action Buy Now Button */}
+                <button
+                  type="button"
+                  onClick={handleCheckout}
+                  disabled={isSubmitting || !selectedPackage || !playerId.trim()}
+                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-black font-black text-sm tracking-wider uppercase transition-all shadow-[0_0_25px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin text-black" />
+                      <span>{language === 'kh' ? 'កំពុងបង្កើតវិក្កយបត្រ...' : 'Processing...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-4 h-4 text-black fill-black" />
+                      <span>
+                        {language === 'kh'
+                          ? `ស្កេន KHQR បញ្ចូលឥឡូវ ($${selectedPackage ? Number(selectedPackage.price).toFixed(2) : '0.00'})`
+                          : `Scan KHQR to Top Up ($${selectedPackage ? Number(selectedPackage.price).toFixed(2) : '0.00'})`}
+                      </span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+
+                <p className="text-[10px] text-center text-neutral-400 mt-3 flex items-center justify-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>{language === 'kh' ? 'សុវត្ថិភាព ១០០% • មិនបាច់បង្កើត Account' : '100% Safe • Zero Login Required'}</span>
+                </p>
               </div>
 
-              {/* Optional Phone / Telegram receipt */}
-              <div className="mt-4 pt-4 border-t border-white/[0.06]">
-                <label className="block text-xs font-medium text-neutral-400 mb-1">
-                  {language === 'kh'
-                    ? 'លេខទូរស័ព្ទ ឬ Telegram (ស្រេចចិត្ត - សម្រាប់ទទួលវិក្កយបត្រ)'
-                    : 'Phone or Telegram (Optional - for receipt delivery)'}
-                </label>
-                <input
-                  type="text"
-                  value={contactPhone}
-                  onChange={(e) => setContactPhone(e.target.value)}
-                  placeholder="e.g. 012 345 678 / @telegram_username"
-                  className="w-full bg-[#161c28] border border-white/[0.08] rounded-xl px-4 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37]"
-                />
+              {/* Telegram Support Pill */}
+              <div className="text-center">
+                <Link
+                  href="https://t.me/nexus_support_kh"
+                  target="_blank"
+                  className="inline-flex items-center gap-2 text-xs text-neutral-400 hover:text-white transition-colors"
+                >
+                  <span>{language === 'kh' ? 'ត្រូវការជំនួយបន្ទាន់?' : 'Need urgent support?'}</span>
+                  <span className="text-cyan-400 underline font-bold">Telegram @nexus_support_kh</span>
+                </Link>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Right Column (4 Cols - Sticky Cockpit): Order Summary & CTA */}
-          <div className="lg:col-span-4 space-y-4 sticky top-24">
-            <div className="bg-[#11151e] rounded-3xl border border-white/[0.1] p-5 sm:p-6 shadow-2xl relative overflow-hidden">
-              {/* Gold Top Light Bar */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600" />
+        {/* ========================================================================= */}
+        {/* SECTION 6: WHY CHOOSE US (Smile.One Style Trust Pillars)                  */}
+        {/* ========================================================================= */}
+        <section className="mb-14 pt-6 border-t border-white/[0.08]">
+          <div className="text-center max-w-xl mx-auto mb-8">
+            <h2 className="text-xl sm:text-2xl font-black uppercase text-white mb-2">
+              {language === 'kh' ? 'ហេតុអ្វីជ្រើសរើសយើងខ្ញុំ?' : 'Why Choose NEXUS Top-Up?'}
+            </h2>
+            <p className="text-xs text-neutral-400">
+              {language === 'kh'
+                ? 'វេទិកាបញ្ចូលលុយហ្គេមទំនើប សុវត្ថិភាព និងរហ័សទាន់ចិត្តបំផុតនៅកម្ពុជា'
+                : 'The premier direct game reload service in Cambodia with automated delivery.'}
+            </p>
+          </div>
 
-              <h3 className="font-black text-sm uppercase tracking-wider text-white mb-4 flex items-center justify-between">
-                <span>{language === 'kh' ? 'សេចក្តីសង្ខេបការបញ្ជាទិញ' : 'Order Summary'}</span>
-                <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 font-bold">
-                  GUEST CHECKOUT
-                </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="bg-[#0d111a] border border-white/[0.08] p-5 rounded-3xl space-y-2.5 hover:border-amber-400/40 transition-all">
+              <div className="w-10 h-10 rounded-2xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-400">
+                <Clock className="w-5 h-5" />
+              </div>
+              <h3 className="font-black text-sm text-white">
+                {language === 'kh' ? 'ចូលលឿនត្រឹម ៣ វិនាទី' : 'Instant 3-Second Delivery'}
               </h3>
-
-              {/* Selected Game & Package Detail Box */}
-              <div className="bg-[#161c28] rounded-2xl p-4 mb-4 border border-white/[0.06] space-y-2.5 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-neutral-400">{language === 'kh' ? 'ហ្គេម' : 'Game'}:</span>
-                  <span className="font-bold text-white flex items-center gap-1.5">
-                    <span>{selectedGame?.title}</span>
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-neutral-400">{language === 'kh' ? 'កញ្ចប់' : 'Package'}:</span>
-                  <span className="font-black text-amber-400">
-                    {selectedPackage ? selectedPackage.name : '—'}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-neutral-400">Player ID:</span>
-                  <span className="font-mono text-white font-bold">
-                    {playerId || '—'} {zoneId ? `(${zoneId})` : ''}
-                  </span>
-                </div>
-
-                {verifiedNickname && (
-                  <div className="flex items-center justify-between pt-1 border-t border-white/[0.06]">
-                    <span className="text-neutral-400">{language === 'kh' ? 'ឈ្មោះតួអង្គ' : 'Nickname'}:</span>
-                    <span className="font-bold text-emerald-400 flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>{verifiedNickname}</span>
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Price Calculation */}
-              <div className="space-y-2 py-3 border-t border-b border-white/[0.06] text-xs">
-                <div className="flex justify-between text-neutral-400">
-                  <span>{language === 'kh' ? 'តម្លៃដើម' : 'Subtotal'}</span>
-                  <span>${selectedPackage ? Number(selectedPackage.price).toFixed(2) : '0.00'}</span>
-                </div>
-                <div className="flex justify-between text-neutral-400">
-                  <span>{language === 'kh' ? 'ថ្លៃសេវា' : 'Platform Fee'}</span>
-                  <span className="text-emerald-400 font-bold">{language === 'kh' ? 'ឥតគិតថ្លៃ ($0.00)' : 'FREE'}</span>
-                </div>
-                <div className="flex justify-between text-neutral-400">
-                  <span>{language === 'kh' ? 'វិធីទូទាត់' : 'Payment'}</span>
-                  <span className="font-semibold text-white">
-                    {paymentMethod === 'bakong_khqr' ? 'Bakong KHQR' : 'NEXUS Wallet'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Total Due */}
-              <div className="pt-3 mb-5">
-                <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-bold text-neutral-300 uppercase tracking-wider">
-                    {language === 'kh' ? 'ទឹកប្រាក់ត្រូវបង់' : 'Total Due'}
-                  </span>
-                  <div className="text-right">
-                    <span className="text-2xl font-black text-[#f2ca50]">
-                      ${selectedPackage ? Number(selectedPackage.price).toFixed(2) : '0.00'}
-                    </span>
-                    <span className="block text-xs text-neutral-400 font-medium">
-                      ≈ {toKHR(selectedPackage ? Number(selectedPackage.price) : 0)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Error Alert */}
-              {paymentError && (
-                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 mb-4 text-xs text-red-300 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-                  <span>{paymentError}</span>
-                </div>
-              )}
-
-              {/* 1-Click CTA Button */}
-              <button
-                type="button"
-                onClick={handleCheckout}
-                disabled={isSubmitting || !selectedPackage || !playerId.trim()}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] hover:brightness-110 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none text-[#0b0e14] font-black text-sm tracking-wider uppercase transition-all shadow-[0_0_20px_rgba(212,175,55,0.35)] flex items-center justify-center gap-2 cursor-pointer"
-              >
-                {isSubmitting ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin text-black" />
-                    <span>{language === 'kh' ? 'កំពុងបង្កើតវិក្កយបត្រ...' : 'Processing...'}</span>
-                  </>
-                ) : (
-                  <>
-                    <Zap className="w-4 h-4 text-black fill-black" />
-                    <span>
-                      {language === 'kh'
-                        ? `ស្កេន KHQR បញ្ចូលឥឡូវ ($${selectedPackage ? Number(selectedPackage.price).toFixed(2) : '0.00'})`
-                        : `Scan KHQR to Top Up ($${selectedPackage ? Number(selectedPackage.price).toFixed(2) : '0.00'})`}
-                    </span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-
-              <p className="text-[10px] text-center text-neutral-400 mt-3 flex items-center justify-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{language === 'kh' ? 'ទូទាត់សុវត្ថិភាព ១០០% • មិនបាច់បង្កើត Account' : '100% Safe • Zero Login Required'}</span>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                {language === 'kh'
+                  ? 'ប្រព័ន្ធ API ស្វ័យប្រវត្តិតភ្ជាប់ផ្ទាល់ទៅ Moonton & Game Publishers ពេជ្រចូលតួអង្គភ្លាមៗ។'
+                  : 'Automated API integration sends diamonds directly to game accounts in seconds.'}
               </p>
             </div>
 
-            {/* Telegram 24/7 Support Pill */}
-            <div className="text-center">
-              <Link
-                href="https://t.me/nexus_support_kh"
-                target="_blank"
-                className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors"
-              >
-                <span>{language === 'kh' ? 'ត្រូវការជំនួយ?' : 'Need instant support?'}</span>
-                <span className="text-cyan-400 underline font-semibold">Telegram @nexus_support_kh</span>
-              </Link>
+            <div className="bg-[#0d111a] border border-white/[0.08] p-5 rounded-3xl space-y-2.5 hover:border-cyan-400/40 transition-all">
+              <div className="w-10 h-10 rounded-2xl bg-cyan-400/15 border border-cyan-400/30 flex items-center justify-center text-cyan-400">
+                <QrCode className="w-5 h-5" />
+              </div>
+              <h3 className="font-black text-sm text-white">
+                {language === 'kh' ? 'ស្កេនបង់ Bakong KHQR' : 'Bakong KHQR Payments'}
+              </h3>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                {language === 'kh'
+                  ? 'គាំទ្រការស្កេនបង់ប្រាក់ពីគ្រប់ Mobile Banking (ABA, Wing, ACLEDA, Bakong...) គ្មានកម្រៃសេវា។'
+                  : 'Pay directly via any Cambodian mobile banking app with zero transaction charges.'}
+              </p>
+            </div>
+
+            <div className="bg-[#0d111a] border border-white/[0.08] p-5 rounded-3xl space-y-2.5 hover:border-emerald-400/40 transition-all">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h3 className="font-black text-sm text-white">
+                {language === 'kh' ? 'សុវត្ថិភាព ១០០% គ្មាន Password' : '100% Safe (Zero Password)'}
+              </h3>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                {language === 'kh'
+                  ? 'បញ្ចូលតែ Player ID ប៉ុណ្ណោះ គ្មានការសួររក Password ឬចូល Email ធានាសុវត្ថិភាពតួអង្គដាច់ខាត។'
+                  : 'No account passwords required. Your gaming profile is permanently protected.'}
+              </p>
+            </div>
+
+            <div className="bg-[#0d111a] border border-white/[0.08] p-5 rounded-3xl space-y-2.5 hover:border-blue-400/40 transition-all">
+              <div className="w-10 h-10 rounded-2xl bg-blue-400/15 border border-blue-400/30 flex items-center justify-center text-blue-400">
+                <Headphones className="w-5 h-5" />
+              </div>
+              <h3 className="font-black text-sm text-white">
+                {language === 'kh' ? 'ជំនួយអតិថិជន ២៤/៧' : '24/7 Dedicated Support'}
+              </h3>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                {language === 'kh'
+                  ? 'ក្រុមការងារប្រចាំការរង់ចាំដោះស្រាយ និងឆ្លើយតបរហ័សតាម Live Chat និង Telegram ២៤ ម៉ោង។'
+                  : 'Live human assistance available around the clock on web chat and Telegram.'}
+              </p>
             </div>
           </div>
-        </div>
+        </section>
       </div>
 
-      {/* ============================================================== */}
-      {/* 6. BAKONG KHQR PAYMENT MODAL                                   */}
-      {/* ============================================================== */}
+      {/* ========================================================================= */}
+      {/* BAKONG KHQR PAYMENT MODAL                                                 */}
+      {/* ========================================================================= */}
       {showPaymentModal && currentOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in">
-          <div className="bg-[#121620] rounded-3xl border border-white/[0.12] w-full max-w-md p-6 relative shadow-2xl overflow-hidden animate-in zoom-in-95">
-            {/* Top Accent Line */}
+          <div className="bg-[#0f1422] rounded-3xl border border-white/[0.12] w-full max-w-md p-6 relative shadow-2xl overflow-hidden animate-in zoom-in-95">
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500" />
 
-            {/* Header */}
+            {/* Modal Title */}
             <div className="text-center mb-4">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold mb-2">
                 <CheckCircle2 className="w-3.5 h-3.5" />
@@ -1103,7 +1333,7 @@ export default function TopUpPage() {
               </p>
             </div>
 
-            {/* Pending Payment State: Display KHQR */}
+            {/* Pending State: Display QR Code */}
             {currentOrder.paymentStatus === 'pending' && currentOrder.qrImage && (
               <div className="space-y-4">
                 <div className="bg-white p-4 rounded-2xl mx-auto w-64 h-64 flex items-center justify-center shadow-lg relative">
@@ -1123,12 +1353,12 @@ export default function TopUpPage() {
                   </div>
                 </div>
 
-                {/* KHQR Actions */}
+                {/* Buttons */}
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <a
                     href={currentOrder.qrImage}
                     download={`KHQR-${currentOrder.orderNumber}.png`}
-                    className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#1a2232] border border-white/[0.08] hover:bg-[#20293d] text-white font-bold transition-all"
+                    className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#1a2234] border border-white/[0.08] hover:bg-[#222c42] text-white font-bold transition-all"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>{language === 'kh' ? 'ទាញយក QR' : 'Save QR'}</span>
@@ -1150,15 +1380,15 @@ export default function TopUpPage() {
                         setCopiedOrder(true);
                         setTimeout(() => setCopiedOrder(false), 2000);
                       }}
-                      className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#1a2232] border border-white/[0.08] text-white font-bold"
+                      className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#1a2234] border border-white/[0.08] text-white font-bold"
                     >
-                      <Copy className="w-3.5 h-3.5" />
+                      <Check className="w-3.5 h-3.5" />
                       <span>{copiedOrder ? 'បានចម្លង!' : 'ចម្លងលេខ Order'}</span>
                     </button>
                   )}
                 </div>
 
-                {/* Instant Sandbox Payment Simulator (Allows one-click live testing) */}
+                {/* Test Simulate Payment Button */}
                 <div className="pt-2 border-t border-white/[0.08]">
                   <button
                     type="button"
@@ -1201,7 +1431,7 @@ export default function TopUpPage() {
                 </div>
 
                 {currentOrder.deliveryProof && (
-                  <div className="bg-[#161c28] p-3 rounded-xl border border-white/[0.06] text-left text-xs font-mono text-neutral-300">
+                  <div className="bg-[#141926] p-3 rounded-xl border border-white/[0.06] text-left text-xs font-mono text-neutral-300">
                     <span className="text-[10px] text-neutral-500 uppercase block mb-1">
                       Delivery Proof Reference:
                     </span>
@@ -1212,7 +1442,7 @@ export default function TopUpPage() {
                 <button
                   type="button"
                   onClick={() => setShowPaymentModal(false)}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-black font-black text-xs uppercase tracking-wider cursor-pointer"
+                  className="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-400 text-black font-black text-xs uppercase tracking-wider cursor-pointer"
                 >
                   {language === 'kh' ? 'បិទផ្ទាំង (រួចរាល់)' : 'Close & Done'}
                 </button>
@@ -1234,18 +1464,18 @@ export default function TopUpPage() {
       {/* Guide Modal: Where to find ID */}
       {showGuideModal && selectedGame && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-[#121620] rounded-3xl border border-white/[0.12] w-full max-w-md p-6 relative shadow-2xl">
+          <div className="bg-[#0f1422] rounded-3xl border border-white/[0.12] w-full max-w-md p-6 relative shadow-2xl">
             <h3 className="text-base font-black text-white mb-2 flex items-center gap-2">
               <HelpCircle className="w-5 h-5 text-amber-400" />
               <span>{language === 'kh' ? selectedGame.guideTitleKh : selectedGame.guideTitle}</span>
             </h3>
-            <p className="text-xs text-neutral-300 leading-relaxed bg-[#161c28] p-4 rounded-xl border border-white/[0.06] mb-4">
+            <p className="text-xs text-neutral-300 leading-relaxed bg-[#141926] p-4 rounded-xl border border-white/[0.06] mb-4">
               {language === 'kh' ? selectedGame.guideDescriptionKh : selectedGame.guideDescription}
             </p>
             <button
               type="button"
               onClick={() => setShowGuideModal(false)}
-              className="w-full py-2.5 rounded-xl bg-[#1a2232] hover:bg-[#20293d] border border-white/[0.08] text-white font-bold text-xs cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-[#1a2234] hover:bg-[#222c42] border border-white/[0.08] text-white font-bold text-xs cursor-pointer"
             >
               {language === 'kh' ? 'យល់ព្រម' : 'Got it'}
             </button>

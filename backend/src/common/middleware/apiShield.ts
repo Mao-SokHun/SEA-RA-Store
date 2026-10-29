@@ -12,6 +12,7 @@ const ALLOWED_ORIGINS = new Set([
 const EXEMPT_PATHS = [
   '/health',
   `${config.apiPrefix}/payments/webhook`,
+  `${config.apiPrefix}/topup/games`,
 ];
 
 /**
@@ -40,7 +41,8 @@ export function apiShield(req: Request, res: Response, next: NextFunction): void
   // 2. Validate Origin if present
   if (origin) {
     const normalizedOrigin = origin.replace(/\/$/, '');
-    if (!ALLOWED_ORIGINS.has(normalizedOrigin)) {
+    const isAllowed = ALLOWED_ORIGINS.has(normalizedOrigin) || normalizedOrigin.endsWith('.vercel.app');
+    if (!isAllowed) {
       res.status(403).json({
         success: false,
         code: 'FORBIDDEN_ORIGIN',

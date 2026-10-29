@@ -214,15 +214,15 @@ export interface TopUpGame {
   title: string;
   platform: string;
   iconUrl?: string;
-  packageCount: number;
-  currencyName: string;
-  currencyNameKh: string;
-  currencyIcon: string;
-  inputConfig: TopUpInputConfig[];
-  guideTitle: string;
-  guideTitleKh: string;
-  guideDescription: string;
-  guideDescriptionKh: string;
+  packageCount?: number;
+  currencyName?: string;
+  currencyNameKh?: string;
+  currencyIcon?: string;
+  inputConfig?: TopUpInputConfig[];
+  guideTitle?: string;
+  guideTitleKh?: string;
+  guideDescription?: string;
+  guideDescriptionKh?: string;
 }
 
 export interface TopUpPackage {

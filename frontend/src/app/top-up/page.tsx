@@ -36,6 +36,7 @@ import {
   ExternalLink,
   ChevronDown,
   Receipt,
+  ArrowLeft,
 } from 'lucide-react';
 
 // Rich Curated Game Poster Metadata (Smile.One Game Catalog)
@@ -129,12 +130,116 @@ const GAME_POSTERS: Record<string, {
   },
 };
 
+// Immediate zero-delay games data (Prevents 0 Games or blank screen on mount)
+const DEFAULT_GAMES: TopUpGame[] = [
+  {
+    id: '1',
+    title: 'Mobile Legends: Bang Bang',
+    platform: 'Mobile',
+    iconUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200',
+    packageCount: 7,
+    currencyName: 'Diamonds',
+    currencyNameKh: 'Diamonds (ពេជ្រ)',
+    currencyIcon: '💎',
+  },
+  {
+    id: '7',
+    title: 'Roblox',
+    platform: 'Cross-platform',
+    iconUrl: 'https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=200',
+    packageCount: 7,
+    currencyName: 'Robux',
+    currencyNameKh: 'Robux (រ៉ូប៊ុក)',
+    currencyIcon: '⚡',
+  },
+  {
+    id: '3',
+    title: 'Free Fire',
+    platform: 'Mobile',
+    iconUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=200',
+    packageCount: 7,
+    currencyName: 'Diamonds',
+    currencyNameKh: 'Diamonds (ពេជ្រ)',
+    currencyIcon: '💎',
+  },
+  {
+    id: '2',
+    title: 'PUBG Mobile',
+    platform: 'Mobile',
+    iconUrl: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=200',
+    packageCount: 6,
+    currencyName: 'Unknown Cash (UC)',
+    currencyNameKh: 'UC (យូស៊ី)',
+    currencyIcon: '🪙',
+  },
+  {
+    id: '8',
+    title: 'Call of Duty: Mobile',
+    platform: 'Mobile',
+    iconUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200',
+    packageCount: 6,
+    currencyName: 'CP (COD Points)',
+    currencyNameKh: 'CP (ស៊ីភី)',
+    currencyIcon: '🪙',
+  },
+  {
+    id: '5',
+    title: 'Genshin Impact',
+    platform: 'Cross-platform',
+    iconUrl: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=200',
+    packageCount: 5,
+    currencyName: 'Genesis Crystals',
+    currencyNameKh: 'Genesis Crystals (គ្រីស្តាល់)',
+    currencyIcon: '✨',
+  },
+  {
+    id: '6',
+    title: 'Valorant',
+    platform: 'PC',
+    iconUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200',
+    packageCount: 4,
+    currencyName: 'Valorant Points (VP)',
+    currencyNameKh: 'Valorant Points (VP)',
+    currencyIcon: '🎯',
+  },
+  {
+    id: '9',
+    title: 'League of Legends: Wild Rift',
+    platform: 'Mobile',
+    iconUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=200',
+    packageCount: 5,
+    currencyName: 'Wild Cores',
+    currencyNameKh: 'Wild Cores (វ៉ាយខ័រ)',
+    currencyIcon: '💎',
+  },
+  {
+    id: '4',
+    title: 'Honor of Kings',
+    platform: 'Mobile',
+    iconUrl: 'https://images.unsplash.com/photo-1612287233207-6b22998a445b?w=200',
+    packageCount: 5,
+    currencyName: 'Tokens',
+    currencyNameKh: 'Tokens (កាក់ហ្គេម)',
+    currencyIcon: '👑',
+  },
+  {
+    id: '10',
+    title: 'Blood Strike',
+    platform: 'Mobile',
+    iconUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=200',
+    packageCount: 5,
+    currencyName: 'Gold',
+    currencyNameKh: 'Gold (មាស)',
+    currencyIcon: '💰',
+  },
+];
+
 export default function TopUpPage() {
   const { language, t } = useLanguage();
   const { user, isAuthenticated } = useAuth();
 
-  // State
-  const [games, setGames] = useState<TopUpGame[]>([]);
+  // State (Initialized with DEFAULT_GAMES so there is never 0 Games on mount)
+  const [games, setGames] = useState<TopUpGame[]>(DEFAULT_GAMES);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedGameId, setSelectedGameId] = useState<string>('');
   const [selectedGame, setSelectedGame] = useState<TopUpGameDetails | null>(null);
@@ -172,13 +277,22 @@ export default function TopUpPage() {
     async function loadGames() {
       try {
         const gameList = await api.topup.getGames();
-        setGames(gameList);
-        if (gameList.length > 0) {
-          const defaultGame =
-            gameList.find((g) => g.title.toLowerCase().includes('mobile legends')) ||
-            gameList.find((g) => g.title.toLowerCase().includes('roblox')) ||
-            gameList[0];
-          setSelectedGameId(defaultGame.id);
+        if (gameList && gameList.length > 0) {
+          setGames(gameList);
+        }
+
+        // If user navigated with ?game=... in URL, auto select it
+        if (typeof window !== 'undefined') {
+          const params = new URLSearchParams(window.location.search);
+          const targetGame = params.get('game');
+          if (targetGame) {
+            const match = gameList.find(
+              (g) => g.id === targetGame || g.title.toLowerCase().includes(targetGame.toLowerCase())
+            );
+            if (match) {
+              setSelectedGameId(match.id);
+            }
+          }
         }
       } catch (err) {
         console.error('Failed to load top-up games:', err);
@@ -523,7 +637,7 @@ export default function TopUpPage() {
         {/* ========================================================================= */}
         {/* SECTION 4: HOT GAMES CATALOG (Smile.One Rich Poster Cards)                 */}
         {/* ========================================================================= */}
-        <section className="mb-14">
+        <section id="hot-games" className="mb-14 scroll-mt-24">
           <div className="flex items-center justify-between mb-6">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
@@ -631,46 +745,60 @@ export default function TopUpPage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* SECTION 5: STEP-BY-STEP TOP-UP COCKPIT (Smile.One 3-Step Flow)            */}
+        {/* SECTION 5: STEP-BY-STEP TOP-UP COCKPIT (Shown ONLY when game is selected) */}
         {/* ========================================================================= */}
-        <section ref={cockpitRef} className="pt-6 mb-16 scroll-mt-24">
-          {/* Active Game Header Ribbon */}
-          <div className="bg-[#0f1422] rounded-3xl border border-white/[0.1] p-5 sm:p-6 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 bottom-0 w-2 bg-gradient-to-b from-amber-400 to-yellow-500" />
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl overflow-hidden p-0.5 bg-gradient-to-br from-amber-400 to-yellow-500 shadow-md shrink-0">
-                <img
-                  src={selectedGame?.iconUrl || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200'}
-                  alt={selectedGame?.title || 'Game'}
-                  className="w-full h-full object-cover rounded-[14px]"
-                />
-              </div>
-              <div>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-400/15 text-amber-300 text-[10px] font-black uppercase tracking-wider mb-1">
-                  <span>⚡ 100% AUTOMATED RELOAD</span>
+        {selectedGame && (
+          <section ref={cockpitRef} className="pt-6 mb-16 scroll-mt-24 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            {/* Active Game Header Ribbon */}
+            <div className="bg-[#0f1422] rounded-3xl border border-white/[0.1] p-5 sm:p-6 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 left-0 bottom-0 w-2 bg-gradient-to-b from-amber-400 to-yellow-500" />
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl overflow-hidden p-0.5 bg-gradient-to-br from-amber-400 to-yellow-500 shadow-md shrink-0">
+                  <img
+                    src={selectedGame.iconUrl || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200'}
+                    alt={selectedGame.title}
+                    className="w-full h-full object-cover rounded-[14px]"
+                  />
                 </div>
-                <h2 className="text-xl sm:text-2xl font-black text-white">
-                  {selectedGame?.title}
-                </h2>
-                <p className="text-xs text-neutral-400">
-                  {language === 'kh'
-                    ? `បញ្ចូល ${selectedGame?.currencyName} ផ្ទាល់ចូលក្នុង ID តួអង្គក្នុងហ្គេមរបស់អ្នក`
-                    : `Direct in-game ${selectedGame?.currencyName} reload`}
-                </p>
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-400/15 text-amber-300 text-[10px] font-black uppercase tracking-wider mb-1">
+                    <span>⚡ 100% AUTOMATED RELOAD</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black text-white">
+                    {selectedGame.title}
+                  </h2>
+                  <p className="text-xs text-neutral-400">
+                    {language === 'kh'
+                      ? `បញ្ចូល ${selectedGame.currencyNameKh || selectedGame.currencyName} ផ្ទាល់ចូលក្នុង ID តួអង្គក្នុងហ្គេមរបស់អ្នក`
+                      : `Direct in-game ${selectedGame.currencyName} reload`}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2.5">
+                {/* Back to All Games button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedGame(null);
+                    setSelectedGameId('');
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-xs font-bold text-neutral-300 hover:text-white flex items-center gap-1.5 transition-all cursor-pointer"
+                >
+                  <ArrowLeft className="w-4 h-4 text-amber-400" />
+                  <span>{language === 'kh' ? '← ជ្រើសរើសហ្គេមផ្សេង' : '← Change Game'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowGuideModal(true)}
+                  className="px-4 py-2 rounded-xl bg-[#182030] hover:bg-[#202b40] border border-white/[0.1] text-xs font-bold text-cyan-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <HelpCircle className="w-4 h-4 text-cyan-400" />
+                  <span>{language === 'kh' ? 'របៀបមើល ID?' : 'How to find ID?'}</span>
+                </button>
               </div>
             </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setShowGuideModal(true)}
-                className="px-4 py-2 rounded-xl bg-[#182030] hover:bg-[#202b40] border border-white/[0.1] text-xs font-bold text-cyan-300 flex items-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <HelpCircle className="w-4 h-4 text-cyan-400" />
-                <span>{language === 'kh' ? 'របៀបមើល ID?' : 'How to find ID?'}</span>
-              </button>
-            </div>
-          </div>
 
           {/* 3-Step Grid Board */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -1187,6 +1315,7 @@ export default function TopUpPage() {
             </div>
           </div>
         </section>
+        )}
 
         {/* ========================================================================= */}
         {/* SECTION 6: WHY CHOOSE US (Smile.One Style Trust Pillars)                  */}

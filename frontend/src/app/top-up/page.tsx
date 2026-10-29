@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { TopUpGame, TopUpGameDetails, TopUpPackage, TopUpOrder } from '@/types';
 import confetti from 'canvas-confetti';
+import Hero3DMarquee from '@/components/hero/Hero3DMarquee';
 import {
   Zap,
   ShieldCheck,
@@ -34,41 +35,8 @@ import {
   CheckCheck,
   ExternalLink,
   ChevronDown,
+  Receipt,
 } from 'lucide-react';
-
-// Hero Promotional Carousel Banners (Smile.One style)
-const PROMO_SLIDES = [
-  {
-    id: 1,
-    title: 'Mobile Legends: Bang Bang',
-    subtitle: 'Weekly Diamond Pass & 86 - 2,195 Diamonds',
-    tag: '🔥 HOT PROMOTION',
-    badge: '10% EXTRA BONUS',
-    image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80',
-    gameMatch: 'Mobile Legends',
-    buttonText: 'បញ្ចូលពេជ្រឥឡូវនេះ',
-  },
-  {
-    id: 2,
-    title: 'Roblox Robux & Blox Fruits',
-    subtitle: 'បញ្ចូលផ្ទាល់ចូល @Username មិនបាច់ Password',
-    tag: '⚡ 100% AUTOMATED',
-    badge: 'INSTANT 3 SECONDS',
-    image: 'https://images.unsplash.com/photo-1598550476439-6847785fcea6?auto=format&fit=crop&w=1200&q=80',
-    gameMatch: 'Roblox',
-    buttonText: 'បញ្ចូល Robux ឥឡូវនេះ',
-  },
-  {
-    id: 3,
-    title: 'Free Fire & PUBG Mobile',
-    subtitle: 'Diamonds & UC Reload ស្កេនបង់តាម Bakong KHQR',
-    tag: '👑 OFFICIAL PARTNER',
-    badge: 'ZERO PLATFORM FEE',
-    image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80',
-    gameMatch: 'Free Fire',
-    buttonText: 'បញ្ចូលលុយភ្លាមៗ',
-  },
-];
 
 // Rich Curated Game Poster Metadata (Smile.One Game Catalog)
 const GAME_POSTERS: Record<string, {
@@ -173,9 +141,6 @@ export default function TopUpPage() {
   const [selectedPackage, setSelectedPackage] = useState<TopUpPackage | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  // Carousel slide index
-  const [currentSlide, setCurrentSlide] = useState<number>(0);
-
   // Input states
   const [playerId, setPlayerId] = useState<string>('');
   const [zoneId, setZoneId] = useState<string>('');
@@ -201,14 +166,6 @@ export default function TopUpPage() {
 
   // Cockpit scroll reference
   const cockpitRef = useRef<HTMLDivElement>(null);
-
-  // Auto carousel slide timer
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % PROMO_SLIDES.length);
-    }, 5500);
-    return () => clearInterval(timer);
-  }, []);
 
   // Load games from backend
   useEffect(() => {
@@ -440,101 +397,78 @@ export default function TopUpPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* ========================================================================= */}
-        {/* SECTION 1: PROMOTIONAL EVENT BANNER CAROUSEL (Smile.One Signature Style)  */}
+        {/* SECTION 1: HIGH-IMPACT 2-COLUMN HERO (TEXT ON LEFT, 3D ANIMATION ON RIGHT) */}
         {/* ========================================================================= */}
-        <section className="pt-4 pb-6">
-          <div className="relative rounded-3xl overflow-hidden border border-white/[0.08] bg-[#0d111a] shadow-[0_10px_40px_rgba(0,0,0,0.6)]">
-            <div className="relative h-56 sm:h-72 lg:h-80 w-full overflow-hidden">
-              {PROMO_SLIDES.map((slide, index) => {
-                const isActive = index === currentSlide;
-                return (
-                  <div
-                    key={slide.id}
-                    className={`absolute inset-0 transition-all duration-700 ease-in-out flex items-center justify-between p-6 sm:p-12 ${
-                      isActive ? 'opacity-100 scale-100 z-10' : 'opacity-0 scale-98 z-0 pointer-events-none'
-                    }`}
-                  >
-                    {/* Background Hero Artwork */}
-                    <img
-                      src={slide.image}
-                      alt={slide.title}
-                      className="absolute inset-0 w-full h-full object-cover object-center filter brightness-[0.45] scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#07090e] via-[#07090e]/85 to-transparent" />
+        <section className="pt-2 pb-8 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+            {/* Left 7 Columns: Typography, Value Proposition & Actions */}
+            <div className="lg:col-span-7 space-y-6 text-left">
+              {/* Glowing Guest Top-Up Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-400/15 via-[#f2ca50]/15 to-amber-400/15 border border-[#f2ca50]/35 text-[#f2ca50] text-xs font-black uppercase tracking-wider shadow-[0_0_20px_rgba(242,202,80,0.2)]">
+                <Sparkles className="w-3.5 h-3.5 text-[#00e4f2] animate-bounce" />
+                <span>{language === 'kh' ? '✨ មិនបាច់បង្កើត Account • មិនបាច់ Login' : '✨ 100% Guest Checkout • No Account Needed'}</span>
+              </div>
 
-                    {/* Banner Copy & CTA */}
-                    <div className="relative z-10 max-w-2xl space-y-3">
-                      <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400/15 border border-amber-400/35 text-amber-300 text-xs font-black uppercase tracking-wider shadow-sm">
-                        <Flame className="w-4 h-4 text-amber-400 animate-bounce" />
-                        <span>{slide.tag}</span>
-                        <span className="text-white/40">•</span>
-                        <span className="text-white">{slide.badge}</span>
-                      </div>
+              {/* Main Headline */}
+              <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black text-white tracking-tight leading-[1.18]">
+                {language === 'kh' ? (
+                  <>
+                    បញ្ចូលលុយ <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffe088] via-[#f2ca50] to-[#c99516]">ពេជ្រ & កាក់ហ្គេម</span> ស្វ័យប្រវត្តិតាម Bakong KHQR
+                  </>
+                ) : (
+                  <>
+                    DIRECT IN-GAME <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffe088] via-[#f2ca50] to-[#c99516]">TOP-UP PLATFORM</span> INSTANT DELIVERY
+                  </>
+                )}
+              </h1>
 
-                      <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight drop-shadow-md">
-                        {slide.title}
-                      </h1>
+              {/* Subtitle */}
+              <p className="text-xs sm:text-sm text-neutral-300 font-medium leading-relaxed max-w-xl">
+                {language === 'kh'
+                  ? 'ជ្រើសរើសហ្គេម បញ្ចូល Player ID រួចស្កេនបង់ប្រាក់ ពេជ្រនឹងចូលគណនីរបស់អ្នកភ្លាមៗក្នុង ៣ វិនាទី! មិនប៉ះពាល់ Password សុវត្ថិភាពខ្ពស់ ១០០%។'
+                  : 'Choose your game, enter your Player ID, and scan with Bakong KHQR for instant 3-second credit reload. No passwords required, 100% safe & trusted.'}
+              </p>
 
-                      <p className="text-xs sm:text-base text-neutral-300 font-medium max-w-lg">
-                        {slide.subtitle}
-                      </p>
+              {/* CTAs */}
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <a
+                  href="#hot-games"
+                  className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#ffe088] via-[#f2ca50] to-[#c99516] hover:brightness-110 active:scale-95 text-[#07090e] font-black text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 shadow-[0_0_25px_rgba(242,202,80,0.35)] transition-all cursor-pointer"
+                >
+                  <Zap className="w-4 h-4 fill-black text-black" />
+                  <span>{language === 'kh' ? 'បញ្ចូលលុយឥឡូវនេះ' : 'Top-Up Now'}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </a>
 
-                      <div className="pt-2 flex flex-wrap items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const match = games.find((g) =>
-                              g.title.toLowerCase().includes(slide.gameMatch.toLowerCase())
-                            );
-                            if (match) handleSelectGame(match.id);
-                          }}
-                          className="px-6 py-3 rounded-2xl bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] hover:brightness-110 active:scale-95 text-black font-black text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 shadow-[0_0_25px_rgba(212,175,55,0.45)] transition-all cursor-pointer"
-                        >
-                          <Zap className="w-4 h-4 fill-black text-black" />
-                          <span>{slide.buttonText}</span>
-                          <ArrowRight className="w-4 h-4" />
-                        </button>
+                <Link
+                  href="/orders"
+                  className="px-5 py-3.5 rounded-2xl bg-[#141b28] hover:bg-[#1c2638] border border-white/[0.08] hover:border-[#f2ca50]/40 text-neutral-200 hover:text-white font-extrabold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-sm"
+                >
+                  <Receipt className="w-4 h-4 text-[#f2ca50]" />
+                  <span>{language === 'kh' ? 'តាមដានការកុម្ម៉ង់' : 'Track Orders'}</span>
+                </Link>
+              </div>
 
-                        <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3.5 py-2.5 rounded-xl border border-emerald-500/25">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                          <span>{language === 'kh' ? 'មិនបាច់បង្កើត Account' : 'No Account Needed'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {/* 3 Trust Signals */}
+              <div className="grid grid-cols-3 gap-2.5 pt-4 border-t border-white/[0.06] max-w-lg text-[11px] font-bold text-neutral-300">
+                <div className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>{language === 'kh' ? 'ចូលលឿន (3 វិនាទី)' : 'Instant 3s'}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#00e4f2] shrink-0" />
+                  <span>{language === 'kh' ? 'គ្មាន Password' : 'No Password'}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>{language === 'kh' ? 'Bakong KHQR' : 'Bakong KHQR'}</span>
+                </div>
+              </div>
             </div>
 
-            {/* Carousel Navigation Dots & Arrows */}
-            <div className="absolute bottom-5 right-5 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/[0.1]">
-              <button
-                type="button"
-                onClick={() =>
-                  setCurrentSlide((prev) => (prev - 1 + PROMO_SLIDES.length) % PROMO_SLIDES.length)
-                }
-                className="text-neutral-400 hover:text-white transition-colors cursor-pointer p-0.5"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <div className="flex items-center gap-1.5 px-1.5">
-                {PROMO_SLIDES.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentSlide(i)}
-                    className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                      i === currentSlide ? 'w-6 bg-amber-400 shadow-[0_0_10px_rgba(212,175,55,0.8)]' : 'w-2 bg-white/30'
-                    }`}
-                  />
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => setCurrentSlide((prev) => (prev + 1) % PROMO_SLIDES.length)}
-                className="text-neutral-400 hover:text-white transition-colors cursor-pointer p-0.5"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+            {/* Right 5 Columns: 3D Animated Game Display with Perspective & Continuous Scroll */}
+            <div className="lg:col-span-5 flex justify-center w-full">
+              <Hero3DMarquee />
             </div>
           </div>
         </section>

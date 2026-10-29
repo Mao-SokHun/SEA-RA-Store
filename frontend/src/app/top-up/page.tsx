@@ -161,16 +161,6 @@ const GAME_POSTERS: Record<string, {
   },
 };
 
-// Live Recent Activity Ticker (Smile.One style)
-const RECENT_TRANSACTIONS = [
-  { id: '1', user: '012***48', game: 'MLBB', item: 'Weekly Diamond Pass', time: 'ទើបតែបញ្ជាទិញ' },
-  { id: '2', user: '098***12', game: 'Roblox', item: '800 Robux', time: '1 នាទីមុន' },
-  { id: '3', user: '070***95', game: 'Free Fire', item: '520 Diamonds', time: '2 នាទីមុន' },
-  { id: '4', user: '085***33', game: 'PUBG Mobile', item: '660 UC', time: '3 នាទីមុន' },
-  { id: '5', user: '016***77', game: 'MLBB', item: '257 Diamonds', time: '4 នាទីមុន' },
-  { id: '6', user: '069***21', game: 'Genshin Impact', item: 'Blessing of Welkin Moon', time: '5 នាទីមុន' },
-];
-
 export default function TopUpPage() {
   const { language, t } = useLanguage();
   const { user, isAuthenticated } = useAuth();
@@ -550,35 +540,7 @@ export default function TopUpPage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* SECTION 2: LIVE RECENT TOP-UP ACTIVITY TICKER (Smile.One Social Proof)   */}
-        {/* ========================================================================= */}
-        <div className="mb-8 bg-[#0d111a] border border-white/[0.08] rounded-2xl p-3 px-5 flex items-center justify-between text-xs overflow-hidden shadow-sm">
-          <div className="flex items-center gap-2 text-amber-300 font-bold shrink-0">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-            <span className="font-black text-amber-400 uppercase tracking-wider">
-              ⚡ {language === 'kh' ? 'ប្រតិបត្តិការផ្ទាល់' : 'Live Reloads'}:
-            </span>
-          </div>
-
-          <div className="flex items-center gap-6 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap text-xs text-neutral-300 px-3">
-            {RECENT_TRANSACTIONS.map((item) => (
-              <div key={item.id} className="flex items-center gap-2 shrink-0 bg-[#141b28] px-3 py-1 rounded-xl border border-white/[0.04]">
-                <span className="font-mono text-neutral-400">{item.user}</span>
-                <span className="text-white font-bold">{item.game}</span>
-                <span className="text-amber-400 font-semibold">{item.item}</span>
-                <span className="text-emerald-400 font-bold text-[10px]">✓ {item.time}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="hidden lg:flex items-center gap-1.5 text-xs text-neutral-400 shrink-0 font-medium">
-            <span>Powered by</span>
-            <span className="text-amber-400 font-black tracking-wide">Smile.One API</span>
-          </div>
-        </div>
-
-        {/* ========================================================================= */}
-        {/* SECTION 3: SEARCH BAR & TRENDING TAGS BAR                                 */}
+        {/* SECTION 2: SEARCH BAR & TRENDING TAGS BAR                                 */}
         {/* ========================================================================= */}
         <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-4 bg-[#0d111a] p-4 rounded-3xl border border-white/[0.08]">
           {/* Live Search Input */}

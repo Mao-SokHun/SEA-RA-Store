@@ -704,36 +704,38 @@ export default function TopUpPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0d111a] via-[#0d111a]/40 to-transparent" />
                   </div>
 
-                  {/* Card Content & Action Button */}
-                  <div className="p-4 sm:p-5 space-y-3 relative z-10 -mt-6 bg-[#0d111a] rounded-t-3xl border-t border-white/[0.04]">
+                  {/* Card Content & Action Button (Sample 1 & 2 Gaming Card Style) */}
+                  <div className="p-4 sm:p-5 space-y-3 relative z-10 -mt-6 bg-[#0c1018] rounded-t-3xl border-t border-white/[0.06]">
                     <div>
-                      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-0.5">
-                        {meta.publisher}
-                      </span>
-                      <h3 className="text-sm sm:text-base font-black text-white group-hover:text-amber-300 transition-colors line-clamp-1">
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest truncate">
+                          {meta.publisher}
+                        </span>
+                        <span className="text-[10px] font-bold text-amber-400 flex items-center gap-0.5 shrink-0 bg-amber-400/10 px-1.5 py-0.5 rounded">
+                          ★ {meta.rating.split(' ')[0]}
+                        </span>
+                      </div>
+                      <h3 className="text-sm sm:text-base font-black text-white group-hover:text-[#f2ca50] transition-colors line-clamp-1">
                         {g.title}
                       </h3>
-                      <p className="text-[11px] text-amber-400/90 font-semibold line-clamp-1 mt-0.5">
+                      <p className="text-[11px] text-[#00e4f2] font-bold line-clamp-1 mt-0.5">
                         {meta.popularLabel}
                       </p>
                     </div>
 
-                    <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between">
-                      <div className="text-[11px] text-neutral-400 font-semibold flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>3s Direct Credit</span>
-                      </div>
-
+                    {/* Full-width High-Impact Gaming Action Button */}
+                    <div className="pt-2 border-t border-white/[0.06]">
                       <button
                         type="button"
-                        className={`px-3 py-1.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-1 cursor-pointer ${
+                        className={`w-full py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-98 cursor-pointer ${
                           isSelected
-                            ? 'bg-[#d4af37] text-black shadow-md'
-                            : 'bg-[#182030] text-amber-300 group-hover:bg-[#d4af37] group-hover:text-black'
+                            ? 'bg-gradient-to-r from-[#ffe088] via-[#f2ca50] to-[#ff9f1c] text-black shadow-[0_0_20px_rgba(242,202,80,0.4)]'
+                            : 'bg-[#151b27] group-hover:bg-gradient-to-r group-hover:from-[#ffe088] group-hover:via-[#f2ca50] group-hover:to-[#ff9f1c] text-amber-300 group-hover:text-black border border-white/[0.08] group-hover:border-transparent'
                         }`}
                       >
-                        <span>{language === 'kh' ? 'បញ្ចូល' : 'Top Up'}</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
+                        <Zap className="w-3.5 h-3.5 fill-current" />
+                        <span>{language === 'kh' ? 'បញ្ចូលលុយឥឡូវនេះ' : 'TOP UP NOW'}</span>
+                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                       </button>
                     </div>
                   </div>

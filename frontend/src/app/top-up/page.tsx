@@ -5,3 +5,4 @@ import HomePage from '../page';
 export default function TopUpPage() {
   return <HomePage />;
 }
+

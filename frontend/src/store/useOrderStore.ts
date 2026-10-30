@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { GAMES, GameItem, GamePackage } from '@/data/games';
 import { Language } from '@/i18n/translations';
+import { api } from '@/lib/api';
 import confetti from 'canvas-confetti';
 
 export interface ActiveOrder {
@@ -15,6 +16,7 @@ export interface ActiveOrder {
   status: 'pending' | 'paid' | 'processing' | 'delivered';
   qrCodeUrl: string;
   createdAt: string;
+  backendOrderNumber?: string;
 }
 
 interface OrderStore {
@@ -58,8 +60,8 @@ interface OrderStore {
   isSubmitting: boolean;
   isSimulating: boolean;
   showSuccessModal: boolean;
-  submitOrder: () => void;
-  simulatePaymentSuccess: () => void;
+  submitOrder: () => Promise<void>;
+  simulatePaymentSuccess: () => Promise<void>;
   closeSuccessModal: () => void;
 }
 
@@ -100,7 +102,6 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
       (packageId && game.packages.find((p) => p.id === packageId)) ||
       game.packages[0];
 
-    // Seed mock account field defaults if available
     const initialAccount: Record<string, string> = {};
     game.accountFields.forEach((f) => {
       initialAccount[f.id] = f.id === 'server' && f.options ? f.options[0].value : '';
@@ -130,7 +131,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   setAccountField: (fieldId, value) => {
     set((state) => ({
       accountData: { ...state.accountData, [fieldId]: value },
-      verifiedNickname: null, // Reset verification when ID changes
+      verifiedNickname: null,
       verificationError: null,
     }));
   },
@@ -154,10 +155,30 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
 
     set({ isVerifying: true, verificationError: null, verifiedNickname: null });
 
-    // Mock API verification check with simulated network delay
+    // 1. Try real backend API first
+    try {
+      const backendRes = await api.topup.checkPlayer({
+        gameId: activeGame.id,
+        playerId: val.trim(),
+        zoneId: accountData['zoneId']?.trim(),
+        serverRegion: accountData['server']?.trim(),
+      });
+
+      if (backendRes?.data?.nickname) {
+        set({
+          isVerifying: false,
+          verifiedNickname: `${backendRes.data.nickname} ✓`,
+          verificationError: null,
+        });
+        return;
+      }
+    } catch (apiErr) {
+      // Backend not running or check endpoint unreachable: fallback to smart mock check
+    }
+
+    // 2. Fallback smart mock IGN generation
     await new Promise((r) => setTimeout(r, 600));
 
-    // Curated dynamic nickname generation based on game
     const nicknames: Record<string, string[]> = {
       '1': ['Slayer_ProKH', 'MythicGlory99', 'Vireak_Assassin', 'ShadowKing'],
       '2': ['FF_Headhunter', 'BooyahMaster', 'GarenaSniper'],
@@ -206,42 +227,94 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     }
   },
 
-  submitOrder: () => {
-    const { activeGame, activePackage, accountData, verifiedNickname, paymentMethodId, promoDiscountPercent } = get();
+  submitOrder: async () => {
+    const {
+      activeGame,
+      activePackage,
+      accountData,
+      verifiedNickname,
+      paymentMethodId,
+      promoDiscountPercent,
+      contactInfo,
+    } = get();
     if (!activeGame || !activePackage) return;
 
     const discountMultiplier = (100 - promoDiscountPercent) / 100;
     const finalUSD = Number((activePackage.priceUSD * discountMultiplier).toFixed(2));
     const finalKHR = Math.round(activePackage.priceKHR * discountMultiplier);
 
-    const orderNum = `GV-${Math.floor(100000 + Math.random() * 900000)}`;
+    const primaryField = activeGame.accountFields[0];
+    const playerId = accountData[primaryField.id] || 'GuestID';
+    const zoneId = accountData['zoneId'] || undefined;
+    const serverRegion = accountData['server'] || undefined;
+
+    set({ isSubmitting: true });
+
+    let orderNum = `GV-${Math.floor(100000 + Math.random() * 900000)}`;
+    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=KHQR-${orderNum}-USD-${finalUSD}`;
+    let backendOrderNum: string | undefined = undefined;
+
+    // 1. Try real backend API
+    try {
+      const res = await api.topup.createOrder({
+        gameId: activeGame.id,
+        packageId: activePackage.id,
+        playerId,
+        zoneId,
+        serverRegion,
+        playerNickname: verifiedNickname?.replace(' ✓', '') || playerId,
+        contactPhone: contactInfo || undefined,
+        paymentMethod: paymentMethodId,
+      });
+
+      if (res?.data?.orderNumber) {
+        orderNum = res.data.orderNumber;
+        backendOrderNum = res.data.orderNumber;
+        if (res.data.qrCodeUrl) {
+          qrUrl = res.data.qrCodeUrl;
+        }
+      }
+    } catch (err) {
+      // Backend offline or error: smoothly keep locally generated QR order
+    }
 
     const order: ActiveOrder = {
       orderNumber: orderNum,
+      backendOrderNumber: backendOrderNum,
       game: activeGame,
       package: activePackage,
       accountData,
-      playerNickname: verifiedNickname || accountData[activeGame.accountFields[0].id] || 'Guest',
+      playerNickname: verifiedNickname || playerId,
       paymentMethodId,
       totalUSD: finalUSD,
       totalKHR: finalKHR,
       status: 'pending',
-      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=KHQR-${orderNum}-USD-${finalUSD}`,
+      qrCodeUrl: qrUrl,
       createdAt: new Date().toISOString(),
     };
 
     set({
+      isSubmitting: false,
       currentOrder: order,
       isModalOpen: false,
       showSuccessModal: true,
     });
   },
 
-  simulatePaymentSuccess: () => {
+  simulatePaymentSuccess: async () => {
     const { currentOrder } = get();
     if (!currentOrder) return;
 
     set({ isSimulating: true });
+
+    // If order was created on backend, also trigger backend simulation
+    if (currentOrder.backendOrderNumber) {
+      try {
+        await api.topup.simulatePayment(currentOrder.backendOrderNumber);
+      } catch (e) {
+        // Continue simulation
+      }
+    }
 
     setTimeout(() => {
       set({
@@ -253,11 +326,11 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
       });
 
       confetti({
-        particleCount: 120,
-        spread: 80,
+        particleCount: 150,
+        spread: 85,
         origin: { y: 0.6 },
       });
-    }, 1200);
+    }, 1000);
   },
 
   closeSuccessModal: () => {

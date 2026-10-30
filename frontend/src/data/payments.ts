@@ -79,3 +79,4 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
     feePercent: 0,
   },
 ];
+

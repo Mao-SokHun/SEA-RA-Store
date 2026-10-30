@@ -199,3 +199,4 @@ export const TOP_BUYERS: TopBuyer[] = [
     badge: '⭐ VIP',
   },
 ];
+

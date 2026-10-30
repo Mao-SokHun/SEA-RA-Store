@@ -82,7 +82,7 @@ export default function Navbar() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[72px] flex items-center justify-between gap-4 lg:gap-8">
         {/* ========================================================================= */}
-        {/* 1. BRAND EMBLEM & LOGO (Sample 1 & 2 Style: Cyber Crest + NEXUS GAMING)   */}
+        {/* 1. BRAND EMBLEM & LOGO (Sample 1 & 2 Style: Cyber Crest + SEA RA GAMING)  */}
         {/* ========================================================================= */}
         <Link href="/top-up" className="flex items-center gap-3 shrink-0 group">
           {/* Cyber Shield Crest with Glowing Neon Cyber Edge */}
@@ -91,13 +91,13 @@ export default function Navbar() {
               <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 2L4 6V12C4 17.5 7.4 20.8 12 22C16.6 20.8 20 17.5 20 12V6L12 2Z"
-                  fill="url(#nexus-grad)"
+                  fill="url(#seara-grad)"
                   stroke="#f2ca50"
                   strokeWidth="1.5"
                 />
                 <path d="M9 12L11 14L15 10" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 <defs>
-                  <linearGradient id="nexus-grad" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                  <linearGradient id="seara-grad" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
                     <stop stopColor="#00e4f2" stopOpacity="0.4" />
                     <stop offset="0.5" stopColor="#6366f1" stopOpacity="0.3" />
                     <stop offset="1" stopColor="#f2ca50" stopOpacity="0.4" />
@@ -110,7 +110,7 @@ export default function Navbar() {
           {/* Typography */}
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5 leading-none">
-              <span className="font-black text-xl tracking-wider text-white">NEXUS</span>
+              <span className="font-black text-xl tracking-wider text-white">SEA RA</span>
               <span className="font-black text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#ffe088] via-[#f2ca50] to-[#ff9f1c]">
                 GAMING
               </span>
@@ -155,7 +155,7 @@ export default function Navbar() {
           </Link>
 
           <a
-            href="https://t.me/nexus_support_kh"
+            href="https://t.me/seara_support_kh"
             target="_blank"
             className="text-neutral-300 hover:text-[#00e4f2] transition-colors relative py-2 flex items-center gap-1.5"
           >
@@ -241,7 +241,7 @@ export default function Navbar() {
 
           {/* Official Telegram Support Link (Tactical Comms) */}
           <Link
-            href="https://t.me/nexus_support_kh"
+            href="https://t.me/seara_support_kh"
             target="_blank"
             className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black bg-[#0088cc]/15 hover:bg-[#0088cc]/25 text-[#00e4f2] hover:text-white border border-[#0088cc]/30 transition-all cursor-pointer shadow-sm"
           >
@@ -441,7 +441,7 @@ export default function Navbar() {
           </Link>
 
           <Link
-            href="https://t.me/nexus_support_kh"
+            href="https://t.me/seara_support_kh"
             target="_blank"
             onClick={() => setMobileMenuOpen(false)}
             className="flex items-center justify-between w-full py-2.5 px-3.5 rounded-xl bg-[#0088cc]/15 border border-[#0088cc]/30 text-xs font-black text-[#00e4f2]"

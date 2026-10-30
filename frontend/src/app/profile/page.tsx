@@ -42,7 +42,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        const raw = localStorage.getItem('nexus_saved_players');
+        const raw = localStorage.getItem('seara_saved_players') || localStorage.getItem('nexus_saved_players');
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed)) {
@@ -61,7 +61,7 @@ export default function ProfilePage() {
     );
     setSavedPlayers(updated);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('nexus_saved_players', JSON.stringify(updated));
+      localStorage.setItem('seara_saved_players', JSON.stringify(updated));
     }
   };
 
@@ -331,7 +331,7 @@ export default function ProfilePage() {
           </Link>
 
           <Link
-            href="https://t.me/nexus_support_kh"
+            href="https://t.me/seara_support_kh"
             target="_blank"
             className="p-5 rounded-3xl bg-[#0e131d]/90 border border-white/[0.08] hover:border-[#00e4f2]/40 transition-all flex items-center justify-between group"
           >
@@ -344,7 +344,7 @@ export default function ProfilePage() {
                   {language === 'kh' ? 'ជំនួយអតិថិជន ២៤/៧' : 'Customer Support 24/7'}
                 </h4>
                 <p className="text-xs text-neutral-400">
-                  {language === 'kh' ? 'ឆាតទៅ Telegram: @nexus_support_kh' : 'Chat via Telegram: @nexus_support_kh'}
+                  {language === 'kh' ? 'ឆាតទៅ Telegram: @seara_support_kh' : 'Chat via Telegram: @seara_support_kh'}
                 </p>
               </div>
             </div>

@@ -28,7 +28,7 @@ export default function FloatingChatWidget() {
       text:
         language === 'kh'
           ? 'សួស្តីបាទ! ខ្ញុំជា Admin Support 24/7។ តើលោកអ្នកត្រូវការជំនួយទាក់ទងនឹងការ Top Up ហ្គេមអ្វីដែរ?'
-          : 'Hello! I am Nexus Support 24/7. How can I assist you with your game top-up today?',
+          : 'Hello! I am SEA RA Support 24/7. How can I assist you with your game top-up today?',
       timestamp: 'Just now',
     },
   ]);
@@ -84,7 +84,7 @@ export default function FloatingChatWidget() {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
-                  <span>{language === 'kh' ? 'Admin ជំនួយ 24/7' : 'Nexus Admin Support'}</span>
+                  <span>{language === 'kh' ? 'Admin ជំនួយ 24/7' : 'SEA RA Admin Support'}</span>
                   <span className="text-[10px] font-black uppercase px-1.5 py-0.2 bg-emerald-500/20 text-emerald-300 rounded border border-emerald-500/30">
                     ONLINE
                   </span>
@@ -211,11 +211,11 @@ export default function FloatingChatWidget() {
               </div>
 
               <div className="w-full bg-[#151a24] p-3 rounded-2xl border border-white/[0.06] text-xs font-mono text-cyan-400">
-                @nexus_support_kh
+                @seara_support_kh
               </div>
 
               <a
-                href="https://t.me/nexus_support_kh"
+                href="https://t.me/seara_support_kh"
                 target="_blank"
                 rel="noreferrer"
                 className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#0088cc] to-[#00a8ff] hover:brightness-110 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(0,168,255,0.3)] flex items-center justify-center gap-2"

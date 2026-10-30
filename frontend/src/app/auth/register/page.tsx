@@ -59,7 +59,7 @@ export default function RegisterPage() {
             </div>
           </div>
           <h1 className="text-2xl font-black text-white">
-            {language === 'kh' ? 'បង្កើតគណនី NEXUS' : 'Create NEXUS Account'}
+            {language === 'kh' ? 'បង្កើតគណនី SEA RA' : 'Create SEA RA Account'}
           </h1>
           <p className="text-xs text-neutral-400">
             {language === 'kh'

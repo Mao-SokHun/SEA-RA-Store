@@ -45,14 +45,15 @@ class ApiError extends Error {
 // Helper to retrieve token from localStorage
 export function getStoredToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('nexus_access_token');
+  return localStorage.getItem('seara_access_token') || localStorage.getItem('nexus_access_token');
 }
 
 export function setStoredToken(token: string | null) {
   if (typeof window === 'undefined') return;
   if (token) {
-    localStorage.setItem('nexus_access_token', token);
+    localStorage.setItem('seara_access_token', token);
   } else {
+    localStorage.removeItem('seara_access_token');
     localStorage.removeItem('nexus_access_token');
   }
 }

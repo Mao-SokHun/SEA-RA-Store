@@ -28,7 +28,7 @@ export default function Footer() {
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-black text-base text-[#f2ca50] tracking-wider">NEXUS</span>
+                  <span className="font-black text-base text-[#f2ca50] tracking-wider">SEA RA</span>
                   <span className="text-[9px] uppercase font-bold tracking-widest px-1.5 py-0.2 rounded bg-amber-400/10 text-amber-300 border border-amber-400/30">
                     TOP-UP
                   </span>
@@ -132,14 +132,14 @@ export default function Footer() {
             </p>
             <div className="space-y-2">
               <Link
-                href="https://t.me/nexus_support_kh"
+                href="https://t.me/seara_support_kh"
                 target="_blank"
                 className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0088cc]/15 hover:bg-[#0088cc]/25 border border-[#0088cc]/30 text-[#00e4f2] text-xs font-bold transition-all"
               >
                 <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
                 </svg>
-                <span>Telegram: @nexus_support_kh</span>
+                <span>Telegram: @seara_support_kh</span>
               </Link>
             </div>
           </div>
@@ -147,7 +147,7 @@ export default function Footer() {
 
         {/* Bottom Copyright */}
         <div className="pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500">
-          <p>© {new Date().getFullYear()} NEXUS TOP-UP. All rights reserved. Automated Gaming Aggregator.</p>
+          <p>© {new Date().getFullYear()} SEA RA TOP-UP. All rights reserved. Automated Gaming Aggregator.</p>
           <div className="flex items-center gap-1.5 text-neutral-400">
             <span>Powered by Official Direct Reload API</span>
           </div>

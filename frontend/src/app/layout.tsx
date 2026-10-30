@@ -7,9 +7,9 @@ import Footer from '@/components/layout/Footer';
 import MobileBottomNav from '@/components/layout/MobileBottomNav';
 
 export const metadata: Metadata = {
-  title: 'NEXUS TOP-UP | សេវាកម្មបញ្ចូលលុយហ្គេមស្វ័យប្រវត្តិ 24/7 (Instant Game Top-Up)',
+  title: 'SEA RA TOP-UP | សេវាកម្មបញ្ចូលលុយហ្គេមស្វ័យប្រវត្តិ 24/7 (Instant Game Top-Up)',
   description:
-    'សេវាកម្មបញ្ចូលលុយហ្គេមស្វ័យប្រវត្តិតាម Bakong KHQR លឿនត្រឹម ៣ វិនាទី មិនបាច់ Login មិនបាច់បង្កើត Account។ គាំទ្រ Mobile Legends, Free Fire, PUBG Mobile, Roblox, Genshin Impact, Honor of Kings, Valorant, CODM, Wild Rift និង Blood Strike។',
+    'SEA RA - សេវាកម្មបញ្ចូលលុយហ្គេមស្វ័យប្រវត្តិតាម Bakong KHQR លឿនត្រឹម ៣ វិនាទី មិនបាច់ Login មិនបាច់បង្កើត Account។ គាំទ្រ Mobile Legends, Free Fire, PUBG Mobile, Roblox, Genshin Impact, Honor of Kings, Valorant, CODM, Wild Rift និង Blood Strike។',
   keywords: [
     'top up game',
     'game topup cambodia',

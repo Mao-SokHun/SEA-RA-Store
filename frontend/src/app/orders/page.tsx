@@ -63,7 +63,7 @@ export default function GuestOrdersPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        const raw = localStorage.getItem('nexus_guest_orders');
+        const raw = localStorage.getItem('seara_guest_orders') || localStorage.getItem('nexus_guest_orders');
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -507,8 +507,8 @@ export default function GuestOrdersPage() {
                     <div className="flex items-center gap-2">
                       {/* Telegram Assistance with pre-filled Order ID */}
                       <Link
-                        href={`https://t.me/nexus_support_kh?text=${encodeURIComponent(
-                          `សួស្តី NEXUS! ខ្ញុំចង់សាកសួរពីការកុម្ម៉ង់លេខ ${order.orderNumber} (${order.gameTitle} - ${order.packageName})`
+                        href={`https://t.me/seara_support_kh?text=${encodeURIComponent(
+                          `សួស្តី SEA RA! ខ្ញុំចង់សាកសួរពីការកុម្ម៉ង់លេខ ${order.orderNumber} (${order.gameTitle} - ${order.packageName})`
                         )}`}
                         target="_blank"
                         className="px-3 py-2 rounded-xl bg-[#0088cc]/15 hover:bg-[#0088cc]/25 text-[#00e4f2] hover:text-white border border-[#0088cc]/30 text-xs font-bold transition-all flex items-center gap-1.5"
@@ -569,7 +569,7 @@ export default function GuestOrdersPage() {
                 {language === 'kh' ? 'សម្អាតការស្វែងរក' : 'Clear Search'}
               </button>
               <Link
-                href="https://t.me/nexus_support_kh"
+                href="https://t.me/seara_support_kh"
                 target="_blank"
                 className="px-5 py-2.5 rounded-xl bg-[#0088cc]/20 hover:bg-[#0088cc]/30 text-[#00e4f2] border border-[#0088cc]/30 text-xs font-bold"
               >

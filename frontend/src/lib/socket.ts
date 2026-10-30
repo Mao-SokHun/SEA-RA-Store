@@ -19,11 +19,11 @@ export function getSocket(): Socket {
     });
 
     socket.on('connect', () => {
-      console.log('⚡ Connected to Nexus Escrow WebSocket Gateway');
+      console.log('⚡ Connected to SEA RA Escrow WebSocket Gateway');
     });
 
     socket.on('disconnect', (reason) => {
-      console.log('🔌 Disconnected from Nexus WebSocket Gateway:', reason);
+      console.log('🔌 Disconnected from SEA RA WebSocket Gateway:', reason);
     });
 
     socket.on('connect_error', (err) => {

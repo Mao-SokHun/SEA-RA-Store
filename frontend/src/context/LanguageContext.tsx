@@ -56,7 +56,7 @@ export const translations: Translations = {
   slaAntiRecallSub: { en: 'Full Escrow Guarantee', kh: 'ធានាសងប្រាក់វិញ ១០០%' },
 
   // How It Works Section
-  howItWorksTitle: { en: 'How NEXUS Works', kh: 'របៀបទិញ-លក់លើ NEXUS' },
+  howItWorksTitle: { en: 'How SEA RA Works', kh: 'របៀបទិញ-លក់លើ SEA RA' },
   howItWorksSubtitle: {
     en: 'Simple, fast, and 100% scam-free gaming transactions in 3 easy steps.',
     kh: 'ងាយស្រួល រហ័ស និងមានសុវត្ថិភាពខ្ពស់ គ្មានការបោកប្រាស់ ត្រឹមតែ ៣ ជំហានប៉ុណ្ណោះ។',
@@ -105,8 +105,8 @@ export const translations: Translations = {
     kh: 'ស្វែងរកតាមឈ្មោះហ្គេម, Skin, ឬ Rank (ឧ. Roblox Blox Fruits, MLBB Mythic, Free Fire, PUBG...)...',
   },
 
-  // Why Gamers Trust NEXUS
-  whyTrustTitle: { en: 'Why Gamers Trust NEXUS', kh: 'ហេតុអ្វីត្រូវជ្រើសរើស NEXUS?' },
+  // Why Gamers Trust SEA RA
+  whyTrustTitle: { en: 'Why Gamers Trust SEA RA', kh: 'ហេតុអ្វីត្រូវជ្រើសរើស SEA RA?' },
   whyTrustSubtitle: {
     en: 'Built specifically for Cambodian gamers with real safety guarantees and zero scam tolerance.',
     kh: 'បង្កើតឡើងសម្រាប់អ្នកលេងហ្គេមនៅកម្ពុជា ជាមួយការធានាសុវត្ថិភាពពិតប្រាកដ ១០០% គ្មានការបោកប្រាស់។',
@@ -196,7 +196,7 @@ export const translations: Translations = {
   khqrSupportedBanks: { en: 'Supports 60+ Cambodian Financial Institutions', kh: 'គាំទ្រជាង ៦០ គ្រឹះស្ថានធនាគារនៅកម្ពុជា' },
   khqrAwaitingPayment: { en: 'Awaiting Bank Confirmation...', kh: 'កំពុងរង់ចាំការបញ្ជាក់ពីធនាគារ...' },
   walletBalance: { en: 'Available Wallet Balance', kh: 'សមតុល្យកាបូបដែលអាចប្រើបាន' },
-  payWithWallet: { en: 'Pay from Nexus Wallet', kh: 'បង់ប្រាក់ពីកាបូប Nexus' },
+  payWithWallet: { en: 'Pay from SEA RA Wallet', kh: 'បង់ប្រាក់ពីកាបូប SEA RA' },
   simulateTest: { en: 'Instant Test Simulation (Dev Sandbox)', kh: 'សាកល្បងបង់ប្រាក់ភ្លាមៗ (Dev Sandbox)' },
   simulatingNotice: { en: 'Click to simulate a real-time Bakong webhook payment confirmation.', kh: 'ចុចដើម្បីធ្វើតេស្តការទទួលប្រាក់តាមប្រព័ន្ធ Bakong Webhook ភ្លាមៗ។' },
 
@@ -333,7 +333,7 @@ export const translations: Translations = {
   topUpGuideBtn: { en: 'Where to find ID?', kh: 'របៀបមើល ID?' },
   topUpOrderSummary: { en: 'Order Summary', kh: 'សេចក្ដីសង្ខេបការបញ្ជាទិញ' },
   topUpPayWithKHQR: { en: 'Pay via Bakong KHQR', kh: 'បង់តាម Bakong KHQR' },
-  topUpPayWithWallet: { en: 'Pay with Wallet Balance', kh: 'បង់តាមកាបូបប្រាក់ NEXUS' },
+  topUpPayWithWallet: { en: 'Pay with Wallet Balance', kh: 'បង់តាមកាបូបប្រាក់ SEA RA' },
   topUpInstantNotice: { en: '⚡ 100% Automatic In-Game Credit within 3-10 seconds after payment confirmation.', kh: '⚡ ប្រព័ន្ធបញ្ចូលលុយស្វ័យប្រវត្តិ ១០០% ចូលក្នុងហ្គេមក្នុងរង្វង់ ៣ ទៅ ១០ វិនាទីក្រោយបង់ប្រាក់។' },
   topUpSubmitBtn: { en: 'Top Up Now', kh: 'បញ្ចូលលុយឥឡូវនេះ' },
 };
@@ -350,7 +350,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>('kh');
 
   useEffect(() => {
-    const saved = localStorage.getItem('nexus_language') as Language;
+    const saved = (localStorage.getItem('seara_language') || localStorage.getItem('nexus_language')) as Language;
     if (saved === 'kh' || saved === 'en') {
       setLanguageState(saved);
     }
@@ -369,7 +369,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem('nexus_language', lang);
+    localStorage.setItem('seara_language', lang);
   };
 
   const t = (key: string): string => {

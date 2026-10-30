@@ -411,7 +411,7 @@ export default function TopUpPage() {
       // Persist order number & user credentials locally for Guest tracking
       if (typeof window !== 'undefined') {
         try {
-          const raw = localStorage.getItem('nexus_guest_orders');
+          const raw = localStorage.getItem('seara_guest_orders') || localStorage.getItem('nexus_guest_orders');
           const list = raw ? JSON.parse(raw) : [];
           const updated = [
             {
@@ -426,10 +426,10 @@ export default function TopUpPage() {
             },
             ...list.filter((item: any) => item.orderNumber !== order.orderNumber),
           ].slice(0, 30);
-          localStorage.setItem('nexus_guest_orders', JSON.stringify(updated));
+          localStorage.setItem('seara_guest_orders', JSON.stringify(updated));
 
           // Save player ID for 1-click reorder
-          const savedPlayersRaw = localStorage.getItem('nexus_saved_players');
+          const savedPlayersRaw = localStorage.getItem('seara_saved_players') || localStorage.getItem('nexus_saved_players');
           const savedPlayers = savedPlayersRaw ? JSON.parse(savedPlayersRaw) : [];
           const updatedPlayers = [
             {
@@ -442,7 +442,7 @@ export default function TopUpPage() {
             },
             ...savedPlayers.filter((p: any) => !(p.gameTitle === selectedGame?.title && p.playerId === playerId.trim())),
           ].slice(0, 10);
-          localStorage.setItem('nexus_saved_players', JSON.stringify(updatedPlayers));
+          localStorage.setItem('seara_saved_players', JSON.stringify(updatedPlayers));
         } catch (e) {
           console.warn('Could not save order to local storage', e);
         }
@@ -1143,7 +1143,7 @@ export default function TopUpPage() {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-black text-sm text-white">
-                          NEXUS Wallet
+                          SEA RA Wallet
                         </span>
                         {isAuthenticated && user?.wallet && (
                           <span className="text-xs font-mono font-bold text-[#f2ca50]">
@@ -1241,7 +1241,7 @@ export default function TopUpPage() {
                   <div className="flex justify-between text-neutral-400">
                     <span>{language === 'kh' ? 'វិធីទូទាត់' : 'Payment Channel'}</span>
                     <span className="font-semibold text-white">
-                      {paymentMethod === 'bakong_khqr' ? 'Bakong KHQR' : 'NEXUS Wallet'}
+                      {paymentMethod === 'bakong_khqr' ? 'Bakong KHQR' : 'SEA RA Wallet'}
                     </span>
                   </div>
                 </div>
@@ -1305,12 +1305,12 @@ export default function TopUpPage() {
               {/* Telegram Support Pill */}
               <div className="text-center">
                 <Link
-                  href="https://t.me/nexus_support_kh"
+                  href="https://t.me/seara_support_kh"
                   target="_blank"
                   className="inline-flex items-center gap-2 text-xs text-neutral-400 hover:text-white transition-colors"
                 >
                   <span>{language === 'kh' ? 'ត្រូវការជំនួយបន្ទាន់?' : 'Need urgent support?'}</span>
-                  <span className="text-cyan-400 underline font-bold">Telegram @nexus_support_kh</span>
+                  <span className="text-cyan-400 underline font-bold">Telegram @seara_support_kh</span>
                 </Link>
               </div>
             </div>
@@ -1383,7 +1383,7 @@ export default function TopUpPage() {
 
               {/* Direct Telegram Comms Pill */}
               <Link
-                href="https://t.me/nexus_support_kh"
+                href="https://t.me/seara_support_kh"
                 target="_blank"
                 className="shrink-0 flex items-center gap-3 bg-[#0088cc]/15 hover:bg-[#0088cc]/25 border border-[#0088cc]/40 px-5 py-3 rounded-2xl text-xs font-black text-white transition-all shadow-md group cursor-pointer"
               >

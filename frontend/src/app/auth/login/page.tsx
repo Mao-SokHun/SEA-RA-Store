@@ -42,7 +42,7 @@ export default function LoginPage() {
             </div>
           </div>
           <h1 className="text-2xl font-black text-white">
-            {language === 'kh' ? 'ចូលប្រើប្រាស់ NEXUS' : 'Sign In to NEXUS'}
+            {language === 'kh' ? 'ចូលប្រើប្រាស់ SEA RA' : 'Sign In to SEA RA'}
           </h1>
           <p className="text-xs text-neutral-400">
             {language === 'kh' ? 'ចូលទៅកាន់បន្ទប់លេខសម្ងាត់ និងការបញ្ជាទិញរបស់អ្នក។' : 'Access your secure gaming escrow vault and active orders.'}
@@ -68,7 +68,7 @@ export default function LoginPage() {
                 required
                 value={emailOrUsername}
                 onChange={(e) => setEmailOrUsername(e.target.value)}
-                placeholder="seller_pro or user@nexus.com"
+                placeholder="seller_pro or user@seara.com"
                 className="w-full bg-[#0b0e14] border border-white/[0.08] rounded-xl pl-10 pr-4 py-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37]"
               />
             </div>

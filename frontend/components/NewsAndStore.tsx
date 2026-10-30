@@ -1,164 +1,195 @@
 'use client';
 
-import { ChevronRight, ShoppingBag, Tag, Zap } from 'lucide-react';
+import Link from 'next/link';
+import { ChevronRight, Zap, Tag } from 'lucide-react';
 
 const newsItems = [
   {
     id: 1,
-    badge: '💰 FLASH SALE',
-    badgeColor: '#ef4444',
-    title: 'TopUpVerse Summer Sale!',
-    date: '02.11.2025',
-    desc: 'TopUpVerse Summer Sale is back! Up to 50% off on selected games. Don\'t miss it!',
-    img: 'https://placehold.co/300x160/040b1a/ef4444?text=SALE',
+    title: 'GameVerse Summer Sale!',
+    date: '05.11.2025',
+    desc: 'The biggest gaming festival is here with up to 50% discount on all top-up packages.',
+    img: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=450&h=250&fit=crop&q=80',
+    badge: 'SUMMER SALE',
+    badgeBg: 'from-amber-500 to-orange-500',
   },
   {
     id: 2,
-    badge: '🆕 NEW GAME',
-    badgeColor: '#10b981',
-    title: 'New Season Rewards Added',
-    date: '09.25.2025',
-    desc: 'New Esports Season means new exclusive top up packages for your favorite games.',
-    img: 'https://placehold.co/300x160/040b1a/10b981?text=NEW',
+    title: 'New Esports Season Live',
+    date: '01.20.2025',
+    desc: 'Watch the best teams battle for glory and earn exclusive in-game rewards & bonuses.',
+    img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=450&h=250&fit=crop&q=80',
+    badge: 'ESPORTS',
+    badgeBg: 'from-blue-600 to-cyan-500',
   },
   {
     id: 3,
-    badge: '📢 UPDATE',
-    badgeColor: '#8b5cf6',
-    title: 'Platform Update 1.3',
-    date: '06.23.2025',
-    desc: 'Faster checkout, new payment methods, and exclusive bundle deals are now live.',
-    img: 'https://placehold.co/300x160/040b1a/8b5cf6?text=UPDATE',
+    title: 'Patch Notes 1.3 Update',
+    date: '06.21.2025',
+    desc: 'New balance changes, enhanced direct API speed, and zero fee Bakong KHQR checkout.',
+    img: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=450&h=250&fit=crop&q=80',
+    badge: 'UPDATE',
+    badgeBg: 'from-purple-600 to-pink-500',
   },
 ];
 
 const storeDeals = [
   {
-    id: 1,
-    name: 'ML Diamonds x500',
+    id: 'valiant-force',
+    name: 'Valiant Force',
+    category: 'Gems',
     price: '$2.50',
-    original: '$3.50',
-    game: 'Mobile Legends',
+    original: '$4.99',
     badge: 'DEAL',
-    color: '#00a8ff',
-    img: 'https://placehold.co/130x90/040b1a/00a8ff?text=ML+x500',
+    img: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=300&h=380&fit=crop&q=80',
   },
   {
-    id: 2,
-    name: 'Genshin Welkin',
-    price: '$4.99',
-    original: '$6.99',
-    game: 'Genshin Impact',
-    badge: 'HOT',
-    color: '#10b981',
-    img: 'https://placehold.co/130x90/040b1a/10b981?text=WELKIN',
-  },
-  {
-    id: 3,
-    name: 'FF Elite Pass',
+    id: 'shadowfall',
+    name: 'Shadowfall',
+    category: 'Fantasy',
     price: '$7.50',
-    original: '$9.99',
-    game: 'Free Fire',
-    badge: 'NEW',
-    color: '#f97316',
-    img: 'https://placehold.co/130x90/040b1a/f97316?text=FF+PASS',
+    original: '$12.00',
+    badge: 'HOT',
+    img: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300&h=380&fit=crop&q=80',
   },
 ];
 
 export default function NewsAndStore() {
   return (
-    <section className="py-10" style={{ background: 'var(--bg-primary)' }}>
-      <div className="max-w-[1400px] mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Latest News */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-bold text-xl text-white section-title">📰 LATEST NEWS &amp; UPDATES</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {newsItems.map((item) => (
-                <div key={item.id} className="card-game group cursor-pointer">
-                  <div className="relative overflow-hidden" style={{ height: '110px' }}>
-                    <img
-                      src={item.img}
-                      alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <span
-                      className="absolute top-2 left-2 text-white px-2 py-0.5 rounded text-xs font-bold"
-                      style={{ background: item.badgeColor, fontSize: '10px' }}
-                    >
-                      {item.badge}
-                    </span>
-                  </div>
-                  <div className="p-3">
-                    <p className="text-xs mb-1" style={{ color: '#4a5a7a' }}>{item.date}</p>
-                    <h3 className="text-sm font-bold text-white mb-1 leading-tight">{item.title}</h3>
-                    <p className="text-xs mb-3 leading-relaxed" style={{ color: '#4a5a7a' }}>{item.desc}</p>
-                    <button className="flex items-center gap-1 text-xs font-semibold" style={{ color: '#00a8ff' }}>
-                      READ MORE <ChevronRight size={12} />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Top Up Store */}
-          <div>
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-bold text-xl text-white section-title flex items-center gap-2">
-                <ShoppingBag size={18} style={{ color: '#00a8ff' }} />
-                TOP UP STORE
-              </h2>
-              <button className="flex items-center gap-1 text-xs" style={{ color: '#00a8ff' }}>
-                All Deals <ChevronRight size={12} />
-              </button>
-            </div>
-
-            <div className="card-game p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Tag size={14} style={{ color: '#facc15' }} />
-                <span className="text-sm font-bold" style={{ color: '#facc15' }}>DEALS &amp; HOT PACKAGES</span>
+    <section className="py-10 bg-[#040b1a]">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          {/* ── Left: LATEST NEWS & UPDATES (8 cols on lg) ── */}
+          <div className="lg:col-span-8 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="font-en font-black text-lg sm:text-xl text-white tracking-wider uppercase">
+                  LATEST NEWS &amp; UPDATES
+                </h2>
               </div>
 
-              <div className="space-y-3">
-                {storeDeals.map((deal) => (
-                  <div key={deal.id} className="flex gap-3 cursor-pointer group p-2 rounded-lg transition-colors"
-                       style={{ background: 'rgba(0,0,0,0.2)' }}
-                       onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0,168,255,0.05)')}
-                       onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(0,0,0,0.2)')}>
-                    <div className="relative flex-shrink-0 rounded-lg overflow-hidden" style={{ width: '90px', height: '65px' }}>
-                      <img src={deal.img} alt={deal.name} className="w-full h-full object-cover" />
+              {/* 3 News Cards in a row */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {newsItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="group flex flex-col rounded-2xl overflow-hidden bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(0,168,255,0.2)]"
+                  >
+                    {/* Thumbnail */}
+                    <div className="relative w-full h-32 overflow-hidden bg-[#050c1e]">
+                      <img
+                        src={item.img}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        style={{ filter: 'brightness(0.85)' }}
+                      />
                       <span
-                        className="absolute top-1 left-1 text-white px-1 rounded font-bold"
-                        style={{ background: deal.color, fontSize: '9px' }}
+                        className={`absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-black font-en text-white uppercase tracking-wider bg-gradient-to-r ${item.badgeBg}`}
                       >
-                        {deal.badge}
+                        {item.badge}
                       </span>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-xs" style={{ color: '#4a5a7a' }}>{deal.game}</p>
-                      <p className="text-sm font-bold text-white leading-tight">{deal.name}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="font-bold text-sm" style={{ color: '#facc15' }}>{deal.price}</span>
-                        <span className="text-xs line-through" style={{ color: '#4a5a7a' }}>{deal.original}</span>
+
+                    {/* Content */}
+                    <div className="p-3.5 flex flex-col flex-1 justify-between gap-2">
+                      <div>
+                        <span className="font-en text-[10px] text-[#5a6f90]">
+                          {item.date}
+                        </span>
+                        <h3 className="font-en font-black text-xs sm:text-sm text-white group-hover:text-[#00a8ff] transition-colors leading-snug mt-1 line-clamp-1">
+                          {item.title}
+                        </h3>
+                        <p className="font-km text-[11px] text-[#8b9ab4] leading-relaxed mt-1 line-clamp-2">
+                          {item.desc}
+                        </p>
                       </div>
+
+                      <button className="flex items-center gap-1 font-en font-bold text-xs text-[#00a8ff] group-hover:translate-x-1 transition-transform mt-2">
+                        <span>READ MORE</span>
+                        <ChevronRight size={13} />
+                      </button>
                     </div>
-                    <button className="self-center flex-shrink-0 p-1.5 rounded-lg transition-colors"
-                            style={{ background: 'rgba(0,168,255,0.15)', color: '#00a8ff' }}>
-                      <Zap size={14} fill="#00a8ff" />
-                    </button>
                   </div>
                 ))}
               </div>
-
-              <button className="btn-topup mt-4">VIEW ALL PACKAGES</button>
             </div>
           </div>
+
+          {/* ── Right: GAME STORE (4 cols on lg) ── */}
+          <div className="lg:col-span-4 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="font-en font-black text-lg sm:text-xl text-white tracking-wider uppercase">
+                  GAME STORE
+                </h2>
+                <Link
+                  href="#deals"
+                  className="font-en font-bold text-xs text-[#00a8ff] hover:underline flex items-center gap-0.5"
+                >
+                  <span>DEALS &amp; NEW RELEASES</span>
+                  <ChevronRight size={12} />
+                </Link>
+              </div>
+
+              {/* 2 Side-by-Side Vertical Deal Cards */}
+              <div className="grid grid-cols-2 gap-3.5">
+                {storeDeals.map((deal) => (
+                  <div
+                    key={deal.id}
+                    className="group flex flex-col rounded-2xl overflow-hidden bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/60 transition-all duration-300 hover:-translate-y-1"
+                  >
+                    {/* Deal Image */}
+                    <div className="relative w-full h-36 overflow-hidden bg-[#050c1e]">
+                      <img
+                        src={deal.img}
+                        alt={deal.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        style={{ filter: 'brightness(0.85)' }}
+                      />
+                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-black font-en text-white uppercase tracking-wider bg-[#ef4444]">
+                        {deal.badge}
+                      </span>
+                    </div>
+
+                    {/* Deal Info */}
+                    <div className="p-3 flex flex-col justify-between flex-1">
+                      <div>
+                        <h4 className="font-en font-black text-xs sm:text-sm text-white group-hover:text-[#00a8ff] transition-colors truncate">
+                          {deal.name}
+                        </h4>
+                        <span className="font-en text-[10px] text-[#5a6f90]">
+                          {deal.category}
+                        </span>
+                      </div>
+
+                      <div className="flex items-baseline gap-2 mt-2">
+                        <span className="font-en font-black text-sm text-[#facc15]">
+                          {deal.price}
+                        </span>
+                        <span className="font-en text-[10px] text-[#5a6f90] line-through">
+                          {deal.original}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Link
+              href="#store"
+              className="mt-4 w-full py-2.5 rounded-xl bg-gradient-to-r from-[#1e6beb] to-[#00b4d8] hover:from-[#185adb] hover:to-[#009ec0] text-white font-en font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-[0_4px_16px_rgba(0,168,255,0.35)] transition-all"
+            >
+              <Zap size={13} fill="white" />
+              <span>VIEW ALL STORE PACKAGES</span>
+            </Link>
+          </div>
+
         </div>
+
       </div>
     </section>
   );
 }
-

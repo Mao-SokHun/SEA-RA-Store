@@ -1,69 +1,61 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, TrendingUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Users } from 'lucide-react';
 
 const trendingGames = [
   {
+    id: 'valiant-force',
+    name: 'Valiant Force',
+    count: '3,070 players',
+    img: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&h=350&fit=crop&q=80',
+    iconText: 'VF',
+    iconBg: '#f97316',
+  },
+  {
+    id: 'apex-legends',
+    name: 'Apex Legends',
+    count: '2,201 players',
+    img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&h=350&fit=crop&q=80',
+    iconText: 'A',
+    iconBg: '#ef4444',
+  },
+  {
+    id: 'lost-ark',
+    name: 'Lost Ark',
+    count: '2,307 players',
+    img: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&h=350&fit=crop&q=80',
+    iconText: 'LA',
+    iconBg: '#ca8a04',
+  },
+  {
+    id: 'fortnite',
+    name: 'Fortnite',
+    count: '3,691 players',
+    img: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=500&h=350&fit=crop&q=80',
+    iconText: 'FN',
+    iconBg: '#8b5cf6',
+  },
+  {
     id: 'mobile-legends',
     name: 'Mobile Legends',
-    soldCount: '24,850+ ការបញ្ចូល',
-    tag: 'MLBB',
-    img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&h=300&fit=crop&q=80',
-    color: '#00a8ff',
-    icon: '💎',
-  },
-  {
-    id: 'free-fire',
-    name: 'Free Fire',
-    soldCount: '19,340+ ការបញ្ចូល',
-    tag: 'FF MAX',
-    img: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500&h=300&fit=crop&q=80',
-    color: '#f97316',
-    icon: '🔥',
-  },
-  {
-    id: 'genshin-impact',
-    name: 'Genshin Impact',
-    soldCount: '12,500+ ការបញ្ចូល',
-    tag: 'HOYOVERSE',
-    img: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=500&h=300&fit=crop&q=80',
-    color: '#10b981',
-    icon: '✨',
-  },
-  {
-    id: 'pubg-mobile',
-    name: 'PUBG Mobile',
-    soldCount: '16,200+ ការបញ្ចូល',
-    tag: 'TENCENT',
-    img: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=500&h=300&fit=crop&q=80',
-    color: '#facc15',
-    icon: '🪙',
-  },
-  {
-    id: 'valorant',
-    name: 'Valorant',
-    soldCount: '14,120+ ការបញ្ចូល',
-    tag: 'RIOT GAMES',
-    img: 'https://images.unsplash.com/photo-1547082299-de196ea013d6?w=500&h=300&fit=crop&q=80',
-    color: '#ef4444',
-    icon: '🎯',
+    count: '5,840 players',
+    img: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=500&h=350&fit=crop&q=80',
+    iconText: 'ML',
+    iconBg: '#00a8ff',
   },
 ];
 
 export default function TrendingNow() {
   return (
-    <section className="py-10 bg-[#070f24]/60">
+    <section className="py-10 bg-[#040b1a]">
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* ── Section Header ── */}
+        {/* ── Section Header (TRENDING NOW in Reference) ── */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <h2 className="font-km font-bold text-lg sm:text-xl text-white">
-              ហ្គេមពេញនិយមបំផុត{' '}
-              <span className="font-en text-[#00a8ff] text-base sm:text-lg font-black uppercase tracking-wider">
-                (TRENDING NOW)
-              </span>
+            <h2 className="font-en font-black text-lg sm:text-xl text-white tracking-wider uppercase">
+              TRENDING NOW
             </h2>
           </div>
 
@@ -83,55 +75,51 @@ export default function TrendingNow() {
           </div>
         </div>
 
-        {/* ── Trending Cards (Wide Landscape Layout like Reference) ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
-          {trendingGames.map((game, idx) => (
+        {/* ── 5 Cards in a Row Matching Reference 100% ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+          {trendingGames.map((game) => (
             <Link
               key={game.id}
               href={`/top-up/${game.id}`}
-              className="group relative rounded-xl overflow-hidden aspect-[16/11] border border-[#1a335a] hover:border-[#00a8ff]/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(0,168,255,0.2)] block"
+              className="group relative rounded-xl overflow-hidden aspect-[16/11] border border-[#1a335a] hover:border-[#00a8ff]/70 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(0,168,255,0.25)] block bg-[#0a1428]"
             >
-              {/* Background Artwork */}
+              {/* Background Cover Art */}
               <img
                 src={game.img}
                 alt={game.name}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
-                style={{ filter: 'brightness(0.6) contrast(1.1)' }}
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                style={{ filter: 'brightness(0.7) contrast(1.1)' }}
               />
 
-              {/* Gradient Shade for text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#040b1a] via-[#040b1a]/50 to-transparent" />
+              {/* Bottom Gradient for Text Legibility */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#040b1a] via-[#040b1a]/40 to-transparent" />
 
-              {/* Top Rank Badge */}
-              <div className="absolute top-2.5 left-2.5">
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-en bg-[#040b1a]/85 border border-[#1a335a] text-[#00a8ff]">
-                  #{idx + 1} HOT
-                </span>
-              </div>
-
-              {/* Bottom Info Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-3 flex items-center gap-2.5">
+              {/* Bottom Info Bar Overlay (Matches Reference Bottom Banner) */}
+              <div className="absolute bottom-0 left-0 right-0 p-2.5 flex items-center gap-2">
                 {/* Game Mini Icon Thumbnail */}
-                <div className="w-8 h-8 rounded-lg bg-[#0a1428]/90 border border-[#1a335a] flex items-center justify-center text-sm flex-shrink-0 shadow-md">
-                  {game.icon}
+                <div
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-black text-white font-en flex-shrink-0 shadow-md"
+                  style={{ background: game.iconBg }}
+                >
+                  {game.iconText}
                 </div>
 
                 {/* Text Info */}
                 <div className="flex flex-col min-w-0">
-                  <span className="font-km font-bold text-white text-xs sm:text-sm leading-tight truncate group-hover:text-[#00a8ff] transition-colors">
+                  <span className="font-en font-bold text-white text-xs leading-tight truncate group-hover:text-[#00a8ff] transition-colors">
                     {game.name}
                   </span>
                   <div className="flex items-center gap-1 mt-0.5">
-                    <TrendingUp size={11} className="text-[#00a8ff]" />
-                    <span className="font-km text-[10px] text-[#8b9ab4] truncate">
-                      {game.soldCount}
+                    <Users size={10} className="text-[#8b9ab4]" />
+                    <span className="font-en text-[10px] text-[#8b9ab4] truncate">
+                      {game.count}
                     </span>
                   </div>
                 </div>
               </div>
 
               {/* Glowing Outline on Hover */}
-              <div className="absolute inset-0 rounded-xl border-2 border-[#00a8ff] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              <div className="absolute inset-0 rounded-xl border border-[#00a8ff] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             </Link>
           ))}
         </div>

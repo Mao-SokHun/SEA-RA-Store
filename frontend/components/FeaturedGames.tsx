@@ -6,69 +6,48 @@ import { ChevronLeft, ChevronRight, Star, Zap } from 'lucide-react';
 const featuredGames = [
   {
     id: 'mobile-legends',
-    name: 'Mobile Legends: Bang Bang',
-    genre: 'MOBA • Diamonds & Weekly Pass',
-    rating: 4.9,
-    badge: 'INSTANT API',
-    color: '#00a8ff',
-    img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&h=650&fit=crop&q=85',
-    overlayColor: 'rgba(0, 80, 180, 0.35)',
+    name: 'Cyberbound 2077',
+    subName: 'Mobile Legends Bang Bang',
+    genre: 'Game • MOBA Action',
+    rating: 4.5,
+    img: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&h=450&fit=crop&q=85',
   },
   {
     id: 'free-fire',
-    name: 'Free Fire & Free Fire Max',
-    genre: 'Battle Royale • Diamonds',
-    rating: 4.8,
-    badge: 'INSTANT API',
-    color: '#f97316',
-    img: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500&h=650&fit=crop&q=85',
-    overlayColor: 'rgba(180, 50, 0, 0.35)',
+    name: 'Mythic Heroes',
+    subName: 'Free Fire & FF Max',
+    genre: 'Game • Battle Royale',
+    rating: 4.5,
+    img: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&h=450&fit=crop&q=85',
   },
   {
     id: 'pubg-mobile',
-    name: 'PUBG Mobile',
-    genre: 'Battle Royale • Unknown Cash (UC)',
-    rating: 4.9,
-    badge: 'INSTANT API',
-    color: '#facc15',
-    img: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=500&h=650&fit=crop&q=85',
-    overlayColor: 'rgba(120, 90, 0, 0.35)',
+    name: 'Star Drifters',
+    subName: 'PUBG Mobile UC',
+    genre: 'Game • Sci-Fi Shooter',
+    rating: 4.5,
+    img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=450&fit=crop&q=85',
   },
   {
     id: 'genshin-impact',
-    name: 'Genshin Impact',
-    genre: 'RPG • Genesis Crystals & Welkin',
-    rating: 4.8,
-    badge: 'INSTANT API',
-    color: '#8b5cf6',
-    img: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=500&h=650&fit=crop&q=85',
-    overlayColor: 'rgba(80, 20, 160, 0.35)',
-  },
-  {
-    id: 'roblox',
-    name: 'Roblox (Robux Direct)',
-    genre: 'Sandbox • Robux Direct Transfer',
-    rating: 4.9,
-    badge: 'INSTANT API',
-    color: '#10b981',
-    img: 'https://images.unsplash.com/photo-1547082299-de196ea013d6?w=500&h=650&fit=crop&q=85',
-    overlayColor: 'rgba(0, 120, 70, 0.35)',
+    name: 'Aegis Ascendant',
+    subName: 'Genshin Impact Crystals',
+    genre: 'Game • Open World RPG',
+    rating: 4.5,
+    img: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=600&h=450&fit=crop&q=85',
   },
 ];
 
 export default function FeaturedGames() {
   return (
-    <section id="games" className="py-12 bg-[#040b1a]">
+    <section id="games" className="py-10 bg-[#040b1a]">
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* ── Section Header ── */}
-        <div className="flex items-center justify-between mb-6">
+        {/* ── Section Header (Matches FEATURED GAMES in Reference) ── */}
+        <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <h2 className="font-km font-bold text-lg sm:text-xl text-white">
-              ហ្គេមពេញនិយម{' '}
-              <span className="font-en text-[#00a8ff] text-base sm:text-lg font-black uppercase tracking-wider">
-                (FEATURED GAMES)
-              </span>
+            <h2 className="font-en font-black text-lg sm:text-xl text-white tracking-wider uppercase">
+              FEATURED GAMES
             </h2>
           </div>
 
@@ -88,50 +67,49 @@ export default function FeaturedGames() {
           </div>
         </div>
 
-        {/* ── Cards Grid (4 to 5 cards matching reference) ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {/* ── 4 Cards Grid Matching Reference 100% ── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {featuredGames.map((game) => (
             <div
               key={game.id}
-              className="group flex flex-col rounded-2xl overflow-hidden bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/60 hover:shadow-[0_8px_30px_rgba(0,168,255,0.25)] transition-all duration-300 hover:-translate-y-1.5"
+              className="group flex flex-col rounded-2xl overflow-hidden bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/70 hover:shadow-[0_10px_35px_rgba(0,168,255,0.25)] transition-all duration-300 hover:-translate-y-1.5"
             >
-              {/* ── Card Image (Tall Portrait ~62%) ── */}
-              <div className="relative overflow-hidden w-full h-56 sm:h-64 flex-shrink-0">
+              {/* ── Card Image (Compact, 175px tall, character art) ── */}
+              <div className="relative overflow-hidden w-full h-44 sm:h-48 flex-shrink-0 bg-[#050c1e]">
                 <img
                   src={game.img}
                   alt={game.name}
-                  className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
-                  style={{ filter: 'brightness(0.85) contrast(1.05)' }}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  style={{ filter: 'brightness(0.9) contrast(1.1)' }}
                 />
 
-                {/* Color Tint Overlay */}
-                <div className="absolute inset-0" style={{ background: game.overlayColor }} />
+                {/* Subtle vignette shade */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a1428] via-transparent to-black/20" />
 
-                {/* Bottom Fade Overlay into card background */}
-                <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#0a1428] via-[#0a1428]/60 to-transparent" />
-
-                {/* Top-Left Badge */}
-                <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#040b1a]/85 border border-[#00a8ff]/30 backdrop-blur-md">
-                  <Zap size={10} className="text-[#00a8ff]" fill="#00a8ff" />
-                  <span className="text-[10px] font-bold text-[#00a8ff] font-en tracking-wider">
-                    {game.badge}
+                {/* Top Badge */}
+                <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded bg-[#040b1a]/80 border border-[#00a8ff]/30 backdrop-blur-sm">
+                  <span className="text-[10px] font-bold text-[#00a8ff] font-en tracking-wider flex items-center gap-1">
+                    <Zap size={9} fill="#00a8ff" /> TOP UP
                   </span>
                 </div>
               </div>
 
-              {/* ── Card Content ── */}
-              <div className="p-4 pt-1 flex flex-col flex-1 justify-between gap-3">
+              {/* ── Card Body (All info & button clearly visible) ── */}
+              <div className="p-3.5 sm:p-4 pt-2 flex flex-col flex-1 justify-between gap-2.5">
                 <div>
-                  <h3 className="font-km font-bold text-white text-sm leading-snug line-clamp-1 group-hover:text-[#00a8ff] transition-colors">
+                  {/* Game Name */}
+                  <h3 className="font-en font-black text-white text-base leading-tight group-hover:text-[#00a8ff] transition-colors truncate">
                     {game.name}
                   </h3>
-                  <p className="font-km text-[11px] text-[#5a6f90] mt-0.5 line-clamp-1">
+                  
+                  {/* Subtitle / Genre */}
+                  <p className="font-km text-[11px] text-[#8b9ab4] mt-0.5 truncate">
                     {game.genre}
                   </p>
 
-                  {/* Stars Rating */}
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <div className="flex items-center gap-0.5">
+                  {/* Rating Stars */}
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <div className="flex items-center gap-0.5 text-[#facc15]">
                       {[1, 2, 3, 4, 5].map((s) => (
                         <Star
                           key={s}
@@ -147,13 +125,13 @@ export default function FeaturedGames() {
                   </div>
                 </div>
 
-                {/* ── Blue Gradient Full-Width TOP UP button ── */}
+                {/* ── Glowing Electric-Blue Full-Width Button (Exact Match to Reference [PLAY] button) ── */}
                 <Link
                   href={`/top-up/${game.id}`}
-                  className="w-full py-2.5 rounded-xl font-km font-bold text-xs sm:text-sm text-white tracking-wider flex items-center justify-center gap-2 bg-gradient-to-r from-[#0088ff] to-[#00c8ff] hover:from-[#0077ee] hover:to-[#00bbee] shadow-[0_4px_15px_rgba(0,168,255,0.35)] hover:shadow-[0_6px_22px_rgba(0,168,255,0.55)] transition-all active:scale-[0.98]"
+                  className="w-full py-2 sm:py-2.5 rounded-xl font-en font-black text-xs sm:text-sm text-white tracking-widest uppercase flex items-center justify-center gap-1.5 bg-gradient-to-r from-[#1e6beb] to-[#00b4d8] hover:from-[#185adb] hover:to-[#009ec0] shadow-[0_4px_16px_rgba(0,168,255,0.4)] hover:shadow-[0_6px_22px_rgba(0,168,255,0.6)] transition-all active:scale-[0.98]"
                 >
-                  <Zap size={14} fill="white" />
-                  <span>បញ្ចូលលុយ</span>
+                  <Zap size={13} fill="white" />
+                  <span>PLAY / TOP UP</span>
                 </Link>
               </div>
             </div>

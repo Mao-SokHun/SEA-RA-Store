@@ -17,15 +17,14 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-[#040b1a]/95 backdrop-blur-md border-b border-[#00a8ff]/15">
-      {/* Full width container edge-to-edge */}
-      <div className="w-full px-4 lg:px-8 h-16 flex items-center justify-between gap-3">
+    <header className="fixed top-0 left-0 w-full z-50 bg-[#040b1a]/95 backdrop-blur-md border-b border-[#00a8ff]/20">
+      <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         
         {/* ── Left: Brand Logo ── */}
         <div className="flex items-center gap-3 flex-shrink-0">
           <Link href="/" className="flex items-center gap-2.5 group">
             {/* Shield Logo with glowing cyan border */}
-            <div className="w-10 h-10 rounded-xl bg-[#00a8ff]/10 border border-[#00a8ff]/40 flex items-center justify-center shadow-[0_0_15px_rgba(0,168,255,0.25)] group-hover:border-[#00a8ff] group-hover:shadow-[0_0_20px_rgba(0,168,255,0.4)] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-[#00a8ff]/10 border border-[#00a8ff]/50 flex items-center justify-center shadow-[0_0_15px_rgba(0,168,255,0.3)] group-hover:border-[#00a8ff] group-hover:shadow-[0_0_22px_rgba(0,168,255,0.5)] transition-all">
               <ShieldCheck className="w-6 h-6 text-[#00a8ff]" strokeWidth={2.2} />
             </div>
             
@@ -41,13 +40,13 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* ── Center-Left: Desktop Navigation Links (Khmer) ── */}
-        <nav className="hidden xl:flex items-center gap-6 flex-shrink-0">
+        {/* ── Center: Desktop Navigation Links (Khmer) ── */}
+        <nav className="hidden lg:flex items-center gap-4 xl:gap-6 flex-shrink-0">
           {navItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className={`font-km text-[13px] font-medium transition-all duration-200 flex items-center gap-1 relative py-1 ${
+              className={`font-km text-xs xl:text-[13px] font-medium transition-all duration-200 flex items-center gap-1 relative py-1 whitespace-nowrap ${
                 item.active
                   ? 'text-[#00a8ff] font-bold'
                   : 'text-[#8b9ab4] hover:text-white'
@@ -62,48 +61,52 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* ── Center-Right: Search Input ── */}
-        <div className="hidden md:flex items-center flex-1 max-w-xs lg:max-w-sm mx-2">
-          <div className="w-full relative flex items-center">
-            <Search className="w-4 h-4 text-[#8b9ab4] absolute left-3.5 pointer-events-none" />
+        {/* ── Right Section: Search + User Tools ── */}
+        <div className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
+          
+          {/* Search Input (Fixed Width, Never Collides) */}
+          <div className="hidden md:flex items-center relative w-44 lg:w-56 xl:w-64">
+            <Search className="w-3.5 h-3.5 text-[#8b9ab4] absolute left-3 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ស្វែងរកហ្គេម (MLBB, Roblox, Free..."
-              className="w-full bg-[#0a1428]/90 border border-[#1a335a] hover:border-[#00a8ff]/40 focus:border-[#00a8ff] focus:outline-none text-xs text-white placeholder-[#5a6f90] rounded-full pl-9 pr-4 py-2 transition-all font-km"
+              placeholder="ស្វែងរកហ្គេម..."
+              className="w-full bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/40 focus:border-[#00a8ff] focus:outline-none text-xs text-white placeholder-[#5a6f90] rounded-full pl-8 pr-3 py-1.5 transition-all font-km"
             />
           </div>
-        </div>
 
-        {/* ── Right Actions: Language, User Profile, Notification, Cart ── */}
-        <div className="flex items-center gap-2.5 flex-shrink-0">
-          
           {/* Language Switcher */}
-          <button className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/50 text-xs text-[#8b9ab4] hover:text-white transition-all font-km">
+          <button className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/50 text-xs text-[#8b9ab4] hover:text-white transition-all font-km">
             <Globe size={13} className="text-[#00a8ff]" />
-            <span className="font-medium">KH ខ្មែរ</span>
+            <span className="font-medium text-[11px]">KH ខ្មែរ</span>
           </button>
 
           {/* User Profile Pill */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#00a8ff]/15 border border-[#00a8ff]/30 hover:border-[#00a8ff]/60 cursor-pointer transition-all">
+          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-[#00a8ff]/15 border border-[#00a8ff]/30 hover:border-[#00a8ff]/60 cursor-pointer transition-all">
             <div className="w-6 h-6 rounded-lg bg-[#00a8ff] flex items-center justify-center text-white">
               <span className="text-[11px] font-bold">👤</span>
             </div>
-            <div className="flex flex-col text-left">
+            <div className="hidden sm:flex flex-col text-left">
               <span className="text-[9px] text-[#8b9ab4] leading-tight font-en">Welcome,</span>
               <span className="text-xs font-bold text-white leading-tight font-en">Slayer</span>
             </div>
           </div>
 
           {/* Notification Bell */}
-          <button className="relative w-9 h-9 rounded-xl bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/40 flex items-center justify-center text-[#8b9ab4] hover:text-white transition-all">
+          <button
+            aria-label="Notifications"
+            className="relative w-9 h-9 rounded-xl bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/40 flex items-center justify-center text-[#8b9ab4] hover:text-white transition-all"
+          >
             <Bell size={16} />
             <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#f97316] shadow-[0_0_8px_#f97316]" />
           </button>
 
           {/* Cart Icon */}
-          <button className="relative w-9 h-9 rounded-xl bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/40 flex items-center justify-center text-[#8b9ab4] hover:text-white transition-all">
+          <button
+            aria-label="Cart"
+            className="relative w-9 h-9 rounded-xl bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/40 flex items-center justify-center text-[#8b9ab4] hover:text-white transition-all"
+          >
             <ShoppingCart size={16} />
             <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#00a8ff] text-white text-[10px] font-bold flex items-center justify-center shadow-[0_0_8px_#00a8ff]">
               1
@@ -113,7 +116,8 @@ export default function Navbar() {
           {/* Mobile Menu Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="xl:hidden w-9 h-9 rounded-xl bg-[#0a1428] border border-[#1a335a] flex items-center justify-center text-white"
+            className="lg:hidden w-9 h-9 rounded-xl bg-[#0a1428] border border-[#1a335a] flex items-center justify-center text-white"
+            aria-label="Toggle Menu"
           >
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -123,7 +127,7 @@ export default function Navbar() {
 
       {/* ── Mobile Dropdown Menu ── */}
       {mobileMenuOpen && (
-        <div className="xl:hidden w-full bg-[#040b1a]/98 border-t border-[#1a335a] px-6 py-4 flex flex-col gap-3">
+        <div className="lg:hidden w-full bg-[#040b1a]/98 border-t border-[#1a335a] px-6 py-4 flex flex-col gap-3">
           <div className="mb-2">
             <div className="w-full relative flex items-center">
               <Search className="w-4 h-4 text-[#8b9ab4] absolute left-3.5 pointer-events-none" />

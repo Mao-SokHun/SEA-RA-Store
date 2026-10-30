@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Shield, Lock, User, Mail, Tag, ArrowRight, AlertTriangle, Sparkles } from 'lucide-react';
+import { Shield, Lock, User, Mail, Tag, ArrowRight, AlertTriangle, Zap } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -179,7 +179,7 @@ export default function RegisterPage() {
             disabled={isLoading}
             className="w-full py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-gradient-to-r from-[#ffe088] via-[#d4af37] to-[#8f6b10] text-[#0b0e14] shadow-xl hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all flex items-center justify-center gap-2"
           >
-            <Sparkles className="w-4 h-4" />
+            <Zap className="w-4 h-4 fill-black text-black" />
             <span>{isLoading ? (language === 'kh' ? 'កំពុងបង្កើតគណនី...' : 'Creating Account & Wallet...') : t('navGetStarted')}</span>
           </button>
         </form>

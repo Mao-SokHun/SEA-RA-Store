@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Zap, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Zap, CheckCircle2 } from 'lucide-react';
 
 interface TopUpMarqueeItem {
   game: string;
@@ -66,7 +66,7 @@ const column2Items: TopUpMarqueeItem[] = [
   {
     game: 'GENSHIN',
     item: 'Welkin Moon + 300 GC',
-    badge: '✨ +600% VALUE',
+    badge: '🔥 +600% VALUE',
     badgeColor: 'bg-purple-400/20 text-purple-300 border-purple-400/30',
     price: '$4.70',
     priceKHR: '~19,200 ៛',

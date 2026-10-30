@@ -13,7 +13,6 @@ import {
   ShieldCheck,
   CheckCircle2,
   Clock,
-  Sparkles,
   HelpCircle,
   QrCode,
   Wallet,
@@ -74,7 +73,7 @@ const GAME_POSTERS: Record<string, {
   },
   'Roblox': {
     poster: 'https://images.unsplash.com/photo-1598550476439-6847785fcea6?auto=format&fit=crop&w=600&q=80',
-    badge: '✨ NO PASSWORD',
+    badge: '🛡️ NO PASSWORD',
     badgeColor: 'from-cyan-500 to-blue-500 text-white',
     publisher: 'Roblox Corporation',
     rating: '4.9 ★★★★★',
@@ -82,7 +81,7 @@ const GAME_POSTERS: Record<string, {
   },
   'Genshin Impact': {
     poster: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80',
-    badge: '✨ CRYSTALS',
+    badge: '💎 CRYSTALS',
     badgeColor: 'from-purple-500 to-indigo-500 text-white',
     publisher: 'HoYoverse',
     rating: '4.8 ★★★★★',
@@ -190,7 +189,7 @@ const DEFAULT_GAMES: TopUpGame[] = [
     packageCount: 5,
     currencyName: 'Genesis Crystals',
     currencyNameKh: 'Genesis Crystals (គ្រីស្តាល់)',
-    currencyIcon: '✨',
+    currencyIcon: '💎',
   },
   {
     id: '6',
@@ -519,8 +518,8 @@ export default function TopUpPage() {
             <div className="lg:col-span-7 space-y-6 text-left">
               {/* Glowing Guest Top-Up Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-400/15 via-[#f2ca50]/15 to-amber-400/15 border border-[#f2ca50]/35 text-[#f2ca50] text-xs font-black uppercase tracking-wider shadow-[0_0_20px_rgba(242,202,80,0.2)]">
-                <Sparkles className="w-3.5 h-3.5 text-[#00e4f2] animate-bounce" />
-                <span>{language === 'kh' ? '✨ មិនបាច់បង្កើត Account • មិនបាច់ Login' : '✨ 100% Guest Checkout • No Account Needed'}</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-[#00e4f2]" />
+                <span>{language === 'kh' ? '⚡ មិនបាច់បង្កើត Account • មិនបាច់ Login' : '⚡ 100% Guest Checkout • No Account Needed'}</span>
               </div>
 
               {/* Main Headline */}
@@ -1318,75 +1317,84 @@ export default function TopUpPage() {
         )}
 
         {/* ========================================================================= */}
-        {/* SECTION 6: WHY CHOOSE US (Smile.One Style Trust Pillars)                  */}
+        {/* SECTION 6: OFFICIAL PAYMENT NETWORKS & AUTHORIZED PUBLISHERS DOCK         */}
         {/* ========================================================================= */}
-        <section className="mb-14 pt-6 border-t border-white/[0.08]">
-          <div className="text-center max-w-xl mx-auto mb-8">
-            <h2 className="text-xl sm:text-2xl font-black uppercase text-white mb-2">
-              {language === 'kh' ? 'ហេតុអ្វីជ្រើសរើសយើងខ្ញុំ?' : 'Why Choose NEXUS Top-Up?'}
-            </h2>
-            <p className="text-xs text-neutral-400">
-              {language === 'kh'
-                ? 'វេទិកាបញ្ចូលលុយហ្គេមទំនើប សុវត្ថិភាព និងរហ័សទាន់ចិត្តបំផុតនៅកម្ពុជា'
-                : 'The premier direct game reload service in Cambodia with automated delivery.'}
-            </p>
-          </div>
+        <section className="mb-14 pt-8 border-t border-white/[0.08]">
+          <div className="bg-[#0b0f17] border border-white/[0.08] rounded-3xl p-6 sm:p-8 space-y-8 relative overflow-hidden">
+            {/* Ambient background glow */}
+            <div className="absolute top-0 right-0 w-80 h-80 bg-[#f2ca50]/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div className="bg-[#0d111a] border border-white/[0.08] p-5 rounded-3xl space-y-2.5 hover:border-amber-400/40 transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-400">
-                <Clock className="w-5 h-5" />
+            {/* Row 1: Supported Cambodian Payment Channels */}
+            <div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-white">
+                    {language === 'kh' ? 'បណ្តាញទូទាត់ផ្លូវការតាម Bakong KHQR (0% ថ្លៃសេវា)' : 'Official Bakong KHQR Payments (0% Fee)'}
+                  </h3>
+                </div>
+                <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 self-start sm:self-auto">
+                  {language === 'kh' ? '✓ ចូលស្វ័យប្រវត្តិ 3 វិនាទី' : '✓ Instant 3s Credit'}
+                </span>
               </div>
-              <h3 className="font-black text-sm text-white">
-                {language === 'kh' ? 'ចូលលឿនត្រឹម ៣ វិនាទី' : 'Instant 3-Second Delivery'}
-              </h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                {language === 'kh'
-                  ? 'ប្រព័ន្ធ API ស្វ័យប្រវត្តិតភ្ជាប់ផ្ទាល់ទៅ Moonton & Game Publishers ពេជ្រចូលតួអង្គភ្លាមៗ។'
-                  : 'Automated API integration sends diamonds directly to game accounts in seconds.'}
-              </p>
+
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                {[
+                  { name: 'Bakong KHQR', type: 'National QR', badge: '0% FEE', color: 'border-red-500/40 text-red-400' },
+                  { name: 'ABA Mobile', type: 'ABA PAY Direct', badge: 'INSTANT', color: 'border-cyan-500/40 text-cyan-400' },
+                  { name: 'Wing Bank', type: 'WingPay QR', badge: 'INSTANT', color: 'border-lime-500/40 text-lime-400' },
+                  { name: 'ACLEDA ToanChet', type: 'ACLEDA Direct', badge: 'INSTANT', color: 'border-blue-500/40 text-blue-400' },
+                  { name: 'Canadia / Chip Mong', type: 'All Banking Apps', badge: 'ALL BANKS', color: 'border-amber-500/40 text-amber-400' },
+                ].map((bank) => (
+                  <div
+                    key={bank.name}
+                    className="bg-[#121824] border border-white/[0.06] hover:border-white/[0.2] p-3.5 rounded-2xl flex flex-col justify-between transition-all"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/[0.06] text-neutral-300">
+                        {bank.badge}
+                      </span>
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-white">{bank.name}</p>
+                      <p className="text-[10px] font-medium text-neutral-400 mt-0.5">{bank.type}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="bg-[#0d111a] border border-white/[0.08] p-5 rounded-3xl space-y-2.5 hover:border-cyan-400/40 transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-cyan-400/15 border border-cyan-400/30 flex items-center justify-center text-cyan-400">
-                <QrCode className="w-5 h-5" />
+            {/* Row 2: Authorized Game Distribution & Direct API Directives */}
+            <div className="pt-6 border-t border-white/[0.06] flex flex-col lg:flex-row items-center justify-between gap-6">
+              <div className="space-y-1 text-center lg:text-left">
+                <p className="text-xs font-black uppercase tracking-wider text-neutral-300 flex items-center justify-center lg:justify-start gap-2">
+                  <Gamepad2 className="w-4 h-4 text-[#f2ca50]" />
+                  <span>{language === 'kh' ? 'ប្រព័ន្ធតភ្ជាប់ Direct Game API ស្របច្បាប់' : 'Authorized Game Distribution API'}</span>
+                </p>
+                <p className="text-[11px] text-neutral-400 max-w-xl">
+                  {language === 'kh'
+                    ? 'បញ្ចូលផ្ទាល់ដោយប្រើតែ Player ID មិនប៉ះពាល់ Password ឬគណនីហ្គេម ធានាសុវត្ថិភាពខ្ពស់បំផុត ១០០% ស្របតាមគោលការណ៍ផ្លូវការ។'
+                    : 'Direct in-game reload using Player ID only. Zero passwords or credentials required, 100% compliant with official publisher policies.'}
+                </p>
               </div>
-              <h3 className="font-black text-sm text-white">
-                {language === 'kh' ? 'ស្កេនបង់ Bakong KHQR' : 'Bakong KHQR Payments'}
-              </h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                {language === 'kh'
-                  ? 'គាំទ្រការស្កេនបង់ប្រាក់ពីគ្រប់ Mobile Banking (ABA, Wing, ACLEDA, Bakong...) គ្មានកម្រៃសេវា។'
-                  : 'Pay directly via any Cambodian mobile banking app with zero transaction charges.'}
-              </p>
-            </div>
 
-            <div className="bg-[#0d111a] border border-white/[0.08] p-5 rounded-3xl space-y-2.5 hover:border-emerald-400/40 transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h3 className="font-black text-sm text-white">
-                {language === 'kh' ? 'សុវត្ថិភាព ១០០% គ្មាន Password' : '100% Safe (Zero Password)'}
-              </h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                {language === 'kh'
-                  ? 'បញ្ចូលតែ Player ID ប៉ុណ្ណោះ គ្មានការសួររក Password ឬចូល Email ធានាសុវត្ថិភាពតួអង្គដាច់ខាត។'
-                  : 'No account passwords required. Your gaming profile is permanently protected.'}
-              </p>
-            </div>
-
-            <div className="bg-[#0d111a] border border-white/[0.08] p-5 rounded-3xl space-y-2.5 hover:border-blue-400/40 transition-all">
-              <div className="w-10 h-10 rounded-2xl bg-blue-400/15 border border-blue-400/30 flex items-center justify-center text-blue-400">
-                <Headphones className="w-5 h-5" />
-              </div>
-              <h3 className="font-black text-sm text-white">
-                {language === 'kh' ? 'ជំនួយអតិថិជន ២៤/៧' : '24/7 Dedicated Support'}
-              </h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
-                {language === 'kh'
-                  ? 'ក្រុមការងារប្រចាំការរង់ចាំដោះស្រាយ និងឆ្លើយតបរហ័សតាម Live Chat និង Telegram ២៤ ម៉ោង។'
-                  : 'Live human assistance available around the clock on web chat and Telegram.'}
-              </p>
+              {/* Direct Telegram Comms Pill */}
+              <Link
+                href="https://t.me/nexus_support_kh"
+                target="_blank"
+                className="shrink-0 flex items-center gap-3 bg-[#0088cc]/15 hover:bg-[#0088cc]/25 border border-[#0088cc]/40 px-5 py-3 rounded-2xl text-xs font-black text-white transition-all shadow-md group cursor-pointer"
+              >
+                <div className="w-2.5 h-2.5 rounded-full bg-[#00e4f2] animate-ping" />
+                <div className="text-left">
+                  <p className="text-[#00e4f2] text-[10px] uppercase font-black tracking-wider">
+                    {language === 'kh' ? 'ត្រូវការជំនួយបន្ទាន់?' : 'Need Instant Help?'}
+                  </p>
+                  <p className="text-white text-xs font-black group-hover:text-[#f2ca50] transition-colors">
+                    {language === 'kh' ? 'ឆាតទៅ Telegram Support 24/7 →' : 'Chat via Telegram Comms →'}
+                  </p>
+                </div>
+              </Link>
             </div>
           </div>
         </section>
@@ -1492,7 +1500,7 @@ export default function TopUpPage() {
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                        <Zap className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400" />
                         <span>{language === 'kh' ? '🧪 សាកល្បងបង់ប្រាក់ភ្លាមៗ (Test Simulate)' : '🧪 Test Simulate Payment'}</span>
                       </>
                     )}

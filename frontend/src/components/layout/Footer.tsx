@@ -74,7 +74,7 @@ export default function Footer() {
                 <span>Roblox (Robux Direct)</span>
               </li>
               <li className="flex items-center gap-1.5 hover:text-white transition-colors">
-                <span>✨</span>
+                <span>💎</span>
                 <span>Genshin Impact, Valorant & Honor of Kings</span>
               </li>
               <li className="flex items-center gap-1.5 hover:text-white transition-colors">

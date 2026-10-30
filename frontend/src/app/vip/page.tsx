@@ -8,7 +8,6 @@ import {
   Lock,
   Zap,
   ArrowRight,
-  Sparkles,
   MessageSquare,
   CheckCircle2,
   DollarSign,
@@ -140,7 +139,7 @@ export default function VipWhaleSanctuaryPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-[#f2ca50]" />
+                <Crown className="w-5 h-5 text-[#f2ca50]" />
                 {language === 'kh' ? 'បញ្ជីគណនីកម្រ VIP Whale' : 'Vaulted Sovereign Whale Inventory'}
               </h2>
               <p className="text-xs text-neutral-400 mt-0.5">

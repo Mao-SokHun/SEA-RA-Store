@@ -4,7 +4,6 @@ import { AuthProvider } from '@/context/AuthContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import FloatingChatWidget from '@/components/layout/FloatingChatWidget';
 import MobileBottomNav from '@/components/layout/MobileBottomNav';
 
 export const metadata: Metadata = {
@@ -44,7 +43,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="min-h-full flex flex-col bg-[#0b0e14] text-[#e1e2eb] selection:bg-[#d4af37] selection:text-[#0b0e14]"
+        className="min-h-full flex flex-col bg-[#07090e] text-[#e1e2eb] selection:bg-[#f2ca50] selection:text-black font-sans"
         suppressHydrationWarning
       >
         <LanguageProvider>
@@ -53,7 +52,6 @@ export default function RootLayout({
             <main className="flex-1 pt-20">{children}</main>
             <Footer />
             <MobileBottomNav />
-            <FloatingChatWidget />
           </AuthProvider>
         </LanguageProvider>
       </body>

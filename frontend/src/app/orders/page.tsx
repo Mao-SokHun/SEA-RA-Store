@@ -20,7 +20,7 @@ import {
   ChevronRight,
   ArrowRight,
   Gamepad2,
-  Sparkles,
+  Zap,
   Smartphone,
   Download,
   Flame,
@@ -224,9 +224,9 @@ export default function GuestOrdersPage() {
 
         {/* Hero Header */}
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-400/10 to-cyan-400/10 border border-[#f2ca50]/30 text-[#f2ca50] text-xs font-bold uppercase tracking-wider mb-3">
-            <Sparkles className="w-3.5 h-3.5 text-[#00e4f2] animate-bounce" />
-            <span>{language === 'kh' ? '✨ ពិនិត្យភ្លាមៗ • មិនបាច់ Login' : '✨ Instant Guest Lookup • No Login'}</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#f2ca50]/10 border border-[#f2ca50]/30 text-[#f2ca50] text-xs font-bold uppercase tracking-wider mb-3">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#00e4f2]" />
+            <span>{language === 'kh' ? '⚡ ពិនិត្យភ្លាមៗ • មិនបាច់ Login' : '⚡ Instant Guest Lookup • No Login'}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             {language === 'kh' ? (
@@ -743,7 +743,7 @@ export default function GuestOrdersPage() {
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4 text-black" />
+                      <Zap className="w-4 h-4 text-black fill-black" />
                       <span>{language === 'kh' ? '⚡ តេស្តស្កេនជោគជ័យភ្លាមៗ (Test Simulate)' : '⚡ Test Scan Success (Demo)'}</span>
                     </>
                   )}

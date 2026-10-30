@@ -9,7 +9,6 @@ import {
   Globe,
   Gamepad2,
   Receipt,
-  Sparkles,
   ShieldCheck,
   ChevronRight,
   Trash2,
@@ -118,8 +117,8 @@ export default function ProfilePage() {
                   {isAuthenticated
                     ? user?.email
                     : (language === 'kh'
-                        ? '✨ មិនបាច់ចុះឈ្មោះ • ស្កេន KHQR ចូលហ្គេមភ្លាមៗ'
-                        : '✨ Instant top-up via Bakong KHQR with zero login needed')}
+                        ? '⚡ មិនបាច់ចុះឈ្មោះ • ស្កេន KHQR ចូលហ្គេមភ្លាមៗ'
+                        : '⚡ Instant top-up via Bakong KHQR with zero login needed')}
                 </p>
               </div>
             </div>

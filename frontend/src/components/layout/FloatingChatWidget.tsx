@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, X, MessageSquare, ExternalLink, Bot, CheckCheck, Clock, User, Sparkles } from 'lucide-react';
+import { Send, X, MessageSquare, ExternalLink, Bot, CheckCheck, Clock, User, Zap } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 

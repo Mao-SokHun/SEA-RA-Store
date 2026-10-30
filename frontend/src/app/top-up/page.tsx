@@ -7,7 +7,9 @@ import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { TopUpGame, TopUpGameDetails, TopUpPackage, TopUpOrder } from '@/types';
 import confetti from 'canvas-confetti';
-import Hero3DMarquee from '@/components/hero/Hero3DMarquee';
+import GamingUniverseHero from '@/components/hero/GamingUniverseHero';
+import CommunityHub from '@/components/dashboard/CommunityHub';
+import LiveActivitySidebar from '@/components/dashboard/LiveActivitySidebar';
 import {
   Zap,
   ShieldCheck,
@@ -244,6 +246,7 @@ export default function TopUpPage() {
   const [selectedGame, setSelectedGame] = useState<TopUpGameDetails | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<TopUpPackage | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [gameCategory, setGameCategory] = useState<'all' | 'moba' | 'battle-royale' | 'rpg'>('all');
 
   // Input states
   const [playerId, setPlayerId] = useState<string>('');
@@ -491,10 +494,27 @@ export default function TopUpPage() {
     return (usd * 4100).toLocaleString('km-KH') + ' ៛';
   };
 
-  // Filtered games
-  const filteredGames = games.filter((g) =>
-    g.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Game Category mapping for trending filter
+  const GAME_CATEGORIES: Record<string, 'moba' | 'battle-royale' | 'rpg'> = {
+    'Mobile Legends: Bang Bang': 'moba',
+    'Honor of Kings': 'moba',
+    'League of Legends: Wild Rift': 'moba',
+    'Free Fire': 'battle-royale',
+    'PUBG Mobile': 'battle-royale',
+    'Call of Duty: Mobile': 'battle-royale',
+    'Blood Strike': 'battle-royale',
+    'Valorant': 'battle-royale',
+    'Roblox': 'rpg',
+    'Genshin Impact': 'rpg',
+  };
+
+  // Filtered games by search and category
+  const filteredGames = games.filter((g) => {
+    const matchesSearch = g.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      gameCategory === 'all' || GAME_CATEGORIES[g.title] === gameCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   // Filter packages by category
   const filteredPackages =
@@ -510,86 +530,14 @@ export default function TopUpPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* ========================================================================= */}
-        {/* SECTION 1: HIGH-IMPACT 2-COLUMN HERO (TEXT ON LEFT, 3D ANIMATION ON RIGHT) */}
+        {/* SECTION 1: GAMING UNIVERSE PANORAMIC HERO (Sample 1 & 2 Inspired)          */}
         {/* ========================================================================= */}
-        <section className="pt-2 pb-8 mb-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-            {/* Left 7 Columns: Typography, Value Proposition & Actions */}
-            <div className="lg:col-span-7 space-y-6 text-left">
-              {/* Glowing Guest Top-Up Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-400/15 via-[#f2ca50]/15 to-amber-400/15 border border-[#f2ca50]/35 text-[#f2ca50] text-xs font-black uppercase tracking-wider shadow-[0_0_20px_rgba(242,202,80,0.2)]">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#00e4f2]" />
-                <span>{language === 'kh' ? '⚡ មិនបាច់បង្កើត Account • មិនបាច់ Login' : '⚡ 100% Guest Checkout • No Account Needed'}</span>
-              </div>
-
-              {/* Main Headline */}
-              <h1 className="text-3xl sm:text-5xl lg:text-5xl font-black text-white tracking-tight leading-[1.18]">
-                {language === 'kh' ? (
-                  <>
-                    បញ្ចូលលុយ <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffe088] via-[#f2ca50] to-[#c99516]">ពេជ្រ & កាក់ហ្គេម</span> ស្វ័យប្រវត្តិតាម Bakong KHQR
-                  </>
-                ) : (
-                  <>
-                    DIRECT IN-GAME <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ffe088] via-[#f2ca50] to-[#c99516]">TOP-UP PLATFORM</span> INSTANT DELIVERY
-                  </>
-                )}
-              </h1>
-
-              {/* Subtitle */}
-              <p className="text-xs sm:text-sm text-neutral-300 font-medium leading-relaxed max-w-xl">
-                {language === 'kh'
-                  ? 'ជ្រើសរើសហ្គេម បញ្ចូល Player ID រួចស្កេនបង់ប្រាក់ ពេជ្រនឹងចូលគណនីរបស់អ្នកភ្លាមៗក្នុង ៣ វិនាទី! មិនប៉ះពាល់ Password សុវត្ថិភាពខ្ពស់ ១០០%។'
-                  : 'Choose your game, enter your Player ID, and scan with Bakong KHQR for instant 3-second credit reload. No passwords required, 100% safe & trusted.'}
-              </p>
-
-              {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <a
-                  href="#hot-games"
-                  className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#ffe088] via-[#f2ca50] to-[#c99516] hover:brightness-110 active:scale-95 text-[#07090e] font-black text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 shadow-[0_0_25px_rgba(242,202,80,0.35)] transition-all cursor-pointer"
-                >
-                  <Zap className="w-4 h-4 fill-black text-black" />
-                  <span>{language === 'kh' ? 'បញ្ចូលលុយឥឡូវនេះ' : 'Top-Up Now'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </a>
-
-                <Link
-                  href="/orders"
-                  className="px-5 py-3.5 rounded-2xl bg-[#141b28] hover:bg-[#1c2638] border border-white/[0.08] hover:border-[#f2ca50]/40 text-neutral-200 hover:text-white font-extrabold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-sm"
-                >
-                  <Receipt className="w-4 h-4 text-[#f2ca50]" />
-                  <span>{language === 'kh' ? 'តាមដានការកុម្ម៉ង់' : 'Track Orders'}</span>
-                </Link>
-              </div>
-
-              {/* 3 Trust Signals */}
-              <div className="grid grid-cols-3 gap-2.5 pt-4 border-t border-white/[0.06] max-w-lg text-[11px] font-bold text-neutral-300">
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>{language === 'kh' ? 'ចូលលឿន (3 វិនាទី)' : 'Instant 3s'}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#00e4f2] shrink-0" />
-                  <span>{language === 'kh' ? 'គ្មាន Password' : 'No Password'}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>{language === 'kh' ? 'Bakong KHQR' : 'Bakong KHQR'}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right 5 Columns: 3D Animated Game Display with Perspective & Continuous Scroll */}
-            <div className="lg:col-span-5 flex justify-center w-full">
-              <Hero3DMarquee />
-            </div>
-          </div>
-        </section>
+        <GamingUniverseHero onSelectGame={handleSelectGame} />
 
         {/* ========================================================================= */}
-        {/* SECTION 2: SEARCH BAR & TRENDING TAGS BAR                                 */}
+        {/* SECTION 2: SEARCH BAR & QUICK CATEGORY PILLS                              */}
         {/* ========================================================================= */}
-        <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-4 bg-[#0d111a] p-4 rounded-3xl border border-white/[0.08]">
+        <div className="mb-8 flex flex-col md:flex-row items-center justify-between gap-4 bg-[#0c1018] p-4 rounded-3xl border border-white/[0.08] shadow-lg">
           {/* Live Search Input */}
           <div className="relative w-full md:w-96">
             <Search className="w-4 h-4 text-amber-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -598,7 +546,7 @@ export default function TopUpPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={language === 'kh' ? 'ស្វែងរកហ្គេម (MLBB, Roblox, Free Fire...)' : 'Search game title...'}
-              className="w-full bg-[#141926] border border-white/[0.1] rounded-2xl pl-11 pr-4 py-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] transition-all"
+              className="w-full bg-[#111724] border border-white/[0.1] rounded-2xl pl-11 pr-4 py-3 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] transition-all"
             />
             {searchQuery && (
               <button
@@ -634,114 +582,144 @@ export default function TopUpPage() {
         </div>
 
         {/* ========================================================================= */}
-        {/* SECTION 4: HOT GAMES CATALOG (Smile.One Rich Poster Cards)                 */}
+        {/* SECTION 4: TRENDING GAMES SHOWCASE + LIVE ACTIVITY DOCK (Sample 1 & 2)     */}
         {/* ========================================================================= */}
         <section id="hot-games" className="mb-14 scroll-mt-24">
-          <div className="flex items-center justify-between mb-6">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <Flame className="w-5 h-5 text-amber-400 fill-amber-400" />
-                <h2 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-white">
-                  {language === 'kh' ? '🔥 ហ្គេមពេញនិយមបំផុត (Hot Games)' : '🔥 Hot Games'}
-                </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left 8 Columns: Main Game Posters Catalog (Sample 1 & 2 Cards) */}
+            <div className="lg:col-span-8 space-y-6">
+              {/* Header + Category Tabs */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Flame className="w-5 h-5 text-amber-400 fill-amber-400" />
+                    <h2 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-white">
+                      TRENDING NOW // ហ្គេមពេញនិយម
+                    </h2>
+                  </div>
+                  <p className="text-xs text-neutral-400">
+                    {language === 'kh'
+                      ? 'ជ្រើសរើសហ្គេមដើម្បីចាប់ផ្តើមបញ្ចូលលុយស្វ័យប្រវត្តិតាម Bakong KHQR'
+                      : 'Select your game to start instant automated top-up with zero login.'}
+                  </p>
+                </div>
+
+                {/* Filter Pills */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                  {[
+                    { id: 'all', label: '🎮 ទាំងអស់ (ALL)' },
+                    { id: 'moba', label: '🔥 MOBA' },
+                    { id: 'battle-royale', label: '⚡ SHOOTER' },
+                    { id: 'rpg', label: '💎 RPG/ROBLOX' },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setGameCategory(tab.id as any)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer shrink-0 ${
+                        gameCategory === tab.id
+                          ? 'bg-[#f2ca50] text-[#07090e] shadow-[0_0_12px_rgba(242,202,80,0.35)]'
+                          : 'bg-[#121723] hover:bg-[#1a2336] text-neutral-300 border border-white/[0.06]'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <p className="text-xs text-neutral-400">
-                {language === 'kh'
-                  ? 'ចុចលើហ្គេមដែលអ្នកចង់បញ្ចូល ដើម្បីមើលកញ្ចប់ពេជ្រ និងតម្លៃពិសេស'
-                  : 'Click on any game to start instant top-up with zero login required.'}
-              </p>
-            </div>
 
-            <span className="text-xs text-amber-400 font-bold bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/25">
-              {filteredGames.length} {language === 'kh' ? 'ហ្គេម' : 'Titles'}
-            </span>
-          </div>
+              {/* Game Posters Grid (2 or 3 cols in 8-col area) */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5">
+                {filteredGames.map((g) => {
+                  const isSelected = g.id === selectedGameId;
+                  const meta = GAME_POSTERS[g.title] || {
+                    poster: g.iconUrl || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600',
+                    badge: '⚡ INSTANT',
+                    badgeColor: 'from-amber-400 to-yellow-400 text-black',
+                    publisher: 'Official Partner',
+                    rating: '4.9 ★★★★★',
+                    popularLabel: g.currencyName,
+                  };
 
-          {/* High-Resolution Game Poster Cards Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {filteredGames.map((g) => {
-              const isSelected = g.id === selectedGameId;
-              const meta = GAME_POSTERS[g.title] || {
-                poster: g.iconUrl || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600',
-                badge: '⚡ INSTANT',
-                badgeColor: 'from-amber-400 to-yellow-400 text-black',
-                publisher: 'Official Partner',
-                rating: '4.9 ★★★★★',
-                popularLabel: g.currencyName,
-              };
-
-              return (
-                <div
-                  key={g.id}
-                  onClick={() => handleSelectGame(g.id)}
-                  className={`group relative rounded-3xl overflow-hidden border transition-all duration-300 cursor-pointer flex flex-col justify-between ${
-                    isSelected
-                      ? 'border-[#d4af37] bg-[#141b2a] shadow-[0_0_35px_rgba(212,175,55,0.4)] scale-[1.03] ring-2 ring-[#d4af37]/50'
-                      : 'border-white/[0.08] bg-[#0d111a] hover:border-white/[0.25] hover:bg-[#121724] hover:shadow-2xl hover:scale-[1.02]'
-                  }`}
-                >
-                  {/* Top Floating Badge */}
-                  <div className="absolute top-3 left-3 z-10">
-                    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-gradient-to-r ${meta.badgeColor} shadow-md`}>
-                      {meta.badge}
-                    </span>
-                  </div>
-
-                  {/* Selected Indicator Checkmark */}
-                  {isSelected && (
-                    <div className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-[#d4af37] text-black flex items-center justify-center font-black shadow-lg animate-in zoom-in-50">
-                      <Check className="w-4 h-4 stroke-[3]" />
-                    </div>
-                  )}
-
-                  {/* Poster Image Container */}
-                  <div className="relative h-56 sm:h-64 w-full overflow-hidden bg-black/40">
-                    <img
-                      src={meta.poster}
-                      alt={g.title}
-                      className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d111a] via-[#0d111a]/40 to-transparent" />
-                  </div>
-
-                  {/* Card Content & Action Button (Sample 1 & 2 Gaming Card Style) */}
-                  <div className="p-4 sm:p-5 space-y-3 relative z-10 -mt-6 bg-[#0c1018] rounded-t-3xl border-t border-white/[0.06]">
-                    <div>
-                      <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest truncate">
-                          {meta.publisher}
-                        </span>
-                        <span className="text-[10px] font-bold text-amber-400 flex items-center gap-0.5 shrink-0 bg-amber-400/10 px-1.5 py-0.5 rounded">
-                          ★ {meta.rating.split(' ')[0]}
+                  return (
+                    <div
+                      key={g.id}
+                      onClick={() => handleSelectGame(g.id)}
+                      className={`group relative rounded-3xl overflow-hidden border transition-all duration-300 cursor-pointer flex flex-col justify-between ${
+                        isSelected
+                          ? 'border-[#d4af37] bg-[#141b2a] shadow-[0_0_35px_rgba(212,175,55,0.4)] scale-[1.02] ring-2 ring-[#d4af37]/50'
+                          : 'border-white/[0.08] bg-[#0c1018] hover:border-[#00e4f2]/50 hover:bg-[#111724] hover:shadow-[0_10px_30px_rgba(0,228,242,0.15)] hover:scale-[1.02]'
+                      }`}
+                    >
+                      {/* Top Floating Badge */}
+                      <div className="absolute top-3 left-3 z-10">
+                        <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider bg-gradient-to-r ${meta.badgeColor} shadow-md`}>
+                          {meta.badge}
                         </span>
                       </div>
-                      <h3 className="text-sm sm:text-base font-black text-white group-hover:text-[#f2ca50] transition-colors line-clamp-1">
-                        {g.title}
-                      </h3>
-                      <p className="text-[11px] text-[#00e4f2] font-bold line-clamp-1 mt-0.5">
-                        {meta.popularLabel}
-                      </p>
-                    </div>
 
-                    {/* Full-width High-Impact Gaming Action Button */}
-                    <div className="pt-2 border-t border-white/[0.06]">
-                      <button
-                        type="button"
-                        className={`w-full py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-98 cursor-pointer ${
-                          isSelected
-                            ? 'bg-gradient-to-r from-[#ffe088] via-[#f2ca50] to-[#ff9f1c] text-black shadow-[0_0_20px_rgba(242,202,80,0.4)]'
-                            : 'bg-[#151b27] group-hover:bg-gradient-to-r group-hover:from-[#ffe088] group-hover:via-[#f2ca50] group-hover:to-[#ff9f1c] text-amber-300 group-hover:text-black border border-white/[0.08] group-hover:border-transparent'
-                        }`}
-                      >
-                        <Zap className="w-3.5 h-3.5 fill-current" />
-                        <span>{language === 'kh' ? 'បញ្ចូលលុយឥឡូវនេះ' : 'TOP UP NOW'}</span>
-                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                      </button>
+                      {/* Selected Indicator Checkmark */}
+                      {isSelected && (
+                        <div className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-[#d4af37] text-black flex items-center justify-center font-black shadow-lg animate-in zoom-in-50">
+                          <Check className="w-4 h-4 stroke-[3]" />
+                        </div>
+                      )}
+
+                      {/* Poster Image Container */}
+                      <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-black/40">
+                        <img
+                          src={meta.poster}
+                          alt={g.title}
+                          className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1018] via-[#0c1018]/40 to-transparent" />
+                      </div>
+
+                      {/* Card Content & Action Button (Sample 1 & 2 Gaming Card Style) */}
+                      <div className="p-3.5 sm:p-4 space-y-2.5 relative z-10 -mt-5 bg-[#0c1018] rounded-t-2xl border-t border-white/[0.06]">
+                        <div>
+                          <div className="flex items-center justify-between gap-1 mb-1">
+                            <span className="text-[9px] font-black text-neutral-400 uppercase tracking-widest truncate">
+                              {meta.publisher}
+                            </span>
+                            <span className="text-[9px] font-bold text-amber-400 flex items-center gap-0.5 shrink-0 bg-amber-400/10 px-1.5 py-0.5 rounded">
+                              ★ {meta.rating.split(' ')[0]}
+                            </span>
+                          </div>
+                          <h3 className="text-xs sm:text-sm font-black text-white group-hover:text-[#f2ca50] transition-colors line-clamp-1">
+                            {g.title}
+                          </h3>
+                          <p className="text-[10px] text-[#00e4f2] font-bold line-clamp-1 mt-0.5">
+                            {meta.popularLabel}
+                          </p>
+                        </div>
+
+                        {/* Full-width High-Impact Gaming Action Button */}
+                        <div className="pt-2 border-t border-white/[0.06]">
+                          <button
+                            type="button"
+                            className={`w-full py-2.5 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-98 cursor-pointer ${
+                              isSelected
+                                ? 'bg-gradient-to-r from-[#ffe088] via-[#f2ca50] to-[#ff9f1c] text-black shadow-[0_0_20px_rgba(242,202,80,0.4)]'
+                                : 'bg-[#151b27] group-hover:bg-gradient-to-r group-hover:from-[#ffe088] group-hover:via-[#f2ca50] group-hover:to-[#ff9f1c] text-amber-300 group-hover:text-black border border-white/[0.08] group-hover:border-transparent'
+                            }`}
+                          >
+                            <Zap className="w-3.5 h-3.5 fill-current" />
+                            <span>{language === 'kh' ? 'បញ្ចូលលុយ' : 'TOP UP'}</span>
+                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Right 4 Columns: Live Top-Up Feed & API Status Sidebar (Sample 1 Style) */}
+            <div className="lg:col-span-4 sticky top-24">
+              <LiveActivitySidebar onSelectGame={handleSelectGame} />
+            </div>
           </div>
         </section>
 
@@ -1319,7 +1297,12 @@ export default function TopUpPage() {
         )}
 
         {/* ========================================================================= */}
-        {/* SECTION 6: OFFICIAL PAYMENT NETWORKS & AUTHORIZED PUBLISHERS DOCK         */}
+        {/* SECTION 6: COMMUNITY HUB & VIP LEADERBOARD (Sample 1 & 2 Style)           */}
+        {/* ========================================================================= */}
+        <CommunityHub onSelectGame={handleSelectGame} />
+
+        {/* ========================================================================= */}
+        {/* SECTION 7: OFFICIAL PAYMENT NETWORKS & AUTHORIZED PUBLISHERS DOCK         */}
         {/* ========================================================================= */}
         <section className="mb-14 pt-8 border-t border-white/[0.08]">
           <div className="bg-[#0b0f17] border border-white/[0.08] rounded-3xl p-6 sm:p-8 space-y-8 relative overflow-hidden">

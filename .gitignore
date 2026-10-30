@@ -29,6 +29,7 @@ yarn-error.log*
 Thumbs.db
 .vscode/
 .idea/
+frontend_legacy_backup/
 
 # Prisma
 .prisma/

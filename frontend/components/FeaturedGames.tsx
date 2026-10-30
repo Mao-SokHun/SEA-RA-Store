@@ -63,8 +63,8 @@ export default function FeaturedGames() {
         {/* ── Header ── */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-bold text-lg text-white flex items-center gap-2">
-            <span style={{ color: '#8b9ab4', fontWeight: 400 }}>ហ្គេមរំចប់ </span>
-            <span className="font-bold text-white">(FEATURED GAMES)</span>
+            <span className="font-km" style={{ color: '#8b9ab4', fontWeight: 400 }}>ហ្គេមរំចប់ </span>
+            <span className="font-en font-bold text-white">(FEATURED GAMES)</span>
           </h2>
           <div className="flex gap-2">
             <button className="nav-arrow"><ChevronLeft size={14} /></button>
@@ -162,7 +162,7 @@ export default function FeaturedGames() {
 
                 {/* TOP UP button */}
                 <button
-                  className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-sm text-white tracking-wide transition-all duration-200 group-hover:brightness-110"
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-sm text-white tracking-wide transition-all duration-200 group-hover:brightness-110 font-km"
                   style={{
                     background: 'linear-gradient(135deg, #1e90ff 0%, #00bfff 100%)',
                     boxShadow: '0 2px 12px rgba(30,144,255,0.35)',

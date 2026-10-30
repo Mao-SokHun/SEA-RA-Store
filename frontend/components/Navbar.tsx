@@ -26,7 +26,7 @@ export default function Navbar() {
               <Zap size={24} style={{ color: '#00a8ff' }} fill="#00a8ff" />
               <div className="absolute inset-0 blur-sm" style={{ background: '#00a8ff', borderRadius: '50%', opacity: 0.3 }} />
             </div>
-            <span className="font-black text-xl tracking-wider gradient-text">TOPUPVERSE</span>
+            <span className="font-brand text-xl tracking-wider gradient-text">TOPUPVERSE</span>
           </div>
 
           {/* Desktop Nav */}
@@ -35,7 +35,7 @@ export default function Navbar() {
               <a
                 key={link.label}
                 href={link.href}
-                className={`px-3 py-2 text-xs font-semibold tracking-wider transition-colors relative ${link.active ? 'nav-active' : ''}`}
+                className={`px-3 py-2 text-xs font-semibold tracking-wider transition-colors relative font-en ${link.active ? 'nav-active' : ''}`}
                 style={{ color: link.active ? '#00a8ff' : '#8b9ab4' }}
                 onMouseEnter={(e) => { if (!link.active) (e.target as HTMLElement).style.color = '#fff'; }}
                 onMouseLeave={(e) => { if (!link.active) (e.target as HTMLElement).style.color = '#8b9ab4'; }}

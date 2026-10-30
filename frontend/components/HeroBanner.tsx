@@ -209,25 +209,25 @@ export default function HeroBanner() {
             </div>
 
             {/* Game title */}
-            <h1 className="font-black leading-none mb-1" style={{ fontSize: 'clamp(42px, 6vw, 72px)' }}>
+            <h1 className="font-en font-black leading-none mb-1" style={{ fontSize: 'clamp(42px, 6vw, 72px)' }}>
               {slide.game}:
             </h1>
             <h1
-              className="font-black leading-none mb-5"
+              className="font-en font-black leading-none mb-5"
               style={{ fontSize: 'clamp(42px, 6vw, 72px)', color: slide.accentColor }}
             >
               {slide.gameSub}
             </h1>
 
             {/* Description */}
-            <p className="text-sm mb-8 leading-relaxed max-w-md" style={{ color: '#94a3b8' }}>
+            <p className="font-km-body text-sm mb-8 leading-relaxed max-w-md" style={{ color: '#94a3b8' }}>
               {slide.description}
             </p>
 
             {/* CTA Buttons */}
             <div className="flex items-center gap-3 flex-wrap">
               <button
-                className="btn-primary flex items-center gap-2 text-sm"
+                className="btn-primary font-km flex items-center gap-2 text-sm"
                 style={{ background: slide.accentColor === '#00a8ff'
                   ? 'linear-gradient(135deg, #f97316, #ef4444)'
                   : `linear-gradient(135deg, ${slide.accentColor}, ${slide.accentColor}cc)` }}
@@ -235,7 +235,7 @@ export default function HeroBanner() {
                 <Zap size={16} fill="white" />
                 {slide.btnLabel}
               </button>
-              <button className="btn-secondary flex items-center gap-2 text-sm">
+              <button className="btn-secondary font-km flex items-center gap-2 text-sm">
                 <Info size={15} />
                 {slide.btn2Label}
               </button>

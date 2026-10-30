@@ -16,6 +16,12 @@
   --text-muted: #4a5a7a;
   --glow-blue: rgba(0, 168, 255, 0.3);
   --glow-purple: rgba(139, 92, 246, 0.3);
+
+  /* ── Font families ── */
+  --font-en-heading : 'Rajdhani',   'Barlow', sans-serif;
+  --font-en-body    : 'Barlow',     sans-serif;
+  --font-km-heading : 'Kantumruy Pro', 'Noto Sans Khmer', sans-serif;
+  --font-km-body    : 'Noto Sans Khmer', 'Kantumruy Pro', sans-serif;
 }
 
 *,
@@ -37,7 +43,69 @@ body {
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /*
+   * Font stack priority:
+   *  1. Noto Sans Khmer  → covers all Khmer Unicode codepoints
+   *  2. Kantumruy Pro    → beautiful Khmer alternative
+   *  3. Barlow           → English body (modern, readable)
+   *  4. system-ui        → OS fallback
+   *
+   * Khmer text is auto-selected by the browser's Unicode glyph matching,
+   * so listing Noto Sans Khmer first ensures every ​ Khmer character
+   * renders with the correct font even inside English-dominant elements.
+   */
+  font-family:
+    'Noto Sans Khmer',
+    'Kantumruy Pro',
+    'Barlow',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+
+  font-size   : 15px;
+  line-height : 1.65;
+  font-weight : 400;
+  -webkit-font-smoothing : antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering         : optimizeLegibility;
+}
+
+/* ── Headings → Rajdhani (EN) layered with Kantumruy (KM) ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family:
+    'Kantumruy Pro',
+    'Rajdhani',
+    'Barlow',
+    sans-serif;
+  font-weight : 700;
+  line-height : 1.2;
+  letter-spacing: 0.01em;
+}
+
+/* ── Utility classes for explicit font switching ── */
+.font-en {
+  font-family: 'Rajdhani', 'Barlow', sans-serif;
+  letter-spacing: 0.04em;
+}
+.font-en-body {
+  font-family: 'Barlow', sans-serif;
+}
+.font-km {
+  font-family: 'Kantumruy Pro', 'Noto Sans Khmer', sans-serif;
+}
+.font-km-body {
+  font-family: 'Noto Sans Khmer', 'Kantumruy Pro', sans-serif;
+  font-size: 0.95em;
+  line-height: 1.8;
+}
+
+/* ── Logo / Brand text ── */
+.font-brand {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.08em;
 }
 
 /* Reset Next.js default wrapper */

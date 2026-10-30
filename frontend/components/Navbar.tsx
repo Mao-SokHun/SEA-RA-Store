@@ -1,112 +1,158 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Bell, ShoppingCart, Menu, X, ChevronDown, Zap, User } from 'lucide-react';
+import Link from 'next/link';
+import { Search, Bell, ShoppingCart, Globe, ExternalLink, ShieldCheck, Menu, X } from 'lucide-react';
 
-const navLinks = [
-  { label: 'HOME', href: '#', active: true },
-  { label: 'TOP UP GAMES', href: '#topup' },
-  { label: 'DEALS', href: '#deals' },
-  { label: 'COMMUNITY', href: '#community' },
-  { label: 'STORE', href: '#store' },
-  { label: 'SUPPORT', href: '#support' },
+const navItems = [
+  { label: 'ទំព័រដើម', href: '/', active: true },
+  { label: 'ស្វែងរកហ្គេម', href: '#games', active: false },
+  { label: 'ប្រូម៉ូសិន', href: '#deals', active: false },
+  { label: 'តាមដានការកុម្ម៉ង់', href: '#orders', active: false },
+  { label: 'ជំនួយ ២៤/៧', href: '#support', active: false, external: true },
 ];
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50" style={{ background: 'rgba(4,11,26,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(26,42,74,0.8)' }}>
-      <div className="max-w-[1400px] mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <div className="relative">
-              <Zap size={24} style={{ color: '#00a8ff' }} fill="#00a8ff" />
-              <div className="absolute inset-0 blur-sm" style={{ background: '#00a8ff', borderRadius: '50%', opacity: 0.3 }} />
+    <header className="fixed top-0 left-0 w-full z-50 bg-[#040b1a]/95 backdrop-blur-md border-b border-[#00a8ff]/15">
+      {/* Full width container edge-to-edge */}
+      <div className="w-full px-4 lg:px-8 h-16 flex items-center justify-between gap-3">
+        
+        {/* ── Left: Brand Logo ── */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <Link href="/" className="flex items-center gap-2.5 group">
+            {/* Shield Logo with glowing cyan border */}
+            <div className="w-10 h-10 rounded-xl bg-[#00a8ff]/10 border border-[#00a8ff]/40 flex items-center justify-center shadow-[0_0_15px_rgba(0,168,255,0.25)] group-hover:border-[#00a8ff] group-hover:shadow-[0_0_20px_rgba(0,168,255,0.4)] transition-all">
+              <ShieldCheck className="w-6 h-6 text-[#00a8ff]" strokeWidth={2.2} />
             </div>
-            <span className="font-brand text-xl tracking-wider gradient-text">TOPUPVERSE</span>
-          </div>
-
-          {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className={`px-3 py-2 text-xs font-semibold tracking-wider transition-colors relative font-en ${link.active ? 'nav-active' : ''}`}
-                style={{ color: link.active ? '#00a8ff' : '#8b9ab4' }}
-                onMouseEnter={(e) => { if (!link.active) (e.target as HTMLElement).style.color = '#fff'; }}
-                onMouseLeave={(e) => { if (!link.active) (e.target as HTMLElement).style.color = '#8b9ab4'; }}
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
-
-          {/* Right side */}
-          <div className="flex items-center gap-3">
-            {/* Search */}
-            <div className="hidden md:flex items-center gap-2" style={{ background: 'rgba(10,20,40,0.8)', border: '1px solid #1a2a4a', borderRadius: '8px', padding: '6px 12px' }}>
-              <Search size={14} style={{ color: '#4a5a7a' }} />
-              <input
-                type="text"
-                placeholder="Search games..."
-                className="bg-transparent outline-none text-sm w-36"
-                style={{ color: '#8b9ab4', fontSize: '13px' }}
-              />
+            
+            {/* Brand Title + Subtitle */}
+            <div className="flex flex-col">
+              <span className="font-en font-black text-lg tracking-wider text-white leading-none">
+                GAME <span className="text-[#00a8ff]">VERSE</span>
+              </span>
+              <span className="text-[9px] font-semibold tracking-widest text-[#00a8ff]/80 uppercase mt-0.5">
+                SEA RA TOP-UP PLATFORM // KH
+              </span>
             </div>
+          </Link>
+        </div>
 
-            {/* Notification Bell */}
-            <button className="relative p-2 rounded-lg transition-colors" style={{ color: '#8b9ab4' }}>
-              <Bell size={18} />
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full" style={{ background: '#ef4444' }} />
-            </button>
+        {/* ── Center-Left: Desktop Navigation Links (Khmer) ── */}
+        <nav className="hidden xl:flex items-center gap-6 flex-shrink-0">
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`font-km text-[13px] font-medium transition-all duration-200 flex items-center gap-1 relative py-1 ${
+                item.active
+                  ? 'text-[#00a8ff] font-bold'
+                  : 'text-[#8b9ab4] hover:text-white'
+              }`}
+            >
+              {item.label}
+              {item.external && <ExternalLink size={12} className="opacity-70" />}
+              {item.active && (
+                <span className="absolute bottom-[-18px] left-0 right-0 h-[2.5px] bg-[#00a8ff] rounded-full shadow-[0_0_10px_#00a8ff]" />
+              )}
+            </Link>
+          ))}
+        </nav>
 
-            {/* Cart */}
-            <button className="relative p-2 rounded-lg" style={{ color: '#8b9ab4' }}>
-              <ShoppingCart size={18} />
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-white flex items-center justify-center text-xs font-bold" style={{ background: '#00a8ff', fontSize: '10px' }}>3</span>
-            </button>
-
-            {/* User */}
-            <div className="hidden md:flex items-center gap-2 cursor-pointer">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #00a8ff, #8b5cf6)' }}>
-                <User size={15} color="white" />
-              </div>
-              <div className="hidden lg:block">
-                <p className="text-xs font-semibold text-white">Welcome,</p>
-                <p className="text-xs" style={{ color: '#00a8ff' }}>TopUpKing!</p>
-              </div>
-              <ChevronDown size={12} style={{ color: '#8b9ab4' }} />
-            </div>
-
-            {/* Mobile menu */}
-            <button className="lg:hidden p-2" style={{ color: '#8b9ab4' }} onClick={() => setMenuOpen(!menuOpen)}>
-              {menuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
+        {/* ── Center-Right: Search Input ── */}
+        <div className="hidden md:flex items-center flex-1 max-w-xs lg:max-w-sm mx-2">
+          <div className="w-full relative flex items-center">
+            <Search className="w-4 h-4 text-[#8b9ab4] absolute left-3.5 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="ស្វែងរកហ្គេម (MLBB, Roblox, Free..."
+              className="w-full bg-[#0a1428]/90 border border-[#1a335a] hover:border-[#00a8ff]/40 focus:border-[#00a8ff] focus:outline-none text-xs text-white placeholder-[#5a6f90] rounded-full pl-9 pr-4 py-2 transition-all font-km"
+            />
           </div>
         </div>
+
+        {/* ── Right Actions: Language, User Profile, Notification, Cart ── */}
+        <div className="flex items-center gap-2.5 flex-shrink-0">
+          
+          {/* Language Switcher */}
+          <button className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/50 text-xs text-[#8b9ab4] hover:text-white transition-all font-km">
+            <Globe size={13} className="text-[#00a8ff]" />
+            <span className="font-medium">KH ខ្មែរ</span>
+          </button>
+
+          {/* User Profile Pill */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#00a8ff]/15 border border-[#00a8ff]/30 hover:border-[#00a8ff]/60 cursor-pointer transition-all">
+            <div className="w-6 h-6 rounded-lg bg-[#00a8ff] flex items-center justify-center text-white">
+              <span className="text-[11px] font-bold">👤</span>
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-[9px] text-[#8b9ab4] leading-tight font-en">Welcome,</span>
+              <span className="text-xs font-bold text-white leading-tight font-en">Slayer</span>
+            </div>
+          </div>
+
+          {/* Notification Bell */}
+          <button className="relative w-9 h-9 rounded-xl bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/40 flex items-center justify-center text-[#8b9ab4] hover:text-white transition-all">
+            <Bell size={16} />
+            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#f97316] shadow-[0_0_8px_#f97316]" />
+          </button>
+
+          {/* Cart Icon */}
+          <button className="relative w-9 h-9 rounded-xl bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/40 flex items-center justify-center text-[#8b9ab4] hover:text-white transition-all">
+            <ShoppingCart size={16} />
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#00a8ff] text-white text-[10px] font-bold flex items-center justify-center shadow-[0_0_8px_#00a8ff]">
+              1
+            </span>
+          </button>
+
+          {/* Mobile Menu Hamburger */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="xl:hidden w-9 h-9 rounded-xl bg-[#0a1428] border border-[#1a335a] flex items-center justify-center text-white"
+          >
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
+
       </div>
 
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="lg:hidden" style={{ background: 'rgba(4,11,26,0.98)', borderTop: '1px solid #1a2a4a' }}>
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="block px-6 py-3 text-sm font-semibold"
-              style={{ color: link.active ? '#00a8ff' : '#8b9ab4', borderBottom: '1px solid rgba(26,42,74,0.5)' }}
-              onClick={() => setMenuOpen(false)}
+      {/* ── Mobile Dropdown Menu ── */}
+      {mobileMenuOpen && (
+        <div className="xl:hidden w-full bg-[#040b1a]/98 border-t border-[#1a335a] px-6 py-4 flex flex-col gap-3">
+          <div className="mb-2">
+            <div className="w-full relative flex items-center">
+              <Search className="w-4 h-4 text-[#8b9ab4] absolute left-3.5 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="ស្វែងរកហ្គេម..."
+                className="w-full bg-[#0a1428] border border-[#1a335a] text-xs text-white placeholder-[#5a6f90] rounded-full pl-9 pr-4 py-2 font-km"
+              />
+            </div>
+          </div>
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`font-km text-sm py-2 px-3 rounded-lg flex items-center justify-between ${
+                item.active
+                  ? 'bg-[#00a8ff]/10 text-[#00a8ff] font-bold'
+                  : 'text-[#8b9ab4] hover:bg-[#0a1428] hover:text-white'
+              }`}
             >
-              {link.label}
-            </a>
+              <span>{item.label}</span>
+              {item.external && <ExternalLink size={14} />}
+            </Link>
           ))}
         </div>
       )}
-    </nav>
+    </header>
   );
 }
-

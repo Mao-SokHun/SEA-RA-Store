@@ -1,108 +1,142 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, Users } from 'lucide-react';
+import Link from 'next/link';
+import { ChevronLeft, ChevronRight, TrendingUp } from 'lucide-react';
 
 const trendingGames = [
   {
-    id: 1,
+    id: 'mobile-legends',
     name: 'Mobile Legends',
-    players: '2.4M sold',
+    soldCount: '24,850+ ការបញ្ចូល',
+    tag: 'MLBB',
+    img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&h=300&fit=crop&q=80',
     color: '#00a8ff',
-    img: 'https://placehold.co/280x160/040b1a/00a8ff?text=MLBB',
     icon: '💎',
   },
   {
-    id: 2,
-    name: 'Genshin Impact',
-    players: '1.8M sold',
-    color: '#10b981',
-    img: 'https://placehold.co/280x160/040b1a/10b981?text=GENSHIN',
-    icon: '✨',
-  },
-  {
-    id: 3,
+    id: 'free-fire',
     name: 'Free Fire',
-    players: '3.1M sold',
+    soldCount: '19,340+ ការបញ្ចូល',
+    tag: 'FF MAX',
+    img: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500&h=300&fit=crop&q=80',
     color: '#f97316',
-    img: 'https://placehold.co/280x160/040b1a/f97316?text=FREEFIRE',
     icon: '🔥',
   },
   {
-    id: 4,
-    name: 'Fortnite',
-    players: '890K sold',
-    color: '#8b5cf6',
-    img: 'https://placehold.co/280x160/040b1a/8b5cf6?text=FORTNITE',
-    icon: '⚡',
+    id: 'genshin-impact',
+    name: 'Genshin Impact',
+    soldCount: '12,500+ ការបញ្ចូល',
+    tag: 'HOYOVERSE',
+    img: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=500&h=300&fit=crop&q=80',
+    color: '#10b981',
+    icon: '✨',
   },
   {
-    id: 5,
+    id: 'pubg-mobile',
+    name: 'PUBG Mobile',
+    soldCount: '16,200+ ការបញ្ចូល',
+    tag: 'TENCENT',
+    img: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=500&h=300&fit=crop&q=80',
+    color: '#facc15',
+    icon: '🪙',
+  },
+  {
+    id: 'valorant',
     name: 'Valorant',
-    players: '1.2M sold',
+    soldCount: '14,120+ ការបញ្ចូល',
+    tag: 'RIOT GAMES',
+    img: 'https://images.unsplash.com/photo-1547082299-de196ea013d6?w=500&h=300&fit=crop&q=80',
     color: '#ef4444',
-    img: 'https://placehold.co/280x160/040b1a/ef4444?text=VALORANT',
     icon: '🎯',
   },
 ];
 
 export default function TrendingNow() {
   return (
-    <section className="py-10" style={{ background: 'var(--bg-primary)' }}>
-      <div className="max-w-[1400px] mx-auto px-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="font-bold text-xl text-white section-title">🔥 TRENDING NOW</h2>
-          <div className="flex gap-2">
-            <button className="nav-arrow"><ChevronLeft size={14} /></button>
-            <button className="nav-arrow"><ChevronRight size={14} /></button>
+    <section className="py-10 bg-[#070f24]/60">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* ── Section Header ── */}
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <h2 className="font-km font-bold text-lg sm:text-xl text-white">
+              ហ្គេមពេញនិយមបំផុត{' '}
+              <span className="font-en text-[#00a8ff] text-base sm:text-lg font-black uppercase tracking-wider">
+                (TRENDING NOW)
+              </span>
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              aria-label="Previous"
+              className="w-8 h-8 rounded-lg bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff] text-[#8b9ab4] hover:text-white flex items-center justify-center transition-all"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              aria-label="Next"
+              className="w-8 h-8 rounded-lg bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff] text-[#8b9ab4] hover:text-white flex items-center justify-center transition-all"
+            >
+              <ChevronRight size={16} />
+            </button>
           </div>
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        {/* ── Trending Cards (Wide Landscape Layout like Reference) ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
           {trendingGames.map((game, idx) => (
-            <div
+            <Link
               key={game.id}
-              className="relative rounded-xl overflow-hidden cursor-pointer group"
-              style={{ height: '140px', border: `1px solid ${game.color}30` }}
+              href={`/top-up/${game.id}`}
+              className="group relative rounded-xl overflow-hidden aspect-[16/11] border border-[#1a335a] hover:border-[#00a8ff]/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(0,168,255,0.2)] block"
             >
+              {/* Background Artwork */}
               <img
                 src={game.img}
                 alt={game.name}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                style={{ filter: 'brightness(0.6) contrast(1.1)' }}
               />
-              {/* Overlay */}
-              <div className="absolute inset-0" style={{ background: `linear-gradient(0deg, rgba(4,11,26,0.9) 0%, transparent 50%)` }} />
 
-              {/* Rank badge */}
-              <div className="absolute top-2 left-2">
-                <span className={`rank-badge rank-${idx < 3 ? idx + 1 : 'other'} text-xs`} style={{ width: '22px', height: '22px', fontSize: '11px' }}>
-                  #{idx + 1}
+              {/* Gradient Shade for text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#040b1a] via-[#040b1a]/50 to-transparent" />
+
+              {/* Top Rank Badge */}
+              <div className="absolute top-2.5 left-2.5">
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-en bg-[#040b1a]/85 border border-[#1a335a] text-[#00a8ff]">
+                  #{idx + 1} HOT
                 </span>
               </div>
 
-              {/* Info */}
-              <div className="absolute bottom-0 left-0 right-0 p-3">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-base">{game.icon}</span>
-                  <div>
-                    <p className="font-bold text-white text-xs truncate">{game.name}</p>
-                    <div className="flex items-center gap-1">
-                      <Users size={9} style={{ color: game.color }} />
-                      <p className="text-xs" style={{ color: game.color, fontSize: '10px' }}>{game.players}</p>
-                    </div>
+              {/* Bottom Info Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-3 flex items-center gap-2.5">
+                {/* Game Mini Icon Thumbnail */}
+                <div className="w-8 h-8 rounded-lg bg-[#0a1428]/90 border border-[#1a335a] flex items-center justify-center text-sm flex-shrink-0 shadow-md">
+                  {game.icon}
+                </div>
+
+                {/* Text Info */}
+                <div className="flex flex-col min-w-0">
+                  <span className="font-km font-bold text-white text-xs sm:text-sm leading-tight truncate group-hover:text-[#00a8ff] transition-colors">
+                    {game.name}
+                  </span>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <TrendingUp size={11} className="text-[#00a8ff]" />
+                    <span className="font-km text-[10px] text-[#8b9ab4] truncate">
+                      {game.soldCount}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Hover glow border */}
-              <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                   style={{ boxShadow: `inset 0 0 0 2px ${game.color}60` }} />
-            </div>
+              {/* Glowing Outline on Hover */}
+              <div className="absolute inset-0 rounded-xl border-2 border-[#00a8ff] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            </Link>
           ))}
         </div>
+
       </div>
     </section>
   );
 }
-

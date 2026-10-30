@@ -1,276 +1,205 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Zap, Info, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
+import { ChevronLeft, ChevronRight, Zap, Info } from 'lucide-react';
 
 const heroSlides = [
   {
     id: 1,
-    game: 'MOBILE LEGENDS',
-    gameSub: 'BANG BANG',
-    tagline: 'TOP UP DIAMONDS NOW!',
-    description: 'បញ្ចូលទឹកប្រាក់តាមរបៀបងាយស្រួល | បញ្ចូលយ៉ាងប្រកិតតាម DIRECT API ត្រឹម 3 វិនាទី',
+    titleMain: 'SHADOWFALL:',
+    titleSub: 'LEGACY',
+    tagline: 'THE JOURNEY BEGINS NOW!',
+    description: 'ដំណើរកម្សាន្តចាប់ផ្ដើមឥឡូវនេះ! បញ្ចូលលុយស្វ័យប្រវត្តិតាម DIRECT API ត្រឹម 3 វិនាទី',
+    primaryBtn: 'បញ្ចូលលុយឥឡូវនេះ',
+    secondaryBtn: 'មើលកញ្ចប់ទាំងអស់',
     accentColor: '#00a8ff',
-    badge: '⚡ OFFICIAL AUTHORIZED DIRECT TOP-UP',
-    discount: '20% OFF',
-    bgGlow: 'rgba(0, 168, 255, 0.25)',
-    btnLabel: 'បញ្ចូលទឹកប្រាក់ →',
-    btn2Label: 'ស្វែងរករូបថត',
-    bgImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1600&q=80&fit=crop',
-    logo: '💎',
+    badge: 'OFFICIAL AUTHORIZED DIRECT TOP-UP',
+    bgImage: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1920&q=85&fit=crop',
+    targetLink: '/top-up/shadowfall',
   },
   {
     id: 2,
-    game: 'GENSHIN IMPACT',
-    gameSub: 'GENESIS CRYSTALS',
-    tagline: 'BUY CRYSTALS NOW!',
-    description: 'Primogems • Welkin Moon • Battle Pass | ទទួលបានភ្លាមៗ 100%',
-    accentColor: '#10b981',
-    badge: '⚡ OFFICIAL AUTHORIZED DIRECT TOP-UP',
-    discount: '15% OFF',
-    bgGlow: 'rgba(16, 185, 129, 0.25)',
-    btnLabel: 'បញ្ចូលទឹកប្រាក់ →',
-    btn2Label: 'ស្វែងរករូបថត',
-    bgImage: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1600&q=80&fit=crop',
-    logo: '✨',
+    titleMain: 'MOBILE LEGENDS:',
+    titleSub: 'BANG BANG',
+    tagline: 'TOP UP DIAMONDS INSTANTLY!',
+    description: 'បញ្ចូលពេជ្រ MLBB ផ្លូវការ 100% ទទួលស្គាល់ដោយ Moonton សុវត្ថិភាព គ្មានហានិភ័យ',
+    primaryBtn: 'បញ្ចូលពេជ្រឥឡូវនេះ',
+    secondaryBtn: 'មើលកញ្ចប់ពេជ្រ',
+    accentColor: '#00a8ff',
+    badge: 'OFFICIAL MOONTON PARTNER',
+    bgImage: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1920&q=85&fit=crop',
+    targetLink: '/top-up/mobile-legends',
   },
   {
     id: 3,
-    game: 'FREE FIRE',
-    gameSub: 'DIAMONDS & ELITE PASS',
-    tagline: 'GET DIAMONDS INSTANTLY!',
-    description: 'Elite Pass • Characters • Bundles | ដឹកជញ្ជូនភ្លាមៗ ១០០%',
-    accentColor: '#f97316',
-    badge: '⚡ OFFICIAL AUTHORIZED DIRECT TOP-UP',
-    discount: '25% OFF',
-    bgGlow: 'rgba(249, 115, 22, 0.25)',
-    btnLabel: 'បញ្ចូលទឹកប្រាក់ →',
-    btn2Label: 'ស្វែងរករូបថត',
-    bgImage: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=1600&q=80&fit=crop',
-    logo: '🔥',
+    titleMain: 'GENSHIN IMPACT:',
+    titleSub: 'CRYSTALS',
+    tagline: 'BUY GENESIS CRYSTALS & BLESSING',
+    description: 'Primogems, Welkin Moon, Battle Pass ទទួលបានភ្លាមៗដោយគ្រាន់តែបញ្ចូល UID',
+    primaryBtn: 'បញ្ចូល Crystals ឥឡូវនេះ',
+    secondaryBtn: 'មើលកញ្ចប់ទាំងអស់',
+    accentColor: '#10b981',
+    badge: 'DIRECT UID TOP-UP',
+    bgImage: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=1920&q=85&fit=crop',
+    targetLink: '/top-up/genshin-impact',
   },
-];
-
-const particles = [
-  { w: 4, h: 4, top: 10, left: 20, dur: 2 },
-  { w: 3, h: 3, top: 25, left: 55, dur: 3 },
-  { w: 5, h: 5, top: 40, left: 80, dur: 2.5 },
-  { w: 2, h: 2, top: 60, left: 10, dur: 3.5 },
-  { w: 4, h: 4, top: 75, left: 45, dur: 2 },
-  { w: 3, h: 3, top: 15, left: 90, dur: 4 },
-  { w: 6, h: 6, top: 85, left: 70, dur: 2.2 },
-  { w: 2, h: 2, top: 50, left: 30, dur: 3.8 },
-  { w: 4, h: 4, top: 30, left: 65, dur: 2.7 },
-  { w: 3, h: 3, top: 70, left: 5, dur: 3 },
-  { w: 5, h: 5, top: 90, left: 40, dur: 2.4 },
-  { w: 2, h: 2, top: 5, left: 75, dur: 4.2 },
 ];
 
 export default function HeroBanner() {
   const [current, setCurrent] = useState(0);
-  const [transitioning, setTransitioning] = useState(false);
 
-  const goTo = (idx: number) => {
-    if (transitioning) return;
-    setTransitioning(true);
-    setTimeout(() => {
-      setCurrent(idx);
-      setTransitioning(false);
-    }, 200);
-  };
+  const prev = () => setCurrent((c) => (c - 1 + heroSlides.length) % heroSlides.length);
+  const next = () => setCurrent((c) => (c + 1) % heroSlides.length);
 
-  const prev = () => goTo((current - 1 + heroSlides.length) % heroSlides.length);
-  const next = () => goTo((current + 1) % heroSlides.length);
-
-  // Auto-slide every 5s
+  // Auto-play
   useEffect(() => {
-    const timer = setInterval(() => next(), 5000);
+    const timer = setInterval(() => {
+      setCurrent((c) => (c + 1) % heroSlides.length);
+    }, 6000);
     return () => clearInterval(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current]);
+  }, []);
 
   const slide = heroSlides[current];
 
   return (
-    <section
-      className="relative w-full overflow-hidden"
-      style={{ height: 'calc(100vh - 64px)', minHeight: '500px', maxHeight: '700px', marginTop: '64px' }}
-    >
-      {/* ── FULL-WIDTH BACKGROUND IMAGE ── */}
-      {heroSlides.map((s, i) => (
+    <section className="relative w-full overflow-hidden bg-[#040b1a] mt-16" style={{ minHeight: '520px', height: '65vh', maxHeight: '680px' }}>
+      
+      {/* ── Slide Backgrounds with Smooth Fade ── */}
+      {heroSlides.map((s, index) => (
         <div
           key={s.id}
-          className="absolute inset-0 w-full h-full transition-opacity duration-700"
-          style={{ opacity: i === current ? 1 : 0 }}
+          className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+            index === current ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
         >
+          {/* Main Background Game Artwork */}
           <img
             src={s.bgImage}
-            alt={s.game}
-            className="absolute inset-0 w-full h-full object-cover object-center"
-            style={{ filter: 'brightness(0.35) saturate(1.2)' }}
+            alt={s.titleMain}
+            className="w-full h-full object-cover object-center"
+            style={{ filter: 'brightness(0.55) contrast(1.1)' }}
+          />
+
+          {/* Left Dark Gradient Overlay (Keeps text ultra crisp) */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(90deg, rgba(4,11,26,0.95) 0%, rgba(4,11,26,0.85) 35%, rgba(4,11,26,0.4) 65%, rgba(4,11,26,0.1) 100%)',
+            }}
+          />
+
+          {/* Bottom Fade to section below */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-24"
+            style={{ background: 'linear-gradient(0deg, #040b1a 0%, transparent 100%)' }}
           />
         </div>
       ))}
 
-      {/* ── GRADIENT OVERLAYS (left heavy, right fades) ── */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `linear-gradient(
-            100deg,
-            rgba(4,11,26,0.98) 0%,
-            rgba(4,11,26,0.85) 30%,
-            rgba(4,11,26,0.45) 60%,
-            rgba(4,11,26,0.15) 100%
-          )`,
-        }}
-      />
-      {/* Accent color glow from center-right */}
-      <div
-        className="absolute inset-0 transition-all duration-700"
-        style={{
-          background: `radial-gradient(ellipse 55% 70% at 72% 50%, ${slide.bgGlow}, transparent 70%)`,
-        }}
-      />
-      {/* Bottom fade */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-28"
-        style={{ background: 'linear-gradient(0deg, var(--bg-primary) 0%, transparent 100%)' }}
-      />
+      {/* ── Subtle Cyber Grid Overlay ── */}
+      <div className="absolute inset-0 grid-pattern opacity-30 pointer-events-none" />
 
-      {/* ── FLOATING PARTICLES ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {particles.map((p, i) => (
-          <div
+      {/* ── Main Content Container (Aligned with Navbar) ── */}
+      <div className="relative z-10 w-full h-full max-w-[1400px] mx-auto px-6 lg:px-12 flex items-center justify-between">
+        
+        {/* Left Side: Hero Text & Actions */}
+        <div className="max-w-xl py-8">
+          
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00a8ff]/10 border border-[#00a8ff]/30 mb-4 backdrop-blur-sm">
+            <Zap size={13} className="text-[#00a8ff]" fill="#00a8ff" />
+            <span className="text-[11px] font-bold tracking-wider text-[#00a8ff] font-en uppercase">
+              {slide.badge}
+            </span>
+          </div>
+
+          {/* Hero Main Heading: SHADOWFALL: LEGACY */}
+          <h1 className="font-en font-black text-white text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight mb-2 drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
+            {slide.titleMain}
+            <span className="block text-[#00a8ff] drop-shadow-[0_0_25px_rgba(0,168,255,0.4)]">
+              {slide.titleSub}
+            </span>
+          </h1>
+
+          {/* Tagline */}
+          <p className="font-en font-bold text-sm sm:text-base tracking-widest text-[#f97316] mb-3 uppercase">
+            {slide.tagline}
+          </p>
+
+          {/* Description */}
+          <p className="font-km text-xs sm:text-sm text-[#94a3b8] leading-relaxed mb-6 max-w-lg">
+            {slide.description}
+          </p>
+
+          {/* CTA Buttons (Matches Orange & Blue Outline Buttons from Reference) */}
+          <div className="flex items-center gap-4 flex-wrap">
+            <Link
+              href={slide.targetLink}
+              className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#f97316] to-[#ea580c] hover:from-[#ea580c] hover:to-[#c2410c] text-white font-km font-bold text-sm shadow-[0_4px_20px_rgba(249,115,22,0.4)] hover:shadow-[0_6px_25px_rgba(249,115,22,0.6)] hover:-translate-y-0.5 transition-all flex items-center gap-2"
+            >
+              <span>{slide.primaryBtn}</span>
+              <span className="text-base leading-none">→</span>
+            </Link>
+
+            <Link
+              href="#games"
+              className="px-6 py-3 rounded-lg bg-[#00a8ff]/10 hover:bg-[#00a8ff]/20 text-[#00a8ff] hover:text-white border border-[#00a8ff]/40 hover:border-[#00a8ff] font-km font-semibold text-sm transition-all"
+            >
+              {slide.secondaryBtn}
+            </Link>
+          </div>
+        </div>
+
+        {/* Right Side: Stylized Game Logo Watermark (like in Reference top-right) */}
+        <div className="hidden lg:flex flex-col items-center justify-center text-center opacity-85 select-none pointer-events-none pr-8">
+          <div className="text-5xl mb-2 filter drop-shadow-[0_0_20px_rgba(0,168,255,0.6)]">
+            ⚔️
+          </div>
+          <h2 className="font-en font-black text-3xl tracking-widest text-white/90 drop-shadow-[0_2px_15px_rgba(0,0,0,0.9)] uppercase">
+            {slide.titleMain}
+          </h2>
+          <span className="font-en font-bold text-lg tracking-[0.3em] text-[#00a8ff] uppercase">
+            — {slide.titleSub} —
+          </span>
+        </div>
+
+      </div>
+
+      {/* ── Slide Navigation Arrows (Positioned at Edges) ── */}
+      <button
+        onClick={prev}
+        aria-label="Previous slide"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-xl bg-[#0a1428]/80 hover:bg-[#00a8ff] border border-[#1a335a] hover:border-[#00a8ff] text-[#8b9ab4] hover:text-white flex items-center justify-center transition-all shadow-lg backdrop-blur-sm"
+      >
+        <ChevronLeft size={20} />
+      </button>
+
+      <button
+        onClick={next}
+        aria-label="Next slide"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-xl bg-[#0a1428]/80 hover:bg-[#00a8ff] border border-[#1a335a] hover:border-[#00a8ff] text-[#8b9ab4] hover:text-white flex items-center justify-center transition-all shadow-lg backdrop-blur-sm"
+      >
+        <ChevronRight size={20} />
+      </button>
+
+      {/* ── Bottom Slide Indicator Dots (Centered like reference) ── */}
+      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+        {heroSlides.map((_, i) => (
+          <button
             key={i}
-            className="absolute rounded-full"
-            style={{
-              width: `${p.w}px`,
-              height: `${p.h}px`,
-              background: slide.accentColor,
-              opacity: 0.35,
-              top: `${p.top}%`,
-              left: `${p.left}%`,
-              animation: `pulse ${p.dur}s ease-in-out infinite`,
-            }}
+            onClick={() => setCurrent(i)}
+            aria-label={`Go to slide ${i + 1}`}
+            className={`transition-all duration-300 rounded-full ${
+              i === current
+                ? 'w-7 h-2 bg-[#00a8ff] shadow-[0_0_10px_#00a8ff]'
+                : 'w-2 h-2 bg-white/30 hover:bg-white/60'
+            }`}
           />
         ))}
       </div>
 
-      {/* ── GRID PATTERN ── */}
-      <div className="absolute inset-0 grid-pattern opacity-40" />
-
-      {/* ── RIGHT SIDE: bright glow orb ── */}
-      <div
-        className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse 60% 80% at 80% 50%, ${slide.bgGlow}, transparent 70%)`,
-        }}
-      />
-
-      {/* ── GAME LOGO CARD (top-right, like reference) ── */}
-      <div
-        className="absolute right-16 top-1/2 -translate-y-1/2 z-10 rounded-2xl flex flex-col items-center justify-center gap-2 hidden xl:flex"
-        style={{
-          width: '170px',
-          height: '180px',
-          background: 'rgba(10,20,50,0.75)',
-          border: `2px solid ${slide.accentColor}50`,
-          boxShadow: `0 0 40px ${slide.bgGlow}, inset 0 0 30px rgba(0,0,0,0.5)`,
-          backdropFilter: 'blur(12px)',
-        }}
-      >
-        <div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center text-4xl"
-          style={{ background: `${slide.accentColor}20`, border: `1.5px solid ${slide.accentColor}40` }}
-        >
-          <ShieldCheck size={36} style={{ color: slide.accentColor }} strokeWidth={1.5} />
-        </div>
-        <p className="font-black text-sm text-white text-center tracking-widest leading-tight">{slide.game}</p>
-        <div className="h-px w-12" style={{ background: slide.accentColor }} />
-        <p className="text-xs font-medium text-center" style={{ color: slide.accentColor }}>
-          {slide.gameSub}
-        </p>
-      </div>
-
-      {/* ── MAIN CONTENT ── */}
-      <div className="relative z-10 h-full flex items-center">
-        <div className="w-full max-w-[1400px] mx-auto px-8 md:px-12">
-          <div
-            className="max-w-xl transition-all duration-500"
-            style={{ opacity: transitioning ? 0 : 1, transform: transitioning ? 'translateY(8px)' : 'translateY(0)' }}
-          >
-            {/* Official badge */}
-            <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full"
-                 style={{ background: `${slide.accentColor}15`, border: `1px solid ${slide.accentColor}40` }}>
-              <span className="text-xs font-bold tracking-wider" style={{ color: slide.accentColor }}>
-                {slide.badge}
-              </span>
-            </div>
-
-            {/* Game title */}
-            <h1 className="font-en font-black leading-none mb-1" style={{ fontSize: 'clamp(42px, 6vw, 72px)' }}>
-              {slide.game}:
-            </h1>
-            <h1
-              className="font-en font-black leading-none mb-5"
-              style={{ fontSize: 'clamp(42px, 6vw, 72px)', color: slide.accentColor }}
-            >
-              {slide.gameSub}
-            </h1>
-
-            {/* Description */}
-            <p className="font-km-body text-sm mb-8 leading-relaxed max-w-md" style={{ color: '#94a3b8' }}>
-              {slide.description}
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <button
-                className="btn-primary font-km flex items-center gap-2 text-sm"
-                style={{ background: slide.accentColor === '#00a8ff'
-                  ? 'linear-gradient(135deg, #f97316, #ef4444)'
-                  : `linear-gradient(135deg, ${slide.accentColor}, ${slide.accentColor}cc)` }}
-              >
-                <Zap size={16} fill="white" />
-                {slide.btnLabel}
-              </button>
-              <button className="btn-secondary font-km flex items-center gap-2 text-sm">
-                <Info size={15} />
-                {slide.btn2Label}
-              </button>
-            </div>
-
-            {/* Slide dots */}
-            <div className="flex items-center gap-2 mt-8">
-              {heroSlides.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => goTo(i)}
-                  className="slide-dot transition-all duration-300"
-                  style={i === current ? { width: '28px', background: slide.accentColor, borderRadius: '4px' } : {}}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── ARROW BUTTONS ── */}
-      <button
-        onClick={prev}
-        className="absolute left-3 top-1/2 -translate-y-1/2 z-20 nav-arrow"
-        style={{ width: '36px', height: '36px' }}
-      >
-        <ChevronLeft size={18} />
-      </button>
-      <button
-        onClick={next}
-        className="absolute right-3 top-1/2 -translate-y-1/2 z-20 nav-arrow"
-        style={{ width: '36px', height: '36px' }}
-      >
-        <ChevronRight size={18} />
-      </button>
     </section>
   );
 }

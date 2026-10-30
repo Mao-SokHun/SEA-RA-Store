@@ -122,14 +122,14 @@ export default function Navbar() {
         </Link>
 
         {/* ========================================================================= */}
-        {/* 2. CENTER: CLEAN PRO NAV LINKS (Sample 1 & 2 Style: Flat Uppercase Tabs)  */}
+        {/* 2. CENTER: CLEAN PRO NAV LINKS (Sample 2 GAMEVERSE Template Style)       */}
         {/* ========================================================================= */}
-        <nav className="hidden lg:flex items-center gap-8 text-xs font-black tracking-wider uppercase">
+        <nav className="hidden lg:flex items-center gap-7 text-xs font-black tracking-wider uppercase">
           <Link
             href="/top-up"
             className={`relative py-2 transition-colors ${
-              pathname === '/top-up'
-                ? 'text-[#f2ca50] after:absolute after:bottom-[-20px] after:left-0 after:right-0 after:h-[2px] after:bg-[#f2ca50] after:shadow-[0_0_8px_#f2ca50]'
+              pathname === '/top-up' || pathname === '/'
+                ? 'text-[#00e5ff] after:absolute after:bottom-[-20px] after:left-0 after:right-0 after:h-[2px] after:bg-[#00e5ff] after:shadow-[0_0_8px_#00e5ff]'
                 : 'text-neutral-300 hover:text-white'
             }`}
           >
@@ -137,27 +137,37 @@ export default function Navbar() {
           </Link>
 
           <a
-            href="/top-up#hot-games"
-            className="text-neutral-300 hover:text-white transition-colors relative py-2 hover:after:absolute hover:after:bottom-[-20px] hover:after:left-0 hover:after:right-0 hover:after:h-[2px] hover:after:bg-[#00e4f2]"
+            href="/top-up#featured-games"
+            className="text-neutral-300 hover:text-white transition-colors relative py-2 hover:after:absolute hover:after:bottom-[-20px] hover:after:left-0 hover:after:right-0 hover:after:h-[2px] hover:after:bg-[#00e5ff]"
           >
-            {language === 'kh' ? 'ហ្គេមពេញនិយម' : 'GAMES'}
+            {language === 'kh' ? 'ស្វែងរកហ្គេម' : 'EXPLORE GAMES'}
           </a>
 
-          <Link
-            href="/orders"
-            className={`relative py-2 transition-colors ${
-              pathname === '/orders'
-                ? 'text-[#f2ca50] after:absolute after:bottom-[-20px] after:left-0 after:right-0 after:h-[2px] after:bg-[#f2ca50] after:shadow-[0_0_8px_#f2ca50]'
-                : 'text-neutral-300 hover:text-white'
-            }`}
+          <a
+            href="/top-up#news-updates"
+            className="text-neutral-300 hover:text-white transition-colors relative py-2 hover:after:absolute hover:after:bottom-[-20px] hover:after:left-0 hover:after:right-0 hover:after:h-[2px] hover:after:bg-[#00e5ff]"
           >
-            {language === 'kh' ? 'តាមដានការកុម្ម៉ង់' : 'ORDERS'}
-          </Link>
+            {language === 'kh' ? 'ព័ត៌មានថ្មីៗ' : 'NEWS'}
+          </a>
+
+          <a
+            href="/top-up#community-hub"
+            className="text-neutral-300 hover:text-white transition-colors relative py-2 hover:after:absolute hover:after:bottom-[-20px] hover:after:left-0 hover:after:right-0 hover:after:h-[2px] hover:after:bg-[#00e5ff]"
+          >
+            {language === 'kh' ? 'សហគមន៍' : 'COMMUNITY'}
+          </a>
+
+          <a
+            href="/top-up#game-store"
+            className="text-neutral-300 hover:text-white transition-colors relative py-2 hover:after:absolute hover:after:bottom-[-20px] hover:after:left-0 hover:after:right-0 hover:after:h-[2px] hover:after:bg-[#00e5ff]"
+          >
+            {language === 'kh' ? 'ហាងលក់' : 'STORE'}
+          </a>
 
           <a
             href="https://t.me/seara_support_kh"
             target="_blank"
-            className="text-neutral-300 hover:text-[#00e4f2] transition-colors relative py-2 flex items-center gap-1.5"
+            className="text-neutral-300 hover:text-[#00e5ff] transition-colors relative py-2 flex items-center gap-1.5"
           >
             <span>{language === 'kh' ? 'ជំនួយ ២៤/៧' : 'SUPPORT'}</span>
             <ExternalLink className="w-3 h-3 text-neutral-500" />

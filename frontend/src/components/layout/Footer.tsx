@@ -1,156 +1,144 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Zap, ShieldCheck, Clock, QrCode, Headphones, CheckCircle2, Heart } from 'lucide-react';
+import { Send, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 export default function Footer() {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim()) {
+      setSubscribed(true);
+      setTimeout(() => setSubscribed(false), 3000);
+      setEmail('');
+    }
+  };
 
   return (
-    <footer className="relative bg-[#090c10] border-t border-white/[0.08] text-neutral-400 overflow-hidden">
-      {/* Background ambient lighting */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute bottom-0 left-1/4 w-[500px] h-[250px] bg-amber-500/5 rounded-full blur-[140px]" />
-        <div className="absolute top-0 right-10 w-[400px] h-[200px] bg-cyan-500/5 rounded-full blur-[120px]" />
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
-          {/* Brand & Value Proposition */}
-          <div className="space-y-3.5">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#ffe088] via-[#d4af37] to-[#8f6b10] p-[1.5px] shadow-[0_0_15px_rgba(212,175,55,0.25)]">
-                <div className="w-full h-full bg-[#0b0e14] rounded-[10px] flex items-center justify-center">
-                  <Zap className="w-4 h-4 text-[#f2ca50] fill-[#f2ca50]" />
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-black text-base text-[#f2ca50] tracking-wider">SEA RA</span>
-                  <span className="text-[9px] uppercase font-bold tracking-widest px-1.5 py-0.2 rounded bg-amber-400/10 text-amber-300 border border-amber-400/30">
-                    TOP-UP
-                  </span>
-                </div>
-                <span className="text-[10px] text-neutral-400">
-                  {language === 'kh' ? 'សេវាកម្មបញ្ចូលលុយហ្គេមរហ័សទាន់ចិត្ត' : 'Direct Game Top Up Platform'}
-                </span>
-              </div>
+    <footer className="relative bg-[#050811] border-t border-white/[0.08] text-neutral-400 select-none overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Top 3-Part Section (Sample 2 Template Layout) */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center pb-10 border-b border-white/[0.06]">
+          {/* Left: Quick Navigation Links (2 Columns of 3 links) */}
+          <div className="md:col-span-4 grid grid-cols-2 gap-y-2 text-xs font-semibold text-neutral-400">
+            <Link href="/top-up" className="hover:text-white transition-colors">
+              About Us
             </Link>
-
-            <p className="text-xs text-neutral-400 leading-relaxed">
-              {language === 'kh'
-                ? 'វេទិកាបញ្ចូលពេជ្រ និងកាក់ហ្គេមស្វ័យប្រវត្តិតាម Bakong KHQR លឿនត្រឹម ៣ វិនាទី មិនបាច់ Login មិនប៉ះពាល់ Password សុវត្ថិភាព ១០០%។'
-                : 'Instant 24/7 automated in-game currency reload via Bakong KHQR. Zero login required, zero password needed, 100% safe & trusted.'}
-            </p>
-
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#151a23] border border-white/[0.08] text-[11px] text-emerald-400 font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span>{language === 'kh' ? 'ប្រព័ន្ធ API ដំណើរការ ២៤/៧' : 'API Systems 100% Operational'}</span>
-            </div>
+            <Link href="/top-up#featured-games" className="hover:text-white transition-colors">
+              Genres
+            </Link>
+            <Link href="/top-up" className="hover:text-white transition-colors">
+              Careers
+            </Link>
+            <Link href="/top-up" className="hover:text-white transition-colors">
+              Community
+            </Link>
+            <Link href="/warranty" className="hover:text-white transition-colors">
+              Legal
+            </Link>
+            <Link href="https://t.me/seara_support_kh" target="_blank" className="hover:text-white transition-colors">
+              Support
+            </Link>
           </div>
 
-          {/* Supported Popular Games */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              {language === 'kh' ? 'ហ្គេមពេញនិយម' : 'Supported Games'}
-            </h4>
-            <ul className="space-y-1.5 text-xs text-neutral-400">
-              <li className="flex items-center gap-1.5 hover:text-white transition-colors">
-                <span>💎</span>
-                <span>Mobile Legends: Bang Bang (Diamonds & Pass)</span>
-              </li>
-              <li className="flex items-center gap-1.5 hover:text-white transition-colors">
-                <span>🔥</span>
-                <span>Free Fire & Free Fire Max (Diamonds)</span>
-              </li>
-              <li className="flex items-center gap-1.5 hover:text-white transition-colors">
-                <span>🪙</span>
-                <span>PUBG Mobile (Unknown Cash - UC)</span>
-              </li>
-              <li className="flex items-center gap-1.5 hover:text-white transition-colors">
-                <span>⚡</span>
-                <span>Roblox (Robux Direct)</span>
-              </li>
-              <li className="flex items-center gap-1.5 hover:text-white transition-colors">
-                <span>💎</span>
-                <span>Genshin Impact, Valorant & Honor of Kings</span>
-              </li>
-              <li className="flex items-center gap-1.5 hover:text-white transition-colors">
-                <span>🎯</span>
-                <span>CODM, Wild Rift & Blood Strike</span>
-              </li>
-              <li className="pt-1.5">
-                <Link href="/orders" className="text-[#f2ca50] hover:underline font-bold flex items-center gap-1">
-                  <span>🧾</span>
-                  <span>{language === 'kh' ? 'ពិនិត្យប្រវត្តិបញ្ជាទិញ (Track Orders)' : 'Track Orders & Receipts'}</span>
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Payment Methods */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              {language === 'kh' ? 'វិធីសាស្ត្របង់ប្រាក់' : 'Payment Gateways'}
-            </h4>
-            <p className="text-xs text-neutral-400">
-              {language === 'kh'
-                ? 'គាំទ្រការស្កេនបង់ប្រាក់តាម Bakong KHQR គ្រប់ធនាគារក្នុងប្រទេសកម្ពុជា៖'
-                : 'Supports one-click Bakong KHQR scans from all major Cambodian banks:'}
-            </p>
-            <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold text-neutral-300">
-              <div className="bg-[#151a23] px-2.5 py-1.5 rounded-lg border border-white/[0.06] flex items-center gap-1.5">
-                <span className="text-red-400 font-black">KHQR</span>
-                <span>Bakong Pay</span>
-              </div>
-              <div className="bg-[#151a23] px-2.5 py-1.5 rounded-lg border border-white/[0.06] flex items-center gap-1.5">
-                <span className="text-cyan-400 font-bold">ABA</span>
-                <span>ABA Mobile</span>
-              </div>
-              <div className="bg-[#151a23] px-2.5 py-1.5 rounded-lg border border-white/[0.06] flex items-center gap-1.5">
-                <span className="text-lime-400 font-bold">WING</span>
-                <span>Wing Bank</span>
-              </div>
-              <div className="bg-[#151a23] px-2.5 py-1.5 rounded-lg border border-white/[0.06] flex items-center gap-1.5">
-                <span className="text-blue-400 font-bold">ACLEDA</span>
-                <span>ACLEDA Pay</span>
-              </div>
-            </div>
-          </div>
-
-          {/* 24/7 Support & Guarantees */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-              {language === 'kh' ? 'ជំនួយអតិថិជន ២៤/៧' : 'Customer Support'}
-            </h4>
-            <p className="text-xs text-neutral-400">
-              {language === 'kh'
-                ? 'មានបញ្ហា ឬត្រូវការជំនួយបន្ទាន់? ក្រុមការងារយើងខ្ញុំប្រចាំការរង់ចាំឆ្លើយតបរហ័សទាន់ចិត្ត ២៤ ម៉ោង។'
-                : 'Got questions or need urgent top-up assistance? Our dedicated support team is available 24/7.'}
-            </p>
-            <div className="space-y-2">
-              <Link
-                href="https://t.me/seara_support_kh"
-                target="_blank"
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0088cc]/15 hover:bg-[#0088cc]/25 border border-[#0088cc]/30 text-[#00e4f2] text-xs font-bold transition-all"
-              >
-                <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+          {/* Center: Glowing Crest & Social Media Icons (Sample 2 Template Style) */}
+          <div className="md:col-span-4 flex flex-col items-center justify-center text-center space-y-2">
+            {/* Glowing Logo Crest */}
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00e5ff] via-[#3b82f6] to-[#f59e0b] p-[1.5px] shadow-[0_0_20px_rgba(0,229,255,0.4)] flex items-center justify-center">
+              <div className="w-full h-full bg-[#070b14] rounded-[10px] flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 2L4 6V12C4 17.5 7.4 20.8 12 22C16.6 20.8 20 17.5 20 12V6L12 2Z"
+                    fill="url(#footer-crest-grad)"
+                    stroke="#00e5ff"
+                    strokeWidth="1.5"
+                  />
+                  <path d="M9 12L11 14L15 10" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <defs>
+                    <linearGradient id="footer-crest-grad" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#00e5ff" stopOpacity="0.4" />
+                      <stop offset="1" stopColor="#3b82f6" stopOpacity="0.4" />
+                    </linearGradient>
+                  </defs>
                 </svg>
-                <span>Telegram: @seara_support_kh</span>
-              </Link>
+              </div>
             </div>
+
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+              Social Media
+            </span>
+
+            {/* Social Icons (Discord, Twitter, YouTube, Twitch) */}
+            <div className="flex items-center gap-3 pt-1 text-neutral-400">
+              {/* Discord */}
+              <a href="https://t.me/seara_support_kh" target="_blank" className="hover:text-[#00e5ff] transition-colors p-1">
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                </svg>
+              </a>
+              {/* Twitter / X */}
+              <a href="https://t.me/seara_support_kh" target="_blank" className="hover:text-[#00e5ff] transition-colors p-1">
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </a>
+              {/* YouTube */}
+              <a href="https://t.me/seara_support_kh" target="_blank" className="hover:text-[#00e5ff] transition-colors p-1">
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+              </a>
+              {/* Twitch */}
+              <a href="https://t.me/seara_support_kh" target="_blank" className="hover:text-[#00e5ff] transition-colors p-1">
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          {/* Right: Subscribe for Updates! (Sample 2 Template Style) */}
+          <div className="md:col-span-4 space-y-2 text-right">
+            <span className="text-xs font-bold text-neutral-300 uppercase tracking-wider block">
+              Subscribe for updates!
+            </span>
+
+            <form onSubmit={handleSubscribe} className="relative flex items-center justify-end">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your updates..."
+                className="w-full max-w-xs bg-[#0b101c] border border-white/[0.1] rounded-xl pl-3 pr-10 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#00e5ff]"
+              />
+              <button
+                type="submit"
+                aria-label="Subscribe"
+                className="absolute right-1.5 w-7 h-7 rounded-lg bg-[#0070f3] hover:bg-[#0088cc] text-white flex items-center justify-center transition-all cursor-pointer shadow-sm"
+              >
+                {subscribed ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300" />
+                ) : (
+                  <Send className="w-3.5 h-3.5 fill-current" />
+                )}
+              </button>
+            </form>
           </div>
         </div>
 
-        {/* Bottom Copyright */}
-        <div className="pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500">
-          <p>© {new Date().getFullYear()} SEA RA TOP-UP. All rights reserved. Automated Gaming Aggregator.</p>
-          <div className="flex items-center gap-1.5 text-neutral-400">
-            <span>Powered by Official Direct Reload API</span>
+        {/* Bottom Logo & Copyright (Sample 2: Centered GAMEVERSE) */}
+        <div className="pt-6 flex flex-col items-center justify-center gap-2">
+          <div className="font-black text-sm tracking-[0.3em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-white via-[#00e5ff] to-[#3b82f6]">
+            SEA RA GAMING
           </div>
+          <p className="text-[10px] text-neutral-500">
+            © {new Date().getFullYear()} SEA RA GAMING. All rights reserved. Direct In-Game Top-Up Aggregator.
+          </p>
         </div>
       </div>
     </footer>

@@ -1,106 +1,93 @@
 'use client';
 
+import React from 'react';
 import { Zap, ShieldCheck, QrCode, Headphones } from 'lucide-react';
 
-const stats = [
-  { value: '5M+',   label: 'អ្នកប្រើប្រាស់ជឿជាក់', icon: '👥' },
-  { value: '200+',  label: 'ហ្គេមដែលគាំទ្រ',       icon: '🎮' },
-  { value: '99.9%', label: 'អត្រាជោគជ័យ',         icon: '✅' },
-  { value: '24/7',  label: 'ជំនួយការអតិថិជន',     icon: '🛡️' },
-];
-
-const features = [
+const trustFeatures = [
   {
-    icon: <Zap size={24} className="text-[#00a8ff]" fill="#00a8ff" />,
-    iconBg: 'rgba(0,168,255,0.12)',
-    iconBorder: 'rgba(0,168,255,0.3)',
-    title: 'ចូលលឿនត្រឹម ៣ វិនាទី',
-    desc: 'ប្រព័ន្ធ API ស្វ័យប្រវត្តិតភ្ជាប់ផ្ទាល់/កាត់ផ្ទាល់ចូលភ្លាម ID ភ្លាមៗ',
+    icon: Zap,
+    iconColor: 'text-[#00F2FE]',
+    iconBg: 'bg-[#00F2FE]/10 border-[#00F2FE]/30',
+    titleKh: 'ចូលលឿនត្រឹម ៣ វិនាទី',
+    titleEn: 'Instant 3-Sec Delivery',
+    descKh: 'ប្រព័ន្ធ API ស្វ័យប្រវត្តិកំពូលបញ្ចូលផ្ទាល់ចូលក្នុង Game ID ភ្លាមៗ ២៤ ម៉ោង។',
+    descEn: 'Direct publisher API delivers diamonds and currency to your ID within seconds.',
   },
   {
-    icon: <ShieldCheck size={24} className="text-[#10b981]" />,
-    iconBg: 'rgba(16,185,129,0.12)',
-    iconBorder: 'rgba(16,185,129,0.3)',
-    title: 'សុវត្ថិភាព ១០០% គ្មាន Password',
-    desc: 'បញ្ចូលតែ User ID ឬ Player ID ប៉ុណ្ណោះ មិនប៉ះពាល់ Password ឬគណនីឡើយ។',
+    icon: ShieldCheck,
+    iconColor: 'text-emerald-400',
+    iconBg: 'bg-emerald-500/10 border-emerald-500/30',
+    titleKh: 'សុវត្ថិភាព ១០០% គ្មាន Password',
+    titleEn: '100% Safe • No Password',
+    descKh: 'បញ្ចូលតែ User ID ឬ Player ID ប៉ុណ្ណោះ មិនប៉ះពាល់ Password ឬគណនីឡើយ។',
+    descEn: 'Requires only Player ID & Zone. Never asks for your passwords or credentials.',
   },
   {
-    icon: <QrCode size={24} className="text-[#ef4444]" />,
-    iconBg: 'rgba(239,68,68,0.12)',
-    iconBorder: 'rgba(239,68,68,0.3)',
-    title: 'វេរតាម Bakong KHQR 0% ថ្លៃសេវា',
-    desc: 'ឥតគិតថ្លៃសេវាជាមួយ ABA, Wing, ACLEDA, Canadia និងគ្រប់ធនាគារក្នុងស្រុក។',
+    icon: QrCode,
+    iconColor: 'text-[#FF5500]',
+    iconBg: 'bg-[#FF5500]/10 border-[#FF5500]/30',
+    titleKh: 'ស្កេន Bakong KHQR 0% ថ្លៃសេវា',
+    titleEn: 'Bakong KHQR 0% Fee',
+    descKh: 'ទូទាត់រហ័សតាម ABA, Wing, ACLEDA, Canadia និងគ្រប់ធនាគារទាំងអស់។',
+    descEn: 'Universal scan-to-pay via Bakong KHQR with zero hidden processing charges.',
   },
   {
-    icon: <Headphones size={24} className="text-[#00a8ff]" />,
-    iconBg: 'rgba(0,168,255,0.12)',
-    iconBorder: 'rgba(0,168,255,0.3)',
-    title: 'ក្រុមការងារជំនួយ ២៤/៧',
-    desc: 'ក្រុមការងារឆ្លើយតបរហ័សរាល់ថ្ងៃ និងអតិថិជនរួសរាយ ការដោះស្រាយ ២៤ ម៉ោង។',
+    icon: Headphones,
+    iconColor: 'text-[#3B82F6]',
+    iconBg: 'bg-[#3B82F6]/10 border-[#3B82F6]/30',
+    titleKh: 'ក្រុមការងារជំនួយ ២៤/៧',
+    titleEn: '24/7 Gamer Support',
+    descKh: 'ក្រុមការងារឆ្លើយតបរហ័សតាម Telegram និង Live Desk ដោះស្រាយ ២៤ ម៉ោង។',
+    descEn: 'Instant human assistance via Telegram and Discord whenever you need help.',
   },
 ];
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-14 bg-[#040b1a]">
-      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-8 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 select-none">
+      
+      {/* ── Section Title & Subtitle ── */}
+      <div className="text-center max-w-2xl mx-auto mb-8 space-y-1">
+        <h2 className="font-heading font-black text-xl sm:text-2xl text-white tracking-wider uppercase">
+          ហេតុអ្វីជ្រើសរើស GAMEVERSE?
+        </h2>
+        <p className="text-xs sm:text-[13px] text-[#7F92B0]">
+          សេវាកម្មបញ្ចូលលុយហ្គេមឈានមុខគេនៅកម្ពុជា ជាមួយសុវត្ថិភាពខ្ពស់ ១០០%
+        </p>
+      </div>
 
-        {/* ── Section Header ── */}
-        <div className="text-center mb-10">
-          <h2 className="font-km font-black text-2xl sm:text-3xl text-white mb-2">
-            ហេតុអ្វីជ្រើសរើស{' '}
-            <span className="font-en text-[#00a8ff]">GAMEVERSE?</span>
-          </h2>
-          <p className="font-km text-xs sm:text-sm text-[#8b9ab4]">
-            សេវាកម្មបញ្ចូលទឹកប្រាក់ហ្គេមឈានមុខគេនៅកម្ពុជា ជាមួយសុវត្ថិភាពខ្ពស់ ១០០%
-          </p>
-        </div>
-
-        {/* ── Feature Cards (4 in a row) ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-          {features.map((feat, i) => (
+      {/* ── 4 Feature Cards Grid matching image 2 ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {trustFeatures.map((item, idx) => {
+          const Icon = item.icon;
+          return (
             <div
-              key={i}
-              className="p-5 rounded-2xl bg-[#0a1428] border border-[#1a335a] hover:border-[#00a8ff]/50 transition-all duration-300 flex flex-col gap-3.5 shadow-md hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(0,168,255,0.15)]"
+              key={idx}
+              className="p-5 rounded-2xl bg-[#0A1026] border border-[#152248] hover:border-[#00F2FE]/50 transition-all duration-300 flex flex-col justify-between shadow-lg hover:-translate-y-1 group"
             >
-              {/* Icon */}
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{
-                  background: feat.iconBg,
-                  border: `1px solid ${feat.iconBorder}`,
-                }}
-              >
-                {feat.icon}
-              </div>
+              <div className="space-y-3">
+                <div
+                  className={`w-11 h-11 rounded-xl flex items-center justify-center border ${item.iconBg} group-hover:scale-105 transition-transform`}
+                >
+                  <Icon className={`w-5 h-5 ${item.iconColor}`} />
+                </div>
 
-              {/* Title & Description */}
-              <div>
-                <h3 className="font-km font-bold text-white text-sm leading-snug mb-1.5">
-                  {feat.title}
-                </h3>
-                <p className="font-km text-xs text-[#8b9ab4] leading-relaxed">
-                  {feat.desc}
+                <div className="leading-tight">
+                  <h3 className="font-heading font-bold text-sm text-white group-hover:text-[#00F2FE] transition-colors">
+                    {item.titleKh}
+                  </h3>
+                  <span className="text-[10px] text-[#5A6E8D] uppercase tracking-wider block font-heading">
+                    {item.titleEn}
+                  </span>
+                </div>
+
+                <p className="text-xs text-[#7F92B0] leading-relaxed">
+                  {item.descKh}
                 </p>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* ── Stats Bar ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-          {stats.map((stat, i) => (
-            <div
-              key={i}
-              className="text-center p-4 rounded-xl bg-[#0a1428]/60 border border-[#1a335a]"
-            >
-              <div className="text-xl mb-1">{stat.icon}</div>
-              <p className="font-en font-black text-2xl text-[#00a8ff] mb-0.5">{stat.value}</p>
-              <p className="font-km text-[11px] text-[#5a6f90]">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-
+          );
+        })}
       </div>
     </section>
   );

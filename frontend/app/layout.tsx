@@ -1,9 +1,12 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import './globals.css';
+import { TopUpProvider } from '@/context/TopUpContext';
+import SupportDrawer from '@/components/SupportDrawer';
 
 export const metadata: Metadata = {
-  title: "TOPUPVERSE - Top Up Game Platform",
-  description: "The #1 Game Top Up Platform. Instant delivery, best prices for all your favorite games.",
+  title: 'GameVerse • SEA #1 Game Top-Up Platform (Direct Recharge)',
+  description:
+    'Cambodia’s #1 trusted gaming top-up platform with instant 3-second delivery via Bakong KHQR. Mobile Legends, Roblox, Free Fire, PUBG Mobile, Genshin Impact and more.',
 };
 
 export default function RootLayout({
@@ -12,22 +15,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="km">
+    <html lang="en">
       <head>
-        {/* ── Google Fonts ──
-            • Rajdhani       → English headings (gaming / bold / condensed)
-            • Barlow          → English body + UI (clean, modern)
-            • Kantumruy Pro  → Khmer headings (clean, professional)
-            • Noto Sans Khmer → Khmer body fallback (max glyph coverage)
-        */}
+        {/* Google Fonts: Rajdhani, Barlow, Kantumruy Pro */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600;700;800;900&family=Kantumruy+Pro:wght@100;200;300;400;500;600;700&family=Noto+Sans+Khmer:wght@300;400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Barlow:wght@300;400;500;600;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body className="min-h-screen bg-[#030712] text-white antialiased flex flex-col justify-between selection:bg-[#00F2FE] selection:text-black">
+        <TopUpProvider>
+          {children}
+          <SupportDrawer />
+        </TopUpProvider>
+      </body>
     </html>
   );
 }

@@ -1,24 +1,22 @@
-import TopUpClient from '@/components/TopUpClient';
+import { GAMES } from '@/data/games';
+import { notFound } from 'next/navigation';
+import DedicatedTopUpClient from './DedicatedTopUpClient';
 
 export function generateStaticParams() {
-  return [
-    { slug: 'mobile-legends' },
-    { slug: 'free-fire' },
-    { slug: 'pubg-mobile' },
-    { slug: 'genshin-impact' },
-    { slug: 'roblox' },
-    { slug: 'shadowfall' },
-    { slug: 'valorant' },
-  ];
+  return GAMES.map((g) => ({ slug: g.slug }));
 }
 
-export default async function GameTopUpPage({
+export default async function TopUpPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const resolvedParams = await params;
-  const slug = resolvedParams?.slug || 'mobile-legends';
+  const { slug } = await params;
+  const game = GAMES.find((g) => g.slug === slug);
 
-  return <TopUpClient slug={slug} />;
+  if (!game) {
+    notFound();
+  }
+
+  return <DedicatedTopUpClient game={game} />;
 }

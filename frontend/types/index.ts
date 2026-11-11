@@ -1,70 +1,94 @@
-export type GameCategory = 'all' | 'mobile' | 'pc' | 'gift-card' | 'direct';
+export type Language = 'km' | 'en';
+export type Currency = 'USD' | 'KHR';
 
-export interface GamePackage {
+export interface AccountField {
+  id: string;
+  label: string;
+  labelKh: string;
+  placeholder: string;
+  placeholderKh: string;
+  type: 'text' | 'number' | 'select';
+  options?: { label: string; value: string }[];
+  helperText?: string;
+  helperTextKh?: string;
+  required: boolean;
+}
+
+export interface PackageItem {
   id: string;
   name: string;
-  amount: number;
-  bonus?: number;
+  currencyAmount: number;
+  bonusAmount: number;
   priceUSD: number;
   priceKHR: number;
-  popular?: boolean;
+  originalPriceUSD?: number;
   badge?: string;
-  badgeColor?: string;
+  popular?: boolean;
 }
 
 export interface GameItem {
   id: string;
-  name: string;
   slug: string;
-  category: GameCategory;
-  genre: string;
-  rating: number;
-  reviewsCount: string;
-  badge?: string;
-  badgeType?: 'hot' | 'official' | 'instant' | 'bonus';
-  banner: string;
-  poster: string;
+  name: string;
+  nameKh?: string;
+  publisher: string;
+  category: 'moba' | 'battle-royale' | 'rpg' | 'shooter';
+  categoryLabel: string;
+  categoryLabelKh: string;
+  coverImage: string;
+  bannerImage: string;
   currencyName: string;
   currencyIcon: string;
-  developer: string;
-  requiresZoneId: boolean;
-  zonePlaceholder?: string;
-  packages: GamePackage[];
+  rating: number;
+  ordersToday: number;
+  tags: string[];
+  accountFields: AccountField[];
+  packages: PackageItem[];
+  guideTitle: string;
+  guideTitleKh: string;
+  guideDescription: string;
+  guideDescriptionKh: string;
 }
 
-export interface PaymentMethod {
+export interface PaymentChannel {
   id: string;
   name: string;
-  category: 'khqr' | 'card' | 'crypto' | 'wallet';
-  subText: string;
-  feeText: string;
-  iconType: 'bakong' | 'aba' | 'wing' | 'acleda' | 'visa' | 'crypto';
-  popular?: boolean;
+  nameKh: string;
+  subtitle: string;
+  subtitleKh: string;
   badge?: string;
+  badgeColor?: string;
+  logo: string;
+  type: 'khqr' | 'bank' | 'wallet' | 'crypto';
+  fee: string;
+  isPopular?: boolean;
 }
 
-export interface LiveTransaction {
-  id: string;
-  userMasked: string;
-  gameName: string;
-  gameIcon: string;
-  amountText: string;
-  timeAgo: string;
-}
-
-export type OrderStatus = 'validating' | 'pending_payment' | 'processing' | 'delivered' | 'failed';
-
-export interface OrderInvoice {
-  orderId: string;
+export interface TopUpOrder {
+  orderNumber: string;
   game: GameItem;
-  userId: string;
-  zoneId?: string;
-  verifiedIgn?: string;
-  package: GamePackage;
-  paymentMethod: PaymentMethod;
+  package: PackageItem;
+  accountDetails: Record<string, string>;
+  playerNickname: string;
+  paymentMethod: string;
+  totalUSD: number;
+  totalKHR: number;
+  status: 'pending' | 'processing' | 'completed';
+  qrString?: string;
+  qrCodeUrl?: string;
+  deepLink?: string;
+  createdAt: string;
+  completedAt?: string;
+  deliveryProof?: string;
+}
+
+export interface LiveActivityItem {
+  id: string;
+  maskedId: string;
+  gameName: string;
+  packageName: string;
   amountUSD: number;
-  amountKHR: number;
-  status: OrderStatus;
-  timestamp: string;
-  qrPayload?: string;
+  timeAgo: string;
+  timeAgoKh: string;
+  avatar: string;
 }

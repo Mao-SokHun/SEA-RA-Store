@@ -2,421 +2,319 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useApp } from '@/context/AppContext';
+import { GAMES } from '@/data/games';
 import {
   Search,
-  Bell,
-  ShoppingCart,
-  User,
-  ShieldCheck,
-  ChevronDown,
-  X,
-  Menu,
+  Globe,
+  Receipt,
   ExternalLink,
-  Sparkles,
+  Menu,
+  X,
+  Shield,
+  Zap,
+  CheckCircle2,
 } from 'lucide-react';
-import { useTopUp } from '@/context/TopUpContext';
-
-const notificationsList = [
-  { id: 1, title: '2x Diamond Bonus Active!', time: '10m ago', unread: true },
-  { id: 2, title: 'Weekly Diamond Pass Renewed', time: '1h ago', unread: true },
-  { id: 3, title: 'Bakong KHQR 0% Fee Promo', time: '5h ago', unread: true },
-  { id: 4, title: 'Welcome to GameVerse Top-Up!', time: '1d ago', unread: false },
-];
 
 export default function Navbar() {
   const {
+    language,
+    setLanguage,
     currency,
-    toggleCurrency,
-    formatPrice,
+    setCurrency,
+    t,
+    openTopUp,
+    openTrack,
     searchQuery,
     setSearchQuery,
-    searchResults,
-    userBalance,
-    setIsSupportOpen,
-  } = useTopUp();
+  } = useApp();
 
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  const searchRef = useRef<HTMLDivElement>(null);
-  const notificationRef = useRef<HTMLDivElement>(null);
-  const userMenuRef = useRef<HTMLDivElement>(null);
-
-  // Close popovers on click outside
+  // Close search popover on outside click
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsSearchFocused(false);
-      }
-      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
-        setIsNotificationOpen(false);
-      }
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setIsUserMenuOpen(false);
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(e.target as Node)
+      ) {
+        setSearchFocused(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  return (
-    <header className="sticky top-0 left-0 w-full z-40 bg-[#070B19]/95 backdrop-blur-md border-b border-[#152248]/80 select-none transition-all">
-      {/* Laser Cyan/Blue Bottom Line */}
-      <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#00F2FE]/60 via-[#3B82F6]/60 to-transparent pointer-events-none" />
+  // Keyboard shortcut '/' to focus search
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) {
+        e.preventDefault();
+        const input = searchContainerRef.current?.querySelector('input');
+        input?.focus();
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
-      {/* FULL-WIDTH CONTAINER AS REQUESTED BY USER */}
-      <div className="w-full px-4 sm:px-6 lg:px-10 xl:px-14 h-[68px] flex items-center justify-between gap-4">
-        
-        {/* =================================================================== */}
-        {/* 1. BRAND LOGO (Matches Reference Screenshot)                        */}
-        {/* =================================================================== */}
+  const searchResults = searchQuery.trim()
+    ? GAMES.filter(
+        (g) =>
+          g.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          g.currencyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          g.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    : [];
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-40 bg-[#090C15]/90 backdrop-blur-xl border-b border-white/[0.08] transition-all select-none">
+      {/* Subtle luxury metallic hairline highlight */}
+      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#E5B55E]/40 via-[#00D4FF]/30 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+        {/* ================================================================= */}
+        {/* BRAND EMBLEM: SEA RA PRESTIGE                                    */}
+        {/* ================================================================= */}
         <Link href="/" className="flex items-center gap-3 shrink-0 group">
-          <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-[#00F2FE] via-[#3B82F6] to-[#A855F7] p-[1.5px] shadow-[0_0_18px_rgba(0,242,254,0.4)] group-hover:shadow-[0_0_26px_rgba(0,242,254,0.6)] transition-all">
-            <div className="w-full h-full bg-[#070D1F] rounded-[10px] flex items-center justify-center relative overflow-hidden">
-              <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
+          {/* Luxury Geometric Diamond Crest */}
+          <div className="relative w-11 h-11 rounded-2xl bg-gradient-to-br from-[#E5B55E] via-[#C49740] to-[#1E293B] p-[1px] shadow-[0_0_20px_rgba(229,181,94,0.25)] group-hover:shadow-[0_0_28px_rgba(229,181,94,0.45)] transition-all">
+            <div className="w-full h-full bg-[#0D121E] rounded-[15px] flex items-center justify-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#E5B55E]/15 to-transparent pointer-events-none" />
+              <svg className="w-6 h-6 text-[#E5B55E]" viewBox="0 0 24 24" fill="none">
                 <path
-                  d="M12 2L4 6V12C4 17.5 7.4 20.8 12 22C16.6 20.8 20 17.5 20 12V6L12 2Z"
-                  fill="url(#gv-crest)"
-                  stroke="#00F2FE"
-                  strokeWidth="1.5"
+                  d="M12 2L3 7V13C3 18.5 6.8 21.8 12 23C17.2 21.8 21 18.5 21 13V7L12 2Z"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
-                <path d="M9 12L11 14L15 10" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <defs>
-                  <linearGradient id="gv-crest" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#00F2FE" stopOpacity="0.4" />
-                    <stop offset="0.5" stopColor="#3B82F6" stopOpacity="0.3" />
-                    <stop offset="1" stopColor="#A855F7" stopOpacity="0.4" />
-                  </linearGradient>
-                </defs>
+                <path
+                  d="M12 7L16 11L12 15L8 11L12 7Z"
+                  fill="#E5B55E"
+                  fillOpacity="0.8"
+                />
               </svg>
             </div>
           </div>
 
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5 leading-none">
-              <span className="font-heading font-black text-xl sm:text-2xl tracking-wider text-white">
-                GAME<span className="text-[#00F2FE]">VERSE</span>
+              <span className="font-extrabold text-xl tracking-wider text-white">
+                SEA RA
+              </span>
+              <span className="font-black text-xs uppercase px-1.5 py-0.5 rounded bg-gradient-to-r from-[#E5B55E]/20 to-[#E5B55E]/10 border border-[#E5B55E]/40 text-[#E5B55E] tracking-widest">
+                PRESTIGE
               </span>
             </div>
-            <span className="text-[9px] uppercase font-bold tracking-[0.2em] text-[#00F2FE] mt-0.5">
-              SEA #1 TOP-UP PLATFORM // KH
+            <span className="text-[10px] text-neutral-400 font-medium tracking-wide mt-1">
+              {language === 'km' ? 'សេវាបញ្ចូលលុយហ្គេមផ្លូវការ' : 'Official Game Reload'}
             </span>
           </div>
         </Link>
 
-        {/* =================================================================== */}
-        {/* 2. CENTER NAV LINKS (Matches Mockup Navigation 100%)                */}
-        {/* =================================================================== */}
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-8 font-heading text-xs font-bold tracking-wider uppercase">
-          <Link
-            href="/"
-            className="text-[#00F2FE] relative py-2 after:absolute after:bottom-[-20px] after:left-0 after:right-0 after:h-[2px] after:bg-[#00F2FE] after:shadow-[0_0_8px_#00F2FE]"
-          >
-            HOME
-          </Link>
-          <a
-            href="#games"
-            className="text-[#94A3B8] hover:text-white transition-colors relative py-2 hover:after:absolute hover:after:bottom-[-20px] hover:after:left-0 hover:after:right-0 hover:after:h-[2px] hover:after:bg-[#3B82F6]"
-          >
-            EXPLORE GAMES
-          </a>
-          <a
-            href="#news"
-            className="text-[#94A3B8] hover:text-white transition-colors relative py-2 hover:after:absolute hover:after:bottom-[-20px] hover:after:left-0 hover:after:right-0 hover:after:h-[2px] hover:after:bg-[#3B82F6]"
-          >
-            NEWS
-          </a>
-          <a
-            href="#community"
-            className="text-[#94A3B8] hover:text-white transition-colors relative py-2 hover:after:absolute hover:after:bottom-[-20px] hover:after:left-0 hover:after:right-0 hover:after:h-[2px] hover:after:bg-[#3B82F6]"
-          >
-            COMMUNITY
-          </a>
-          <a
-            href="#store"
-            className="text-[#94A3B8] hover:text-white transition-colors relative py-2 hover:after:absolute hover:after:bottom-[-20px] hover:after:left-0 hover:after:right-0 hover:after:h-[2px] hover:after:bg-[#3B82F6]"
-          >
-            STORE
-          </a>
-          <button
-            type="button"
-            onClick={() => setIsSupportOpen(true)}
-            className="text-[#94A3B8] hover:text-[#00F2FE] transition-colors relative py-2 flex items-center gap-1 cursor-pointer"
-          >
-            <span>SUPPORT</span>
-            <ExternalLink className="w-3 h-3 text-[#5A6E8D]" />
-          </button>
-        </nav>
-
-        {/* =================================================================== */}
-        {/* 3. RIGHT CONTROLS: SEARCH, CURRENCY, AVATAR, BELL, CART             */}
-        {/* =================================================================== */}
-        <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
-          
-          {/* Search Input with Autocomplete */}
-          <div ref={searchRef} className="relative hidden md:block w-44 lg:w-56 xl:w-64">
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 text-[#7F92B0] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                placeholder="Search games, passes..."
-                className="w-full bg-[#0D142E] border border-[#152248] focus:border-[#00F2FE]/70 focus:outline-none text-xs text-white placeholder-[#5A6E8D] rounded-lg pl-8 pr-7 py-2 transition-all font-body shadow-inner"
-              />
-              {searchQuery && (
+        {/* ================================================================= */}
+        {/* CENTER SEARCH BAR WITH AUTO-SUGGEST & SHORTCUT                    */}
+        {/* ================================================================= */}
+        <div ref={searchContainerRef} className="relative hidden md:block flex-1 max-w-md mx-4">
+          <div className="relative">
+            <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              placeholder={t.nav.searchPlaceholder}
+              className="w-full bg-[#111726]/80 hover:bg-[#141C30] focus:bg-[#141C30] border border-white/[0.1] focus:border-[#E5B55E]/80 rounded-2xl pl-10 pr-12 py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none transition-all shadow-inner"
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              {searchQuery ? (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  aria-label="Clear search"
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#7F92B0] hover:text-white cursor-pointer"
+                  className="text-neutral-400 hover:text-white text-xs p-1"
                 >
-                  <X size={12} />
+                  ✕
                 </button>
+              ) : (
+                <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[9px] font-mono font-bold text-neutral-400 bg-white/[0.06] border border-white/[0.1] rounded">
+                  /
+                </kbd>
               )}
             </div>
-
-            {/* Instant Search Dropdown Popover */}
-            {isSearchFocused && searchQuery.trim().length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-[#0A1026] border border-[#152248] rounded-xl shadow-2xl p-2 z-50 max-h-80 overflow-y-auto">
-                {searchResults.length > 0 ? (
-                  <div className="space-y-1">
-                    <div className="px-2 py-1 text-[10px] font-bold text-[#5A6E8D] uppercase tracking-wider font-heading">
-                      GAMES FOUND ({searchResults.length})
-                    </div>
-                    {searchResults.map((game) => (
-                      <Link
-                        key={game.id}
-                        href={`/top-up/${game.slug}`}
-                        onClick={() => setIsSearchFocused(false)}
-                        className="flex items-center justify-between p-2 rounded-lg hover:bg-[#00F2FE]/10 cursor-pointer transition-all group"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <span className="text-base">{game.currencyIcon}</span>
-                          <div>
-                            <p className="font-heading font-bold text-xs text-white group-hover:text-[#00F2FE] transition-colors">
-                              {game.name}
-                            </p>
-                            <p className="text-[10px] text-[#7F92B0]">
-                              {game.genre} • From {formatPrice(game.packages[0].priceUSD)}
-                            </p>
-                          </div>
-                        </div>
-                        <span className="text-[10px] font-bold text-[#00F2FE] font-heading uppercase px-2 py-0.5 rounded bg-[#00F2FE]/10 border border-[#00F2FE]/20">
-                          RECHARGE →
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-4 text-center text-xs text-[#7F92B0]">
-                    No games found. Try &ldquo;Mobile Legends&rdquo; or &ldquo;Roblox&rdquo;.
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
-          {/* Currency Toggle (USD $ / KHR ៛) */}
-          <button
-            type="button"
-            onClick={toggleCurrency}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#0D142E] border border-[#152248] hover:border-[#00F2FE]/40 text-xs font-heading font-bold text-white transition-all cursor-pointer shadow-sm"
-            title="Toggle between USD ($) and Khmer Riel (KHR ៛)"
-          >
-            <span
-              className={`px-1.5 py-0.5 rounded text-[10px] ${
-                currency === 'USD'
-                  ? 'bg-[#00F2FE] text-black font-black shadow-[0_0_8px_#00F2FE]'
-                  : 'text-[#7F92B0]'
-              }`}
-            >
-              $ USD
-            </span>
-            <span
-              className={`px-1.5 py-0.5 rounded text-[10px] ${
-                currency === 'KHR'
-                  ? 'bg-[#00F2FE] text-black font-black shadow-[0_0_8px_#00F2FE]'
-                  : 'text-[#7F92B0]'
-              }`}
-            >
-              ៛ KHR
-            </span>
-          </button>
-
-          {/* User Profile / Welcome BlazeRunner */}
-          <div ref={userMenuRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              className="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-[#0D142E] border border-[#152248] hover:border-[#00F2FE]/40 transition-all cursor-pointer group"
-            >
-              {/* Circular Avatar */}
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#00F2FE] to-[#3B82F6] p-[1px] overflow-hidden flex items-center justify-center shadow-md">
-                <img
-                  src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=80&h=80&fit=crop&q=80"
-                  alt="BlazeRunner Avatar"
-                  className="w-full h-full object-cover rounded-full"
-                />
+          {/* Search Dropdown Results Popover */}
+          {searchFocused && searchQuery.trim() && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-[#0F1524] border border-white/[0.12] rounded-2xl shadow-2xl p-2 z-50 overflow-hidden animate-in fade-in slide-in-from-top-1">
+              <div className="px-3 py-1.5 text-[10px] font-bold text-neutral-400 uppercase tracking-wider border-b border-white/[0.06] flex items-center justify-between">
+                <span>{language === 'km' ? 'ហ្គេមដែលត្រូវគ្នា' : 'Matched Games'}</span>
+                <span>{searchResults.length}</span>
               </div>
-
-              {/* Text: Welcome, BlazeRunner */}
-              <div className="hidden sm:flex flex-col text-left leading-none">
-                <span className="text-[10px] text-[#7F92B0]">Welcome,</span>
-                <span className="font-heading font-bold text-xs text-white group-hover:text-[#00F2FE] transition-colors mt-0.5">
-                  BlazeRunner!
-                </span>
-              </div>
-              <ChevronDown size={12} className="text-[#7F92B0] group-hover:text-white transition-colors" />
-            </button>
-
-            {/* User Dropdown Menu */}
-            {isUserMenuOpen && (
-              <div className="absolute top-full right-0 mt-2 w-60 bg-[#0A1026] border border-[#152248] rounded-xl shadow-2xl p-3 z-50">
-                <div className="pb-2.5 mb-2.5 border-b border-[#152248]">
-                  <p className="text-xs font-bold text-white font-heading">BlazeRunner #KH01</p>
-                  <p className="text-[11px] text-[#7F92B0] truncate">blazerunner@gamer.kh</p>
-                  <div className="mt-2 p-2 rounded-lg bg-[#070D1F] flex items-center justify-between">
-                    <span className="text-[10px] text-[#7F92B0]">Wallet Balance:</span>
-                    <span className="font-heading font-black text-xs text-[#00F2FE]">
-                      {formatPrice(userBalance)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-1 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsUserMenuOpen(false);
-                      setIsSupportOpen(true);
-                    }}
-                    className="w-full text-left py-1.5 px-2 rounded-lg text-[#94A3B8] hover:bg-[#00F2FE]/10 hover:text-white transition-all cursor-pointer"
-                  >
-                    24/7 Live Support Desk
-                  </button>
-                  <a
-                    href="#games"
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="block w-full text-left py-1.5 px-2 rounded-lg text-[#94A3B8] hover:bg-[#00F2FE]/10 hover:text-white transition-all"
-                  >
-                    Explore Games &amp; Vouchers
-                  </a>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Notification Bell with Badge */}
-          <div ref={notificationRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-              className="relative w-8 h-8 rounded-lg bg-[#0D142E] border border-[#152248] hover:border-[#00F2FE]/40 flex items-center justify-center text-[#7F92B0] hover:text-white transition-all cursor-pointer"
-              aria-label="Notifications"
-            >
-              <Bell size={15} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#FF5500] shadow-[0_0_8px_#FF5500]" />
-            </button>
-
-            {isNotificationOpen && (
-              <div className="absolute top-full right-0 mt-2 w-72 bg-[#0A1026] border border-[#152248] rounded-xl shadow-2xl p-3 z-50">
-                <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#152248]">
-                  <span className="font-heading font-bold text-xs text-white uppercase tracking-wider">
-                    NOTIFICATIONS
-                  </span>
-                  <span className="text-[10px] text-[#00F2FE] cursor-pointer hover:underline font-heading">
-                    Mark read
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  {notificationsList.map((item) => (
+              {searchResults.length === 0 ? (
+                <p className="p-4 text-xs text-neutral-400 text-center">
+                  {language === 'km' ? 'រកមិនឃើញហ្គេមនេះទេ' : 'No matching games found.'}
+                </p>
+              ) : (
+                <div className="max-h-64 overflow-y-auto divide-y divide-white/[0.04]">
+                  {searchResults.map((game) => (
                     <div
-                      key={item.id}
-                      className="p-2 rounded-lg bg-[#070D1F] hover:bg-[#00F2FE]/10 cursor-pointer transition-all"
+                      key={game.id}
+                      onClick={() => {
+                        openTopUp(game.id);
+                        setSearchQuery('');
+                        setSearchFocused(false);
+                      }}
+                      className="p-2.5 flex items-center justify-between hover:bg-white/[0.05] rounded-xl cursor-pointer transition-colors"
                     >
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-semibold text-white">{item.title}</p>
-                        {item.unread && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#00F2FE]" />
-                        )}
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={game.coverImage}
+                          alt={game.name}
+                          className="w-10 h-10 rounded-xl object-cover border border-white/[0.1]"
+                        />
+                        <div>
+                          <p className="text-xs font-bold text-white">{game.name}</p>
+                          <span className="text-[10px] text-[#E5B55E]">
+                            {game.currencyName} • {game.packages.length} Packs
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-[10px] text-[#5A6E8D]">{item.time}</span>
+                      <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                        ⚡ 3s
+                      </span>
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ================================================================= */}
+        {/* RIGHT DOCK: TRACK ORDER, CURRENCY & LANGUAGE TOGGLES             */}
+        {/* ================================================================= */}
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+          {/* Track Order Button */}
+          <button
+            type="button"
+            onClick={openTrack}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-[#E5B55E]/50 text-xs font-semibold text-neutral-200 transition-all cursor-pointer"
+          >
+            <Receipt className="w-3.5 h-3.5 text-[#E5B55E]" />
+            <span className="hidden sm:inline">{t.nav.trackOrder}</span>
+          </button>
+
+          {/* Currency Toggle (USD $ / KHR ៛) */}
+          <div className="hidden sm:flex items-center bg-[#111726] border border-white/[0.08] rounded-xl p-0.5 text-xs font-bold">
+            <button
+              type="button"
+              onClick={() => setCurrency('USD')}
+              className={`px-2 py-1 rounded-lg transition-all ${
+                currency === 'USD'
+                  ? 'bg-[#E5B55E] text-black shadow-sm'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
+            >
+              $ USD
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrency('KHR')}
+              className={`px-2 py-1 rounded-lg transition-all ${
+                currency === 'KHR'
+                  ? 'bg-[#E5B55E] text-black shadow-sm'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
+            >
+              ៛ KHR
+            </button>
           </div>
 
-          {/* Shopping Cart Icon with Badge */}
-          <Link
-            href="/top-up/mobile-legends"
-            className="relative w-8 h-8 rounded-lg bg-[#0D142E] border border-[#152248] hover:border-[#00F2FE]/40 flex items-center justify-center text-[#7F92B0] hover:text-white transition-all cursor-pointer"
-            aria-label="Cart"
+          {/* Language Switcher (KM / EN) */}
+          <button
+            type="button"
+            onClick={() => setLanguage(language === 'km' ? 'en' : 'km')}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#111726] hover:bg-[#182035] border border-white/[0.08] text-xs font-bold text-neutral-200 transition-all cursor-pointer"
           >
-            <ShoppingCart size={15} />
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FF5500] text-white text-[9px] font-black flex items-center justify-center shadow-[0_0_8px_#FF5500]">
-              1
-            </span>
-          </Link>
+            <Globe className="w-3.5 h-3.5 text-[#00D4FF]" />
+            <span>{language === 'km' ? '🇰🇭 ខ្មែរ' : '🇺🇸 EN'}</span>
+          </button>
 
-          {/* Mobile Menu Button */}
+          {/* 24/7 VIP Concierge Support Pill */}
+          <a
+            href="https://t.me/seara_support_kh"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden lg:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#0088cc]/15 to-[#0088cc]/5 hover:from-[#0088cc]/25 hover:to-[#0088cc]/15 border border-[#0088cc]/30 text-xs font-bold text-white transition-all shadow-sm group"
+          >
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-neutral-300 group-hover:text-white">
+              {t.nav.support}
+            </span>
+            <ExternalLink className="w-3 h-3 text-neutral-400 group-hover:text-white" />
+          </a>
+
+          {/* Mobile Menu Toggle */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-lg bg-[#0D142E] border border-[#152248] text-[#7F92B0] hover:text-white"
-            aria-label="Toggle menu"
+            className="md:hidden w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-white"
           >
-            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
-
       </div>
 
-      {/* Mobile Drawer Navigation */}
+      {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#0A1026] border-b border-[#152248] px-5 py-4 space-y-3">
-          <div className="flex items-center gap-4 text-xs font-heading font-bold uppercase tracking-wider text-[#94A3B8]">
-            <Link
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-[#00F2FE] block py-1"
-            >
-              HOME
-            </Link>
-            <a
-              href="#games"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1 hover:text-white"
-            >
-              EXPLORE GAMES
-            </a>
-            <a
-              href="#news"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1 hover:text-white"
-            >
-              NEWS
-            </a>
-            <a
-              href="#community"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1 hover:text-white"
-            >
-              COMMUNITY
-            </a>
-            <a
-              href="#store"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-1 hover:text-white"
-            >
-              STORE
-            </a>
+        <div className="md:hidden bg-[#0D121E] border-b border-white/[0.1] p-4 space-y-4 animate-in slide-in-from-top-2">
+          {/* Mobile Search */}
+          <div className="relative">
+            <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t.nav.searchPlaceholder}
+              className="w-full bg-[#141C30] border border-white/[0.1] rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-neutral-400"
+            />
           </div>
+
+          {/* Mobile Links */}
+          <div className="grid grid-cols-2 gap-2 text-xs font-bold">
+            <button
+              type="button"
+              onClick={() => {
+                setCurrency(currency === 'USD' ? 'KHR' : 'USD');
+              }}
+              className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-neutral-200 flex items-center justify-between"
+            >
+              <span>Currency:</span>
+              <span className="text-[#E5B55E]">{currency}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                openTrack();
+                setMobileMenuOpen(false);
+              }}
+              className="p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-neutral-200 flex items-center gap-2"
+            >
+              <Receipt className="w-4 h-4 text-[#E5B55E]" />
+              <span>{t.nav.trackOrder}</span>
+            </button>
+          </div>
+
+          <a
+            href="https://t.me/seara_support_kh"
+            target="_blank"
+            className="block text-center p-3 rounded-xl bg-[#0088cc]/20 border border-[#0088cc]/40 text-xs font-bold text-white"
+          >
+            {t.nav.support} (Telegram 24/7)
+          </a>
         </div>
       )}
     </header>

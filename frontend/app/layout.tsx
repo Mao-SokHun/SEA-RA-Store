@@ -33,7 +33,7 @@ export default function RootLayout({
           <Navbar />
 
           {/* Main Application Container */}
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 pt-16 sm:pt-20">{children}</main>
 
           {/* Global Luxury Footer */}
           <Footer />

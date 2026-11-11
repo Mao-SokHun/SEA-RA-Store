@@ -104,10 +104,10 @@ export default function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full select-none transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 w-full select-none transition-all duration-300 ${
         scrolled
-          ? 'bg-[#070B16]/75 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_12px_40px_rgba(0,0,0,0.65)]'
-          : 'bg-[#070B16]/50 backdrop-blur-xl border-b border-white/[0.05] shadow-[0_4px_24px_rgba(0,0,0,0.3)]'
+          ? 'bg-[#070B16]/80 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_12px_40px_rgba(0,0,0,0.65)]'
+          : 'bg-[#070B16]/55 backdrop-blur-xl border-b border-white/[0.05] shadow-[0_4px_24px_rgba(0,0,0,0.3)]'
       }`}
     >
       {/* Laser Gradient Accent Line along the bottom of the header */}

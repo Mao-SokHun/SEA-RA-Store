@@ -70,11 +70,6 @@ export default function Footer() {
               {t.footer.desc}
             </p>
 
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-400">
-              <ShieldCheck className="w-4 h-4 shrink-0" />
-              <span>Official Smile.One API Authorized Gateway</span>
-            </div>
-
             {/* Official Contact & Community Channels (Facebook & Telegram) */}
             <div className="pt-2 space-y-2.5">
               <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">

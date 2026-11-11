@@ -64,53 +64,33 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Official Game Publisher Gateways */}
+          {/* Payment Partners */}
           <div className="md:col-span-4 lg:col-span-5 space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-white">
-              {t.footer.officialPartners}
+              {t.footer.bankingPartners}
             </h4>
             <div className="flex flex-wrap items-center gap-2 pt-1">
               {[
-                'Moonton API',
-                'Garena API',
-                'Tencent Games',
-                'Roblox Corp',
-                'HoYoverse',
-                'Riot Games',
-                'Activision CODM',
-              ].map((partner) => (
+                'National Bakong KHQR',
+                'ABA Mobile',
+                'Wing Bank',
+                'ACLEDA ToanChet',
+                'Canadia Bank',
+                'USDT TRC20',
+              ].map((bank) => (
                 <span
-                  key={partner}
-                  className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08] text-[10px] font-bold text-neutral-300"
+                  key={bank}
+                  className="px-2.5 py-1.5 rounded-xl bg-[#111726] border border-white/[0.08] text-xs font-semibold text-[#E5B55E]"
                 >
-                  {partner}
+                  {bank}
                 </span>
               ))}
             </div>
-
-            {/* Payment Partners */}
-            <div className="pt-2">
-              <span className="text-[10px] font-bold text-neutral-400 block mb-1.5 uppercase tracking-wider">
-                {t.footer.bankingPartners}:
-              </span>
-              <div className="flex flex-wrap items-center gap-2">
-                {[
-                  'National Bakong KHQR',
-                  'ABA Mobile',
-                  'Wing Bank',
-                  'ACLEDA ToanChet',
-                  'Canadia Bank',
-                  'USDT TRC20',
-                ].map((bank) => (
-                  <span
-                    key={bank}
-                    className="px-2.5 py-1 rounded-md bg-[#111726] border border-white/[0.06] text-[10px] font-semibold text-[#E5B55E]"
-                  >
-                    {bank}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <p className="text-[11px] text-neutral-400 pt-1">
+              {language === 'km'
+                ? 'គាំទ្រការទូទាត់រហ័ស 0% ថ្លៃសេវា តាមរយៈប្រព័ន្ធធនាគារកម្ពុជា'
+                : 'Zero-fee instant settlement powered by Cambodia National Banking Network'}
+            </p>
           </div>
         </div>
 

@@ -377,7 +377,7 @@ export default function TopUpModal() {
                       API Delivery Reference:
                     </span>
                     <span className="text-emerald-400 break-all">
-                      TXN-{currentOrder.orderNumber}-MOONTON-DELIVERED
+                      TXN-{currentOrder.orderNumber}-SMILEONE-DELIVERED
                     </span>
                   </div>
 

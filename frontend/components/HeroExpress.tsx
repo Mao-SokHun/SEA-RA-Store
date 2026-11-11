@@ -16,6 +16,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  Wifi,
+  Activity,
 } from 'lucide-react';
 
 // Crisp short badges for express selector
@@ -35,51 +37,64 @@ const HERO_BANNERS = [
   {
     id: 'mlbb',
     name: 'Mobile Legends: Bang Bang',
-    badge: 'Moonton Official API • 5v5 MOBA',
+    badge: 'Smile.One Partner API • 5v5 MOBA',
     themeColor: '#3B82F6',
-    bannerUrl:
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1920&q=85',
+    neonGlow: 'rgba(59, 130, 246, 0.45)',
+    bannerUrl: '/banners/mlbb.jpg',
+    ghostText: 'MOBILE LEGENDS',
   },
   {
     id: 'roblox',
     name: 'Roblox (Robux Direct)',
     badge: 'Roblox Official Partner • 3D Metaverse',
     themeColor: '#EF4444',
-    bannerUrl:
-      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1920&q=85',
+    neonGlow: 'rgba(239, 68, 68, 0.45)',
+    bannerUrl: '/banners/roblox.jpg',
+    ghostText: 'ROBLOX ROBUX',
   },
   {
     id: 'ff',
     name: 'Free Fire & Free Fire MAX',
     badge: 'Garena Official API • Battle Royale',
     themeColor: '#F97316',
-    bannerUrl:
-      'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1920&q=85',
+    neonGlow: 'rgba(249, 115, 22, 0.45)',
+    bannerUrl: '/banners/ff.jpg',
+    ghostText: 'FREE FIRE MAX',
   },
   {
     id: 'pubg',
     name: 'PUBG Mobile',
     badge: 'Tencent Games API • Tactical Shooter',
     themeColor: '#EAB308',
-    bannerUrl:
-      'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1920&q=85',
+    neonGlow: 'rgba(234, 179, 8, 0.45)',
+    bannerUrl: '/banners/pubg.jpg',
+    ghostText: 'PUBG MOBILE UC',
   },
   {
     id: 'genshin',
     name: 'Genshin Impact',
     badge: 'HoYoverse Direct • Open-World RPG',
     themeColor: '#8B5CF6',
-    bannerUrl:
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1920&q=85',
+    neonGlow: 'rgba(139, 92, 246, 0.45)',
+    bannerUrl: '/banners/genshin.png',
+    ghostText: 'GENSHIN IMPACT',
   },
   {
     id: 'valorant',
     name: 'Valorant',
     badge: 'Riot Games Official • 5v5 Tactical FPS',
     themeColor: '#00D4FF',
-    bannerUrl:
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1920&q=85',
+    neonGlow: 'rgba(0, 212, 255, 0.45)',
+    bannerUrl: '/banners/valorant.png',
+    ghostText: 'VALORANT POINTS',
   },
+];
+
+const LIVE_RECHARGES = [
+  { user: '085***921', item: '86 Diamonds', game: 'MLBB', provider: 'Smile.One', ago: '2s ago' },
+  { user: '012***482', item: '800 Robux', game: 'Roblox', provider: 'Direct API', ago: '5s ago' },
+  { user: '098***115', item: '310 Diamonds', game: 'Free Fire', provider: 'Garena', ago: '9s ago' },
+  { user: '070***634', item: '660 UC Pass', game: 'PUBG', provider: 'Tencent', ago: '14s ago' },
 ];
 
 export default function HeroExpress() {
@@ -96,6 +111,7 @@ export default function HeroExpress() {
   // Auto-rotating background banner index
   const [activeBannerIdx, setActiveBannerIdx] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [liveIdx, setLiveIdx] = useState(0);
 
   // Auto-rotate hero backdrop every 5.5 seconds unless user pauses/hovers
   useEffect(() => {
@@ -105,6 +121,14 @@ export default function HeroExpress() {
     }, 5500);
     return () => clearInterval(timer);
   }, [isPaused]);
+
+  // Rotate social proof micro-alert every 3.5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLiveIdx((prev) => (prev + 1) % LIVE_RECHARGES.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleGameChange = (game: GameItem) => {
     setSelectedGame(game);
@@ -141,28 +165,32 @@ export default function HeroExpress() {
     openTopUp(selectedGame.id, selectedPackage.id);
   };
 
+  const activeBanner = HERO_BANNERS[activeBannerIdx];
+  const liveItem = LIVE_RECHARGES[liveIdx];
+
   return (
     <section
-      className="relative pt-6 pb-16 select-none overflow-hidden"
+      className="relative isolate pt-4 sm:pt-8 pb-16 select-none overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* =============================================================== */}
-      {/* DYNAMIC AUTO-ROTATING GAME BACKDROP SHOWCASE                    */}
+      {/* 1. DYNAMIC AUTO-ROTATING GAME BACKDROP SHOWCASE                 */}
       {/* =============================================================== */}
-      <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         {HERO_BANNERS.map((banner, idx) => {
           const isActive = idx === activeBannerIdx;
           return (
             <div
               key={banner.id}
               className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                isActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                isActive ? 'opacity-100' : 'opacity-0'
               }`}
             >
               <img
                 src={banner.bannerUrl}
                 alt={banner.name}
+                referrerPolicy="no-referrer"
                 className={`w-full h-full object-cover object-center transform transition-transform duration-7000 ease-out ${
                   isActive ? 'scale-105' : 'scale-100'
                 }`}
@@ -170,7 +198,7 @@ export default function HeroExpress() {
 
               {/* Colorful specular ambient bloom matching each game */}
               <div
-                className="absolute top-1/4 right-1/4 w-[600px] h-[400px] rounded-full blur-[140px] opacity-35 transition-colors duration-1000"
+                className="absolute top-1/4 right-1/4 w-[600px] h-[400px] rounded-full blur-[140px] opacity-50 transition-colors duration-1000"
                 style={{ backgroundColor: banner.themeColor }}
               />
             </div>
@@ -178,12 +206,18 @@ export default function HeroExpress() {
         })}
 
         {/* Ambient Top Light Beam */}
-        <div className="absolute top-0 left-1/3 w-[600px] h-[250px] bg-gradient-to-b from-[#00D4FF]/15 via-[#E5B55E]/10 to-transparent blur-3xl" />
+        <div className="absolute top-0 left-1/3 w-[600px] h-[250px] bg-gradient-to-b from-[#00D4FF]/20 via-[#E5B55E]/15 to-transparent blur-3xl" />
 
-        {/* Dynamic Translucent Game Atmosphere: Art is vivid and colorful, text remains 100% legible */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#080D1A]/90 via-[#0A1326]/55 to-[#080D1A]/30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A1326] via-transparent to-[#080D1A]/35" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#080D1A]/15 to-[#080D1A]/55" />
+        {/* Dynamic Transparent Atmosphere: Art is vivid, spacious and bright */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#070B16]/85 via-[#070B16]/35 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#070B16] via-transparent to-transparent" />
+
+        {/* Kinetic Ghost Typography Backdrop (Esports DNA) */}
+        <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 whitespace-nowrap overflow-hidden pointer-events-none select-none opacity-[0.04]">
+          <span className="text-[140px] sm:text-[200px] font-black uppercase tracking-tight text-white inline-block">
+            {activeBanner.ghostText} • TOP-UP • BAKONG KHQR • SPEED &lt; 3S •
+          </span>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -193,6 +227,7 @@ export default function HeroExpress() {
           {/* LEFT 7 COLS: HERO BRAND HEADLINE & VALUE PROPOSITION            */}
           {/* =============================================================== */}
           <div className="lg:col-span-7 space-y-6">
+            
             {/* Publisher Badge + Current Slide Game Name */}
             <div className="flex flex-wrap items-center gap-2">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111A30]/85 border border-[#E5B55E]/40 backdrop-blur-md shadow-lg">
@@ -202,9 +237,9 @@ export default function HeroExpress() {
                 </span>
               </div>
 
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#152445]/70 border border-white/10 backdrop-blur-md text-[11px] font-bold text-neutral-300">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#152445]/75 border border-white/15 backdrop-blur-md text-[11px] font-mono font-bold text-neutral-200">
                 <Sparkles className="w-3 h-3 text-[#00D4FF]" />
-                <span>{HERO_BANNERS[activeBannerIdx].badge}</span>
+                <span>{activeBanner.badge}</span>
               </div>
             </div>
 
@@ -250,144 +285,152 @@ export default function HeroExpress() {
                 className="group px-7 py-3.5 rounded-2xl bg-gradient-to-r from-[#E5B55E] via-[#FBBF24] to-[#D97706] hover:from-[#FBBF24] hover:to-[#B45309] text-black font-black text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(229,181,94,0.45)] hover:shadow-[0_0_35px_rgba(229,181,94,0.65)] transition-all cursor-pointer flex items-center gap-2"
               >
                 <span>{t.hero.ctaTopUp}</span>
-                <ArrowRight className="w-4 h-4 stroke-[2.5] group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
 
               <a
                 href="#game-catalog"
-                className="px-6 py-3.5 rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.15] text-xs font-bold text-white transition-all backdrop-blur-md shadow-md"
+                className="px-6 py-3.5 rounded-2xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.14] text-white font-bold text-sm transition-all"
               >
                 {t.hero.ctaExplore}
               </a>
             </div>
 
-            {/* Banner Slide Progress Indicators & Interactive Controls */}
-            <div className="flex items-center gap-3 pt-3">
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setActiveBannerIdx((prev) => (prev === 0 ? HERO_BANNERS.length - 1 : prev - 1))
-                  }
-                  className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-white cursor-pointer transition-all"
-                  aria-label="Previous Slide"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setActiveBannerIdx((prev) => (prev + 1) % HERO_BANNERS.length)
-                  }
-                  className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-white cursor-pointer transition-all"
-                  aria-label="Next Slide"
-                >
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
+            {/* Carousel Controls & Live Social Proof Micro-Alert */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/[0.08]">
+              {/* Slider Progress & Navigation */}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setActiveBannerIdx(
+                        (prev) => (prev - 1 + HERO_BANNERS.length) % HERO_BANNERS.length
+                      )
+                    }
+                    className="w-8 h-8 rounded-lg bg-black/60 hover:bg-black/90 border border-white/15 flex items-center justify-center text-white/80 hover:text-white transition-all cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setActiveBannerIdx((prev) => (prev + 1) % HERO_BANNERS.length)
+                    }
+                    className="w-8 h-8 rounded-lg bg-black/60 hover:bg-black/90 border border-white/15 flex items-center justify-center text-white/80 hover:text-white transition-all cursor-pointer"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
 
-              <div className="flex items-center gap-1.5">
-                {HERO_BANNERS.map((b, idx) => {
-                  const isActive = idx === activeBannerIdx;
-                  return (
+                <div className="flex items-center gap-1.5">
+                  {HERO_BANNERS.map((banner, i) => (
                     <button
-                      key={b.id}
+                      key={banner.id}
                       type="button"
-                      onClick={() => {
-                        setActiveBannerIdx(idx);
-                        const matched = GAMES.find((g) => g.id === b.id);
-                        if (matched) {
-                          setSelectedGame(matched);
-                          setSelectedPackage(matched.packages[0]);
-                        }
-                      }}
-                      className={`transition-all duration-300 rounded-full h-1.5 cursor-pointer ${
-                        isActive
-                          ? 'w-7 bg-gradient-to-r from-[#E5B55E] to-[#00D4FF] shadow-[0_0_8px_rgba(229,181,94,0.6)]'
-                          : 'w-2 bg-white/30 hover:bg-white/50'
+                      onClick={() => setActiveBannerIdx(i)}
+                      className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                        i === activeBannerIdx
+                          ? 'w-7 bg-gradient-to-r from-[#E5B55E] to-[#00D4FF]'
+                          : 'w-2 bg-white/20 hover:bg-white/40'
                       }`}
-                      title={b.name}
                     />
-                  );
-                })}
+                  ))}
+                </div>
+
+                <span className="text-xs font-mono font-bold text-neutral-300">
+                  {activeBanner.name}
+                </span>
               </div>
 
-              <span className="text-[11px] font-extrabold text-[#E5B55E] pl-1 tracking-wide">
-                {HERO_BANNERS[activeBannerIdx].name}
-              </span>
+              {/* Live Social Proof Pill */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 border border-emerald-500/30 backdrop-blur-md text-[11px] font-mono text-neutral-200">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-neutral-400">{liveItem.user}</span>
+                <span className="text-emerald-400 font-bold">+{liveItem.item}</span>
+                <span className="text-neutral-500 font-mono">[{liveItem.ago}]</span>
+              </div>
             </div>
           </div>
 
           {/* =============================================================== */}
-          {/* RIGHT 5 COLS: 30-SECOND EXPRESS TOP-UP COCKPIT                   */}
+          {/* RIGHT 5 COLS: DECOUPLED SCI-FI GLASS HUD COMMAND STATION         */}
           {/* =============================================================== */}
           <div className="lg:col-span-5">
-            <div className="relative rounded-3xl bg-[#0F172B]/95 border border-white/[0.15] p-5 sm:p-6 shadow-2xl backdrop-blur-2xl ring-1 ring-white/10">
-              {/* Top Accent Rim */}
-              <div className="absolute top-0 left-8 right-8 h-[2px] bg-gradient-to-r from-transparent via-[#E5B55E] to-transparent opacity-90" />
+            <div
+              style={
+                {
+                  '--hud-glow': activeBanner.neonGlow,
+                  clipPath:
+                    'polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))',
+                } as React.CSSProperties
+              }
+              className="relative p-5 sm:p-6 rounded-2xl bg-[#080D1A]/70 backdrop-blur-2xl border border-white/[0.14] shadow-[0_20px_50px_rgba(0,0,0,0.7)] transition-all duration-500"
+            >
+              {/* Sci-Fi Decorative Corner Brackets */}
+              <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-[#E5B55E]/60 pointer-events-none" />
+              <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-[#E5B55E]/60 pointer-events-none" />
 
-              {/* Station Header */}
-              <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.08] mb-4">
+              {/* Status HUD Header */}
+              <div className="flex items-center justify-between gap-3 pb-4 mb-4 border-b border-white/[0.1]">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#E5B55E] to-[#C49740] flex items-center justify-center text-black font-black shadow-md">
-                    <Zap className="w-4 h-4 fill-current" />
+                  <div className="w-8 h-8 rounded-xl bg-[#E5B55E]/15 border border-[#E5B55E]/30 flex items-center justify-center">
+                    <Activity className="w-4 h-4 text-[#E5B55E]" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-extrabold text-white tracking-wide">
-                      {t.hero.expressTitle}
+                    <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+                      <span>{t.hero.expressTitle}</span>
                     </h3>
-                    <p className="text-[11px] text-neutral-300">
+                    <span className="text-[10px] font-mono text-neutral-400 block">
                       {t.hero.expressSub}
-                    </p>
+                    </span>
                   </div>
                 </div>
 
-                <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-md bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 shadow-sm">
-                  ⚡ 3-SEC API
-                </span>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-black/60 border border-emerald-500/40 text-[10px] font-mono font-bold text-emerald-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>ONLINE • 2ms</span>
+                </div>
               </div>
 
-              {/* 1. Quick Game Switcher (Chips with Full Recognized Names) */}
+              {/* 1. Quick Game Selector Pod */}
               <div className="space-y-2 mb-4">
-                <label className="text-[11px] font-bold text-neutral-200 block">
-                  1. {t.hero.selectGamePrompt}
+                <label className="text-[11px] font-mono font-bold text-neutral-300 uppercase tracking-wider flex items-center justify-between">
+                  <span>1. {t.hero.selectGamePrompt}</span>
+                  <span className="text-[10px] text-[#E5B55E] font-normal">
+                    {selectedGame.name}
+                  </span>
                 </label>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-1.5">
                   {GAMES.slice(0, 4).map((game) => {
                     const isSelected = selectedGame.id === game.id;
-                    const shortName = GAME_SHORT_NAMES[game.id] || game.name.split(' ')[0];
                     return (
                       <button
                         key={game.id}
                         type="button"
                         onClick={() => handleGameChange(game)}
-                        className={`p-2 rounded-xl border transition-all text-center flex flex-col items-center gap-1.5 cursor-pointer ${
+                        className={`py-2 px-2 rounded-xl text-center transition-all cursor-pointer font-bold text-xs ${
                           isSelected
-                            ? 'bg-[#1A2644] border-[#E5B55E] ring-1 ring-[#E5B55E] shadow-md scale-[1.02]'
-                            : 'bg-[#111A30] border-white/[0.08] hover:border-white/[0.25]'
+                            ? 'bg-gradient-to-r from-[#E5B55E] to-[#F59E0B] text-black shadow-md font-black scale-[1.02]'
+                            : 'bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-neutral-300 hover:text-white'
                         }`}
                       >
-                        <div className="w-7 h-7 rounded-lg bg-black/40 flex items-center justify-center text-sm font-black overflow-hidden border border-white/10">
-                          {game.currencyIcon}
-                        </div>
-                        <span className="text-[11px] font-extrabold text-white truncate max-w-full">
-                          {shortName}
-                        </span>
+                        {GAME_SHORT_NAMES[game.id] || game.name}
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* 2. Account Details Input with Inline IGN Verify */}
+              {/* 2. Account ID Input Pod */}
               <div className="space-y-2 mb-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-[11px] font-bold text-neutral-200">
+                  <label className="text-[11px] font-mono font-bold text-neutral-300 uppercase tracking-wider">
                     2. {t.hero.enterIdPrompt}
                   </label>
                   {verifiedNick && (
-                    <span className="text-[11px] font-extrabold text-emerald-400 flex items-center gap-1 bg-emerald-500/15 px-2 py-0.5 rounded-md border border-emerald-500/30">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span className="text-[11px] font-mono text-emerald-400 font-bold flex items-center gap-1">
+                      <Check className="w-3 h-3" />
                       <span>{verifiedNick}</span>
                     </span>
                   )}
@@ -408,7 +451,7 @@ export default function HeroExpress() {
                         ? 'Roblox Username'
                         : 'Player ID (UID)'
                     }
-                    className="flex-1 bg-[#111A30] border border-white/[0.14] focus:border-[#E5B55E] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none transition-all shadow-inner"
+                    className="flex-1 bg-black/40 border border-white/[0.14] focus:border-[#E5B55E] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none transition-all shadow-inner font-mono"
                   />
 
                   {selectedGame.accountFields.length > 1 && (
@@ -417,7 +460,7 @@ export default function HeroExpress() {
                       value={zoneId}
                       onChange={(e) => setZoneId(e.target.value)}
                       placeholder="Zone (2001)"
-                      className="w-24 bg-[#111A30] border border-white/[0.14] focus:border-[#E5B55E] rounded-xl px-3 py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none transition-all shadow-inner"
+                      className="w-24 bg-black/40 border border-white/[0.14] focus:border-[#E5B55E] rounded-xl px-3 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none transition-all shadow-inner font-mono"
                     />
                   )}
 
@@ -425,16 +468,16 @@ export default function HeroExpress() {
                     type="button"
                     onClick={handleVerify}
                     disabled={isVerifying || !accountId.trim()}
-                    className="px-3.5 py-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.16] border border-white/[0.14] text-xs font-bold text-[#E5B55E] disabled:opacity-50 transition-all cursor-pointer shrink-0 shadow-sm"
+                    className="px-3.5 py-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.16] border border-white/[0.14] text-xs font-mono font-bold text-[#E5B55E] disabled:opacity-50 transition-all cursor-pointer shrink-0 shadow-sm"
                   >
                     {isVerifying ? '...' : language === 'km' ? 'ផ្ទៀងផ្ទាត់' : 'Verify'}
                   </button>
                 </div>
               </div>
 
-              {/* 3. Denomination Package Selector (4 Popular Items) */}
+              {/* 3. Denomination Package Selector Pod (4 Popular Items) */}
               <div className="space-y-2 mb-5">
-                <label className="text-[11px] font-bold text-neutral-200 block">
+                <label className="text-[11px] font-mono font-bold text-neutral-300 uppercase tracking-wider block">
                   3. {t.hero.selectPackagePrompt}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -447,19 +490,19 @@ export default function HeroExpress() {
                         onClick={() => setSelectedPackage(pkg)}
                         className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer relative ${
                           isSelected
-                            ? 'bg-[#1A2644] border-[#E5B55E] ring-1 ring-[#E5B55E]/60 shadow-md'
-                            : 'bg-[#111A30] border-white/[0.08] hover:border-white/[0.25]'
+                            ? 'bg-[#18233C]/90 border-[#E5B55E] ring-1 ring-[#E5B55E]/60 shadow-md'
+                            : 'bg-black/35 border-white/[0.08] hover:border-white/[0.25]'
                         }`}
                       >
                         {pkg.badge && (
-                          <span className="absolute -top-1.5 right-2 px-1.5 py-0.2 rounded text-[8px] font-black uppercase bg-[#E5B55E] text-black shadow-sm">
+                          <span className="absolute -top-1.5 right-2 px-1.5 py-0.2 rounded text-[8px] font-mono font-black uppercase bg-[#E5B55E] text-black shadow-sm">
                             {pkg.badge}
                           </span>
                         )}
-                        <p className="text-xs font-extrabold text-white line-clamp-1">
+                        <p className="text-xs font-bold text-white line-clamp-1">
                           {pkg.name}
                         </p>
-                        <p className="text-xs font-black text-[#E5B55E] mt-1">
+                        <p className="text-xs font-mono font-black text-[#E5B55E] mt-1">
                           {formatPrice(pkg.priceUSD)}
                         </p>
                       </button>
@@ -468,17 +511,17 @@ export default function HeroExpress() {
                 </div>
               </div>
 
-              {/* Summary & Checkout Action */}
-              <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between gap-4">
+              {/* 4. Focal Point CTA: High-Voltage Bakong KHQR Checkout */}
+              <div className="pt-4 border-t border-white/[0.1] flex items-center justify-between gap-4">
                 <div>
-                  <span className="text-[10px] text-neutral-300 block font-medium">
+                  <span className="text-[10px] font-mono text-neutral-400 block font-medium">
                     {language === 'km' ? 'តម្លៃសរុប:' : 'Total Due:'}
                   </span>
                   <div className="flex items-baseline gap-1.5">
-                    <span className="text-lg font-black text-white">
+                    <span className="text-xl font-mono font-black text-white">
                       {formatPrice(selectedPackage.priceUSD)}
                     </span>
-                    <span className="text-[11px] text-neutral-300">
+                    <span className="text-[11px] font-mono text-neutral-400">
                       ≈ {toKHR(selectedPackage.priceUSD)}
                     </span>
                   </div>
@@ -487,9 +530,9 @@ export default function HeroExpress() {
                 <button
                   type="button"
                   onClick={handleQuickCheckout}
-                  className="px-5 py-3 rounded-xl bg-gradient-to-r from-[#E5B55E] to-[#C49740] hover:from-[#FBBF24] hover:to-[#B45309] text-black font-black text-xs uppercase tracking-wider shadow-lg hover:shadow-xl transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#E5B55E] via-[#FBBF24] to-[#F59E0B] hover:from-[#FBBF24] hover:to-[#D97706] text-black font-black text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(229,181,94,0.5)] hover:shadow-[0_0_35px_rgba(229,181,94,0.75)] transition-all cursor-pointer flex items-center gap-2 transform hover:scale-[1.02]"
                 >
-                  <QrCode className="w-4 h-4" />
+                  <QrCode className="w-4 h-4 text-black" />
                   <span>{t.hero.payNowBtn}</span>
                 </button>
               </div>

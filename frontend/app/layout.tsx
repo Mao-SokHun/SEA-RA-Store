@@ -27,7 +27,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-[#070A14] text-white antialiased flex flex-col justify-between selection:bg-[#E5B55E] selection:text-black leading-relaxed">
+      <body className="min-h-screen text-white antialiased flex flex-col justify-between selection:bg-[#E5B55E] selection:text-black leading-relaxed">
         <AppProvider>
           {/* Global Sticky Luxury Navbar */}
           <Navbar />

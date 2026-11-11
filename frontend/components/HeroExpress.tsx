@@ -180,10 +180,10 @@ export default function HeroExpress() {
         {/* Ambient Top Light Beam */}
         <div className="absolute top-0 left-1/3 w-[600px] h-[250px] bg-gradient-to-b from-[#00D4FF]/15 via-[#E5B55E]/10 to-transparent blur-3xl" />
 
-        {/* Deep Vignette Overlays: Keeps game art visible while guaranteeing text & form contrast */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#070B17]/96 via-[#091022]/85 to-[#070B17]/88" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#090E1B] via-transparent to-[#070B17]/75" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#070B17]/40 to-[#070B17]/90" />
+        {/* Dynamic Translucent Game Atmosphere: Art is vivid and colorful, text remains 100% legible */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080D1A]/90 via-[#0A1326]/55 to-[#080D1A]/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A1326] via-transparent to-[#080D1A]/35" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#080D1A]/15 to-[#080D1A]/55" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -261,32 +261,58 @@ export default function HeroExpress() {
               </a>
             </div>
 
-            {/* Banner Slide Progress Indicators */}
-            <div className="flex items-center gap-2 pt-3">
-              {HERO_BANNERS.map((b, idx) => {
-                const isActive = idx === activeBannerIdx;
-                return (
-                  <button
-                    key={b.id}
-                    type="button"
-                    onClick={() => {
-                      setActiveBannerIdx(idx);
-                      const matched = GAMES.find((g) => g.id === b.id);
-                      if (matched) {
-                        setSelectedGame(matched);
-                        setSelectedPackage(matched.packages[0]);
-                      }
-                    }}
-                    className={`transition-all duration-300 rounded-full h-1.5 cursor-pointer ${
-                      isActive
-                        ? 'w-7 bg-gradient-to-r from-[#E5B55E] to-[#00D4FF] shadow-[0_0_8px_rgba(229,181,94,0.6)]'
-                        : 'w-2 bg-white/30 hover:bg-white/50'
-                    }`}
-                    title={b.name}
-                  />
-                );
-              })}
-              <span className="text-[11px] font-extrabold text-[#E5B55E] pl-2 tracking-wide">
+            {/* Banner Slide Progress Indicators & Interactive Controls */}
+            <div className="flex items-center gap-3 pt-3">
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveBannerIdx((prev) => (prev === 0 ? HERO_BANNERS.length - 1 : prev - 1))
+                  }
+                  className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-white cursor-pointer transition-all"
+                  aria-label="Previous Slide"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveBannerIdx((prev) => (prev + 1) % HERO_BANNERS.length)
+                  }
+                  className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 flex items-center justify-center text-white cursor-pointer transition-all"
+                  aria-label="Next Slide"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                {HERO_BANNERS.map((b, idx) => {
+                  const isActive = idx === activeBannerIdx;
+                  return (
+                    <button
+                      key={b.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveBannerIdx(idx);
+                        const matched = GAMES.find((g) => g.id === b.id);
+                        if (matched) {
+                          setSelectedGame(matched);
+                          setSelectedPackage(matched.packages[0]);
+                        }
+                      }}
+                      className={`transition-all duration-300 rounded-full h-1.5 cursor-pointer ${
+                        isActive
+                          ? 'w-7 bg-gradient-to-r from-[#E5B55E] to-[#00D4FF] shadow-[0_0_8px_rgba(229,181,94,0.6)]'
+                          : 'w-2 bg-white/30 hover:bg-white/50'
+                      }`}
+                      title={b.name}
+                    />
+                  );
+                })}
+              </div>
+
+              <span className="text-[11px] font-extrabold text-[#E5B55E] pl-1 tracking-wide">
                 {HERO_BANNERS[activeBannerIdx].name}
               </span>
             </div>

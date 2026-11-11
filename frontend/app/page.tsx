@@ -4,7 +4,6 @@ import React from 'react';
 import HeroExpress from '@/components/HeroExpress';
 import GameCatalog from '@/components/GameCatalog';
 import PromotionCards from '@/components/PromotionCards';
-import TrustGuarantees from '@/components/TrustGuarantees';
 
 export default function HomePage() {
   return (
@@ -17,9 +16,6 @@ export default function HomePage() {
 
       {/* 3. Luxury Special Offers & Pass Discounts */}
       <PromotionCards />
-
-      {/* 4. Four Pillars of Trust & Security */}
-      <TrustGuarantees />
     </div>
   );
 }

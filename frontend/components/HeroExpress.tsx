@@ -90,13 +90,6 @@ const HERO_BANNERS = [
   },
 ];
 
-const LIVE_RECHARGES = [
-  { user: '085***921', item: '86 Diamonds', game: 'MLBB', provider: 'Smile.One', ago: '2s ago' },
-  { user: '012***482', item: '800 Robux', game: 'Roblox', provider: 'Direct API', ago: '5s ago' },
-  { user: '098***115', item: '310 Diamonds', game: 'Free Fire', provider: 'Garena', ago: '9s ago' },
-  { user: '070***634', item: '660 UC Pass', game: 'PUBG', provider: 'Tencent', ago: '14s ago' },
-];
-
 export default function HeroExpress() {
   const { language, t, openTopUp, formatPrice, toKHR } = useApp();
 
@@ -111,7 +104,6 @@ export default function HeroExpress() {
   // Auto-rotating background banner index
   const [activeBannerIdx, setActiveBannerIdx] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [liveIdx, setLiveIdx] = useState(0);
 
   // Auto-rotate hero backdrop every 5.5 seconds unless user pauses/hovers
   useEffect(() => {
@@ -121,14 +113,6 @@ export default function HeroExpress() {
     }, 5500);
     return () => clearInterval(timer);
   }, [isPaused]);
-
-  // Rotate social proof micro-alert every 3.5 seconds
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setLiveIdx((prev) => (prev + 1) % LIVE_RECHARGES.length);
-    }, 3500);
-    return () => clearInterval(timer);
-  }, []);
 
   const handleGameChange = (game: GameItem) => {
     setSelectedGame(game);
@@ -166,11 +150,10 @@ export default function HeroExpress() {
   };
 
   const activeBanner = HERO_BANNERS[activeBannerIdx];
-  const liveItem = LIVE_RECHARGES[liveIdx];
 
   return (
     <section
-      className="relative isolate pt-4 sm:pt-8 pb-16 select-none overflow-hidden"
+      className="relative isolate -mt-20 sm:-mt-24 pt-24 sm:pt-32 pb-16 select-none overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -208,9 +191,9 @@ export default function HeroExpress() {
         {/* Ambient Top Light Beam */}
         <div className="absolute top-0 left-1/3 w-[600px] h-[250px] bg-gradient-to-b from-[#00D4FF]/20 via-[#E5B55E]/15 to-transparent blur-3xl" />
 
-        {/* Dynamic Transparent Atmosphere: Art is vivid, spacious and bright */}
+        {/* Dynamic Transparent Atmosphere: Art is vivid, spacious and seamlessly blends from top */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#070B16]/90 via-transparent to-[#070B16]" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#070B16]/85 via-[#070B16]/35 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#070B16] via-transparent to-transparent" />
 
         {/* Kinetic Ghost Typography Backdrop (Esports DNA) */}
         <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 whitespace-nowrap overflow-hidden pointer-events-none select-none opacity-[0.04]">
@@ -260,22 +243,6 @@ export default function HeroExpress() {
             <p className="text-sm sm:text-base text-neutral-300 max-w-xl leading-relaxed">
               {t.hero.desc}
             </p>
-
-            {/* Key Value Guarantee Pills */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#121B30]/80 border border-white/[0.12] text-xs font-bold text-neutral-200 shadow-md backdrop-blur-md">
-                <Zap className="w-3.5 h-3.5 text-[#E5B55E]" />
-                <span>{t.hero.speedPill}</span>
-              </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#121B30]/80 border border-white/[0.12] text-xs font-bold text-neutral-200 shadow-md backdrop-blur-md">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{t.hero.zeroFeePill}</span>
-              </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#121B30]/80 border border-white/[0.12] text-xs font-bold text-neutral-200 shadow-md backdrop-blur-md">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#00D4FF]" />
-                <span>{t.hero.safePill}</span>
-              </div>
-            </div>
 
             {/* Hero CTA Actions */}
             <div className="flex flex-wrap items-center gap-4 pt-3">
@@ -341,14 +308,6 @@ export default function HeroExpress() {
                 <span className="text-xs font-mono font-bold text-neutral-300">
                   {activeBanner.name}
                 </span>
-              </div>
-
-              {/* Live Social Proof Pill */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 border border-emerald-500/30 backdrop-blur-md text-[11px] font-mono text-neutral-200">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-neutral-400">{liveItem.user}</span>
-                <span className="text-emerald-400 font-bold">+{liveItem.item}</span>
-                <span className="text-neutral-500 font-mono">[{liveItem.ago}]</span>
               </div>
             </div>
           </div>

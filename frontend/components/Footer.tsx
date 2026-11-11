@@ -42,49 +42,6 @@ export default function Footer() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-10">
         
-        {/* ================================================================= */}
-        {/* 3. CYBERPUNK LIVE TELEMETRY & SYSTEM METRICS BAR                  */}
-        {/* ================================================================= */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-[#090E1B]/80 backdrop-blur-xl border border-white/[0.08] shadow-lg font-mono text-[11px]">
-          {/* Telemetry 1: Smile.One API Uptime */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/40 border border-white/[0.04]">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
-            <div>
-              <span className="text-[9px] text-neutral-400 block uppercase">Smile.One API</span>
-              <span className="text-white font-bold">99.98% Uptime</span>
-            </div>
-          </div>
-
-          {/* Telemetry 2: Delivery Latency */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/40 border border-white/[0.04]">
-            <Zap className="w-3.5 h-3.5 text-[#E5B55E]" />
-            <div>
-              <span className="text-[9px] text-neutral-400 block uppercase">Avg Delivery</span>
-              <span className="text-[#E5B55E] font-bold">&lt; 2.8 Seconds</span>
-            </div>
-          </div>
-
-          {/* Telemetry 3: Bakong KHQR Gateway */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/40 border border-white/[0.04]">
-            <QrCode className="w-3.5 h-3.5 text-[#00D4FF]" />
-            <div>
-              <span className="text-[9px] text-neutral-400 block uppercase">Bakong KHQR</span>
-              <span className="text-white font-bold">Nominal (0% Fee)</span>
-            </div>
-          </div>
-
-          {/* Telemetry 4: Security & Encryption */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/40 border border-white/[0.04]">
-            <Lock className="w-3.5 h-3.5 text-emerald-400" />
-            <div>
-              <span className="text-[9px] text-neutral-400 block uppercase">Encryption</span>
-              <span className="text-emerald-400 font-bold">256-Bit SSL TLS 1.3</span>
-            </div>
-          </div>
-        </div>
 
         {/* ================================================================= */}
         {/* 4. GLASS BENTO TRUST DOCK GRID                                    */}

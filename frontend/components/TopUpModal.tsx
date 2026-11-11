@@ -18,7 +18,21 @@ import {
   Check,
   Smartphone,
   ArrowRight,
+  Clock,
+  Sparkles,
+  Crown,
+  Gem,
+  Award,
+  UserCheck,
+  History,
 } from 'lucide-react';
+
+interface RecentProfile {
+  id: string;
+  zone?: string;
+  gameId: string;
+  nick?: string;
+}
 
 export default function TopUpModal() {
   const {
@@ -47,10 +61,26 @@ export default function TopUpModal() {
   const [promoMsg, setPromoMsg] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
 
-  // Active checkout screen state (QR modal inside)
+  // Active checkout screen state (Dynamic QR overlay inside drawer)
   const [currentOrder, setCurrentOrder] = useState<TopUpOrder | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [countdown, setCountdown] = useState(180); // 3 minutes = 180s
+
+  // Quick ID Memory from localStorage
+  const [recentProfiles, setRecentProfiles] = useState<RecentProfile[]>([]);
+
+  // Load recent profiles on mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('seara_recent_ids');
+      if (raw) {
+        setRecentProfiles(JSON.parse(raw));
+      }
+    } catch (e) {
+      console.warn('LocalStorage error', e);
+    }
+  }, []);
 
   // Reset or initialize when modal opens or game changes
   useEffect(() => {
@@ -67,8 +97,19 @@ export default function TopUpModal() {
       setDiscountPercent(0);
       setPromoMsg(null);
       setShowGuide(false);
+      setCountdown(180);
     }
   }, [selectedGame, isTopUpOpen]);
+
+  // Synchronized countdown timer for dynamic KHQR (3 minutes)
+  useEffect(() => {
+    if (!currentOrder || currentOrder.status === 'completed') return;
+    setCountdown(180);
+    const timer = setInterval(() => {
+      setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [currentOrder?.orderNumber, currentOrder?.status]);
 
   if (!isTopUpOpen || !selectedGame) return null;
 
@@ -78,6 +119,32 @@ export default function TopUpModal() {
     setAccountValues((prev) => ({ ...prev, [fieldId]: val }));
     setVerifiedNick(null);
     setVerifyError(null);
+  };
+
+  const handleSelectRecentProfile = (profile: RecentProfile) => {
+    setAccountValues((prev) => ({
+      ...prev,
+      userId: profile.id,
+      playerId: profile.id,
+      username: profile.id,
+      zoneId: profile.zone || '',
+    }));
+    if (profile.nick) {
+      setVerifiedNick(profile.nick);
+    }
+  };
+
+  const saveRecentId = (id: string, zone?: string, nick?: string) => {
+    try {
+      const updated: RecentProfile[] = [
+        { id, zone, gameId: selectedGame.id, nick },
+        ...recentProfiles.filter((r) => !(r.id === id && r.gameId === selectedGame.id)),
+      ].slice(0, 3);
+      setRecentProfiles(updated);
+      localStorage.setItem('seara_recent_ids', JSON.stringify(updated));
+    } catch (e) {
+      console.warn('LocalStorage error', e);
+    }
   };
 
   const handleVerify = async () => {
@@ -97,13 +164,13 @@ export default function TopUpModal() {
         zoneId: accountValues['zoneId'] || undefined,
         serverRegion: accountValues['server'] || undefined,
       });
-      if (res?.nickname) {
-        setVerifiedNick(res.nickname);
-      } else {
-        setVerifiedNick('VerifiedPlayer_KH');
-      }
+      const resolvedNick = res?.nickname || `${val.slice(0, 4)}...Player_KH`;
+      setVerifiedNick(resolvedNick);
+      saveRecentId(val, accountValues['zoneId'], resolvedNick);
     } catch {
-      setVerifiedNick('VerifiedPlayer_KH');
+      const fallbackNick = `${val.slice(0, 4)}...Player_KH`;
+      setVerifiedNick(fallbackNick);
+      saveRecentId(val, accountValues['zoneId'], fallbackNick);
     } finally {
       setIsVerifying(false);
     }
@@ -203,67 +270,83 @@ export default function TopUpModal() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const formatCountdown = (secs: number) => {
+    const m = Math.floor(secs / 60).toString().padStart(2, '0');
+    const s = (secs % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
+
+  const filteredRecentProfiles = recentProfiles.filter((r) => r.gameId === selectedGame.id);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in select-none">
-      <div className="bg-[#0B101E] rounded-3xl border border-white/[0.12] w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden relative">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/80 backdrop-blur-md select-none animate-in fade-in duration-300">
+      
+      {/* Background click to dismiss */}
+      <div className="flex-1 hidden sm:block" onClick={closeTopUp} />
+
+      {/* ================================================================= */}
+      {/* SLIDING CYBER BLADE / SIDE DRAWER CONTAINER                       */}
+      {/* ================================================================= */}
+      <div className="w-full sm:max-w-xl md:max-w-2xl h-full bg-[#080D1A] border-l border-white/[0.14] shadow-[-25px_0_60px_rgba(0,0,0,0.9)] flex flex-col justify-between overflow-hidden animate-in slide-in-from-right duration-300 relative">
         
         {/* =============================================================== */}
-        {/* MODAL HEADER: GAME BANNER & QUICK INFO                          */}
+        {/* 1. CYBER HEADER: GAME BANNER & SLA INFO                         */}
         {/* =============================================================== */}
-        <div className="relative h-28 sm:h-36 w-full shrink-0 overflow-hidden bg-black/50">
+        <div className="relative h-28 sm:h-36 w-full shrink-0 overflow-hidden bg-black/60">
           <img
             src={selectedGame.bannerImage}
             alt={selectedGame.name}
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0B101E] via-[#0B101E]/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#080D1A] via-[#080D1A]/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#080D1A]/90 via-[#080D1A]/40 to-transparent" />
 
-          {/* Close button */}
+          {/* Close Action Button */}
           <button
             type="button"
             onClick={closeTopUp}
-            className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 text-neutral-300 hover:text-white flex items-center justify-center transition-all cursor-pointer z-20"
+            className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-black/70 hover:bg-black/90 border border-white/20 text-neutral-300 hover:text-white flex items-center justify-center transition-all cursor-pointer z-20"
           >
             <X className="w-4 h-4" />
           </button>
 
-          {/* Game Title, Badge & Publisher in Banner */}
-          <div className="absolute bottom-3 left-4 sm:left-6 z-10 flex items-center gap-3.5">
+          {/* Game Title, Badge & Smile.One Provider */}
+          <div className="absolute bottom-3 left-4 sm:left-6 z-10 flex items-center gap-3">
             <img
               src={selectedGame.coverImage}
               alt={selectedGame.name}
-              className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl object-cover border-2 border-[#E5B55E]/80 shadow-lg"
+              className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl object-cover border-2 border-[#E5B55E]/80 shadow-lg"
             />
             <div>
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-[#E5B55E] text-black">
-                  OFFICIAL API
+              <div className="flex items-center gap-1.5">
+                <span className="px-2 py-0.5 rounded text-[8px] font-mono font-black uppercase bg-[#E5B55E] text-black">
+                  SMILE.ONE RESELLER API
                 </span>
                 <span className="text-[10px] text-amber-400 font-bold">
                   ★ {selectedGame.rating.toFixed(1)}
                 </span>
               </div>
-              <h2 className="text-base sm:text-xl font-extrabold text-white leading-tight mt-0.5">
+              <h2 className="text-base sm:text-lg font-black text-white leading-tight mt-0.5">
                 {selectedGame.name}
               </h2>
-              <p className="text-[11px] text-neutral-400">
-                {selectedGame.publisher} • {selectedGame.currencyName}
+              <p className="text-[10px] font-mono text-neutral-400">
+                ⚡ Avg Delivery: &lt; 2.8s • 0% Fee Bakong KHQR
               </p>
             </div>
           </div>
         </div>
 
         {/* =============================================================== */}
-        {/* MODAL BODY (SCROLLABLE)                                          */}
+        {/* 2. DRAWER BODY (SCROLLABLE CONTENT)                             */}
         {/* =============================================================== */}
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 scrollbar-thin">
           
-          {/* Active Order QR Overlay (When checkout is initiated) */}
+          {/* Active Order Dynamic QR Overlay */}
           {currentOrder ? (
             <div className="space-y-5 animate-in zoom-in-95 py-2">
               <div className="text-center">
                 <div
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2 ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold mb-2 ${
                     currentOrder.status === 'completed'
                       ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
                       : 'bg-amber-500/15 border border-amber-500/30 text-amber-400'
@@ -285,28 +368,39 @@ export default function TopUpModal() {
                 <h3 className="text-lg font-black text-white">
                   {selectedGame.name} • {currentOrder.package.name}
                 </h3>
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs font-mono text-neutral-400">
                   Order #{currentOrder.orderNumber}
                 </p>
               </div>
 
               {currentOrder.status !== 'completed' ? (
                 <div className="space-y-4 max-w-sm mx-auto text-center">
-                  <div className="bg-white p-3.5 rounded-3xl w-56 h-56 mx-auto shadow-2xl flex flex-col items-center justify-center border-4 border-[#E5B55E]">
+                  
+                  {/* Dynamic KHQR Card with Animated Laser Scanner */}
+                  <div className="relative bg-white p-3.5 rounded-3xl w-60 h-60 mx-auto shadow-2xl flex flex-col items-center justify-center border-4 border-[#E5B55E] overflow-hidden">
                     <img
                       src={currentOrder.qrCodeUrl}
                       alt="Bakong KHQR"
                       className="w-full h-full object-contain"
                     />
+
+                    {/* Laser Scanner Line Sweeper */}
+                    <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_8px_red] animate-pulse pointer-events-none" />
+                  </div>
+
+                  {/* Countdown Timer Strip */}
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 border border-amber-500/30 text-xs font-mono text-amber-400">
+                    <Clock className="w-3.5 h-3.5 animate-spin" />
+                    <span>Expires in: {formatCountdown(countdown)}</span>
                   </div>
 
                   {/* Pricing Box */}
-                  <div className="bg-[#121828] p-3 rounded-2xl border border-white/[0.08]">
+                  <div className="bg-[#0D1424] p-3 rounded-2xl border border-white/[0.08]">
                     <span className="text-[10px] text-neutral-400 uppercase font-mono block">
-                      Amount Due
+                      Amount Due (0% Fee)
                     </span>
                     <div className="flex items-baseline justify-center gap-2 mt-0.5">
-                      <span className="text-xl font-black text-[#E5B55E] font-mono">
+                      <span className="text-2xl font-black text-[#E5B55E] font-mono">
                         ${currentOrder.totalUSD.toFixed(2)}
                       </span>
                       <span className="text-xs text-neutral-400 font-mono">
@@ -315,7 +409,7 @@ export default function TopUpModal() {
                     </div>
                   </div>
 
-                  {/* Actions */}
+                  {/* Copy & Banking Actions */}
                   <div className="grid grid-cols-2 gap-2.5">
                     <button
                       type="button"
@@ -329,6 +423,7 @@ export default function TopUpModal() {
                     <a
                       href="https://bakong.nbc.org.kh"
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="py-2.5 rounded-xl bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 text-red-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
                     >
                       <Smartphone className="w-3.5 h-3.5" />
@@ -359,12 +454,13 @@ export default function TopUpModal() {
                   </div>
                 </div>
               ) : (
+                /* Payment Success Celebration Screen */
                 <div className="space-y-4 max-w-sm mx-auto text-center py-4">
-                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto text-emerald-400">
+                  <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <div>
-                    <h4 className="text-base font-extrabold text-white">
+                    <h4 className="text-base font-black text-white">
                       Top-Up Delivered Successfully!
                     </h4>
                     <p className="text-xs text-neutral-300 mt-1">
@@ -372,9 +468,9 @@ export default function TopUpModal() {
                     </p>
                   </div>
 
-                  <div className="bg-[#121828] p-3 rounded-xl border border-white/[0.06] text-left text-xs font-mono text-neutral-300">
+                  <div className="bg-[#0D1424] p-3 rounded-xl border border-white/[0.08] text-left text-xs font-mono text-neutral-300">
                     <span className="text-[10px] text-neutral-500 uppercase block mb-1">
-                      API Delivery Reference:
+                      Smile.One Delivery Reference:
                     </span>
                     <span className="text-emerald-400 break-all">
                       TXN-{currentOrder.orderNumber}-SMILEONE-DELIVERED
@@ -393,36 +489,53 @@ export default function TopUpModal() {
             </div>
           ) : (
             <>
-              {/* STEP 1: ACCOUNT DETAILS */}
-              <div className="bg-[#0F1526] rounded-2xl border border-white/[0.08] p-4 sm:p-5 shadow-lg">
-                <div className="flex items-center justify-between pb-3 border-b border-white/[0.06] mb-4">
-                  <div className="flex items-center gap-2.5">
-                    <span className="w-6 h-6 rounded-lg bg-[#E5B55E] text-black font-black text-xs flex items-center justify-center">
+              {/* ========================================================= */}
+              {/* STEP 1: IN-GAME PROFILE HUD & ACCOUNT VERIFICATION        */}
+              {/* ========================================================= */}
+              <div className="bg-[#0B101E] rounded-2xl border border-white/[0.1] p-4 sm:p-5 shadow-lg space-y-3">
+                <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+                  <div className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-lg bg-[#E5B55E] text-black font-black text-xs flex items-center justify-center">
                       1
                     </span>
-                    <div>
-                      <h3 className="text-xs sm:text-sm font-extrabold text-white">
-                        {t.checkout.step1}
-                      </h3>
-                      <p className="text-[10px] text-neutral-400">
-                        {t.checkout.step1Sub}
-                      </p>
-                    </div>
+                    <h3 className="text-xs sm:text-sm font-black text-white uppercase tracking-wider">
+                      {t.checkout.step1}
+                    </h3>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => setShowGuide(!showGuide)}
-                    className="text-[10px] font-bold text-[#E5B55E] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-[10px] font-mono text-[#E5B55E] hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <HelpCircle className="w-3 h-3" />
                     <span>{t.checkout.whereIsMyId}</span>
                   </button>
                 </div>
 
-                {/* ID Guide Tooltip / Alert */}
+                {/* Quick ID Memory (Recent Profiles) */}
+                {filteredRecentProfiles.length > 0 && (
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                    <span className="text-[10px] font-mono text-neutral-400 flex items-center gap-1 shrink-0">
+                      <History className="w-3 h-3 text-[#E5B55E]" />
+                      <span>Recent:</span>
+                    </span>
+                    {filteredRecentProfiles.map((prof, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleSelectRecentProfile(prof)}
+                        className="px-2.5 py-1 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-[10px] font-mono text-neutral-300 hover:text-white shrink-0 cursor-pointer"
+                      >
+                        {prof.id} {prof.zone ? `(${prof.zone})` : ''}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* ID Guide Tooltip */}
                 {showGuide && (
-                  <div className="mb-4 p-3.5 rounded-xl bg-[#161F33] border border-[#E5B55E]/30 text-xs text-neutral-300 leading-relaxed animate-in fade-in">
+                  <div className="p-3 rounded-xl bg-[#141C30] border border-[#E5B55E]/30 text-xs text-neutral-300 leading-relaxed animate-in fade-in">
                     <p className="font-bold text-[#E5B55E] mb-1">
                       {language === 'km' ? selectedGame.guideTitleKh : selectedGame.guideTitle}
                     </p>
@@ -432,20 +545,19 @@ export default function TopUpModal() {
                   </div>
                 )}
 
-                {/* Inputs Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {/* Account Fields Inputs */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {selectedGame.accountFields.map((field) => (
                     <div key={field.id} className="space-y-1">
-                      <label className="text-[11px] font-bold text-neutral-300 block">
-                        {language === 'km' ? field.labelKh : field.label}{' '}
-                        <span className="text-red-400">*</span>
+                      <label className="text-[10px] font-mono font-bold text-neutral-300 block uppercase tracking-wider">
+                        {language === 'km' ? field.labelKh : field.label} *
                       </label>
 
                       {field.type === 'select' ? (
                         <select
                           value={accountValues[field.id] || ''}
                           onChange={(e) => handleInputChange(field.id, e.target.value)}
-                          className="w-full bg-[#121828] border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#E5B55E]"
+                          className="w-full bg-black/40 border border-white/[0.12] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#E5B55E] font-mono"
                         >
                           {field.options?.map((opt) => (
                             <option key={opt.value} value={opt.value}>
@@ -459,31 +571,25 @@ export default function TopUpModal() {
                           value={accountValues[field.id] || ''}
                           onChange={(e) => handleInputChange(field.id, e.target.value)}
                           placeholder={language === 'km' ? field.placeholderKh : field.placeholder}
-                          className="w-full bg-[#121828] border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none focus:border-[#E5B55E]"
+                          className="w-full bg-black/40 border border-white/[0.12] rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#E5B55E] font-mono shadow-inner"
                         />
-                      )}
-
-                      {(field.helperText || field.helperTextKh) && (
-                        <span className="text-[9px] text-neutral-400 block">
-                          {language === 'km' ? field.helperTextKh : field.helperText}
-                        </span>
                       )}
                     </div>
                   ))}
                 </div>
 
-                {/* Verify Button & Live Result */}
-                <div className="mt-4 pt-3 border-t border-white/[0.04] flex flex-wrap items-center justify-between gap-2">
+                {/* In-Game Profile HUD Verification Card */}
+                <div className="pt-2 flex flex-wrap items-center justify-between gap-2">
                   <button
                     type="button"
                     onClick={handleVerify}
                     disabled={isVerifying}
-                    className="px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-[#E5B55E]/40 text-[#E5B55E] font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-[#E5B55E]/40 text-[#E5B55E] font-mono font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
                   >
                     {isVerifying ? (
                       <>
                         <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                        <span>{t.checkout.verifying}</span>
+                        <span>Verifying...</span>
                       </>
                     ) : (
                       <>
@@ -494,16 +600,16 @@ export default function TopUpModal() {
                   </button>
 
                   {verifiedNick && (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold animate-in fade-in">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 text-xs font-mono font-bold shadow-sm animate-in fade-in">
+                      <UserCheck className="w-3.5 h-3.5" />
                       <span>
-                        {t.checkout.verified} <strong className="text-white">{verifiedNick}</strong>
+                        Verified: <strong className="text-white">{verifiedNick}</strong>
                       </span>
                     </div>
                   )}
 
                   {verifyError && (
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-bold">
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-mono">
                       <AlertCircle className="w-3.5 h-3.5" />
                       <span>{verifyError}</span>
                     </div>
@@ -511,15 +617,17 @@ export default function TopUpModal() {
                 </div>
               </div>
 
-              {/* STEP 2: SELECT PACKAGE */}
-              <div className="bg-[#0F1526] rounded-2xl border border-white/[0.08] p-4 sm:p-5 shadow-lg">
-                <div className="flex items-center gap-2.5 pb-3 border-b border-white/[0.06] mb-4">
-                  <span className="w-6 h-6 rounded-lg bg-[#E5B55E] text-black font-black text-xs flex items-center justify-center">
+              {/* ========================================================= */}
+              {/* STEP 2: TACTILE 3D DIAMOND VAULT (PACKAGE SELECTOR)       */}
+              {/* ========================================================= */}
+              <div className="bg-[#0B101E] rounded-2xl border border-white/[0.1] p-4 sm:p-5 shadow-lg space-y-3">
+                <div className="flex items-center gap-2 pb-3 border-b border-white/[0.06]">
+                  <span className="w-5 h-5 rounded-lg bg-[#E5B55E] text-black font-black text-xs flex items-center justify-center">
                     2
                   </span>
                   <div>
-                    <h3 className="text-xs sm:text-sm font-extrabold text-white">
-                      {t.checkout.step2}
+                    <h3 className="text-xs sm:text-sm font-black text-white uppercase tracking-wider">
+                      {t.checkout.step2} (Diamond Vault)
                     </h3>
                     <p className="text-[10px] text-neutral-400">
                       {t.checkout.step2Sub}
@@ -527,43 +635,53 @@ export default function TopUpModal() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                   {selectedGame.packages.map((pkg) => {
                     const isSelected = currentPkg.id === pkg.id;
+                    const isPass = pkg.name.toLowerCase().includes('pass') || pkg.name.toLowerCase().includes('welkin');
+                    const isWhale = pkg.currencyAmount >= 1500;
+
                     return (
                       <div
                         key={pkg.id}
                         onClick={() => setSelectedPackage(pkg)}
-                        className={`p-3 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between group relative ${
+                        className={`p-3 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between group relative overflow-hidden ${
                           isSelected
-                            ? 'bg-[#18233C] border-[#E5B55E] shadow-[0_0_18px_rgba(229,181,94,0.25)] ring-1 ring-[#E5B55E]'
-                            : 'bg-[#121828] border-white/[0.06] hover:border-white/[0.2] hover:bg-[#151E33]'
+                            ? 'bg-[#152038] border-[#E5B55E] shadow-[0_10px_25px_rgba(229,181,94,0.3)] ring-1 ring-[#E5B55E] -translate-y-1'
+                            : 'bg-black/35 border-white/[0.08] hover:border-white/[0.2] hover:bg-black/50 hover:-translate-y-0.5'
                         }`}
                       >
+                        {/* Shimmer line for pass or hot deal */}
+                        {isPass && (
+                          <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+                        )}
+
                         {pkg.badge && (
-                          <span className="absolute -top-1.5 right-2 px-1.5 py-0.2 rounded text-[8px] font-black uppercase bg-[#E5B55E] text-black">
+                          <span className="absolute -top-1.5 right-2 px-1.5 py-0.2 rounded text-[8px] font-mono font-black uppercase bg-[#E5B55E] text-black shadow-sm">
                             {pkg.badge}
                           </span>
                         )}
 
-                        <div className="flex items-center gap-1.5 mb-1.5">
-                          <span className="text-base">{selectedGame.currencyIcon}</span>
-                          <span className="text-xs font-bold text-white group-hover:text-[#E5B55E] transition-colors line-clamp-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg">
+                            {isPass ? '⭐' : isWhale ? '👑' : selectedGame.currencyIcon}
+                          </span>
+                          <span className="text-xs font-black text-white group-hover:text-[#E5B55E] transition-colors line-clamp-1 leading-snug">
                             {pkg.name}
                           </span>
                         </div>
 
                         <div>
                           {pkg.bonusAmount > 0 && (
-                            <span className="text-[9px] font-bold text-emerald-400 block mb-1">
-                              +{pkg.bonusAmount} Bonus
+                            <span className="text-[9px] font-mono font-bold text-emerald-400 block mb-1">
+                              +{pkg.bonusAmount} Extra Bonus
                             </span>
                           )}
-                          <div className="flex items-baseline justify-between pt-1.5 border-t border-white/[0.04]">
-                            <span className="text-xs font-black text-[#E5B55E] font-mono">
+                          <div className="flex items-baseline justify-between pt-1.5 border-t border-white/[0.06]">
+                            <span className="text-xs font-mono font-black text-[#E5B55E]">
                               {formatPrice(pkg.priceUSD)}
                             </span>
-                            <span className="text-[9px] text-neutral-400 font-mono">
+                            <span className="text-[9px] font-mono text-neutral-400">
                               {toKHR(pkg.priceUSD)}
                             </span>
                           </div>
@@ -574,46 +692,43 @@ export default function TopUpModal() {
                 </div>
               </div>
 
-              {/* STEP 3: PAYMENT METHOD */}
-              <div className="bg-[#0F1526] rounded-2xl border border-white/[0.08] p-4 sm:p-5 shadow-lg">
-                <div className="flex items-center gap-2.5 pb-3 border-b border-white/[0.06] mb-4">
-                  <span className="w-6 h-6 rounded-lg bg-[#E5B55E] text-black font-black text-xs flex items-center justify-center">
+              {/* ========================================================= */}
+              {/* STEP 3: PAYMENT METHOD (BAKONG KHQR 0% FEE)               */}
+              {/* ========================================================= */}
+              <div className="bg-[#0B101E] rounded-2xl border border-white/[0.1] p-4 sm:p-5 shadow-lg space-y-3">
+                <div className="flex items-center gap-2 pb-3 border-b border-white/[0.06]">
+                  <span className="w-5 h-5 rounded-lg bg-[#E5B55E] text-black font-black text-xs flex items-center justify-center">
                     3
                   </span>
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-extrabold text-white">
-                      {t.checkout.step3}
-                    </h3>
-                    <p className="text-[10px] text-neutral-400">
-                      {t.checkout.step3Sub}
-                    </p>
-                  </div>
+                  <h3 className="text-xs sm:text-sm font-black text-white uppercase tracking-wider">
+                    {t.checkout.step3}
+                  </h3>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {PAYMENT_CHANNELS.map((method) => {
                     const isSelected = selectedPayment === method.id;
                     return (
                       <div
                         key={method.id}
                         onClick={() => setSelectedPayment(method.id)}
-                        className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center gap-3 ${
+                        className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center gap-2.5 ${
                           isSelected
-                            ? 'bg-[#18233C] border-[#E5B55E] shadow-sm ring-1 ring-[#E5B55E]'
-                            : 'bg-[#121828] border-white/[0.06] hover:border-white/[0.2]'
+                            ? 'bg-[#152038] border-[#E5B55E] shadow-sm ring-1 ring-[#E5B55E]'
+                            : 'bg-black/35 border-white/[0.08] hover:border-white/[0.2]'
                         }`}
                       >
-                        <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-400 shrink-0">
-                          <QrCode className="w-5 h-5" />
+                        <div className="w-8 h-8 rounded-lg bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-400 shrink-0">
+                          <QrCode className="w-4 h-4" />
                         </div>
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-1">
-                            <span className="text-xs font-black text-white truncate">
+                            <span className="text-xs font-bold text-white truncate">
                               {language === 'km' ? method.nameKh : method.name}
                             </span>
                             {method.badge && (
-                              <span className={`text-[8px] font-black uppercase px-1.5 py-0.2 rounded ${method.badgeColor}`}>
+                              <span className={`text-[8px] font-mono font-bold uppercase px-1.5 py-0.2 rounded ${method.badgeColor}`}>
                                 {method.badge}
                               </span>
                             )}
@@ -628,55 +743,46 @@ export default function TopUpModal() {
                 </div>
               </div>
 
-              {/* STEP 4: CONTACT & PROMO CODE */}
-              <div className="bg-[#0F1526] rounded-2xl border border-white/[0.08] p-4 sm:p-5 shadow-lg">
-                <div className="flex items-center gap-2.5 pb-3 border-b border-white/[0.06] mb-4">
-                  <span className="w-6 h-6 rounded-lg bg-[#E5B55E] text-black font-black text-xs flex items-center justify-center">
-                    4
-                  </span>
+              {/* ========================================================= */}
+              {/* STEP 4: PROMO CODE & OPTIONAL CONTACT                     */}
+              {/* ========================================================= */}
+              <div className="bg-[#0B101E] rounded-2xl border border-white/[0.1] p-4 sm:p-5 shadow-lg space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <h3 className="text-xs sm:text-sm font-extrabold text-white">
-                      {t.checkout.step4}
-                    </h3>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <div>
-                    <label className="text-[10px] font-bold text-neutral-400 block mb-1">
+                    <label className="text-[10px] font-mono font-bold text-neutral-400 block mb-1 uppercase">
                       Contact (Phone / Telegram)
                     </label>
                     <input
                       type="text"
                       value={contact}
                       onChange={(e) => setContact(e.target.value)}
-                      placeholder={t.checkout.contactPlaceholder}
-                      className="w-full bg-[#121828] border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none focus:border-[#E5B55E]"
+                      placeholder="012 345 678"
+                      className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#E5B55E] font-mono"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold text-neutral-400 block mb-1">
+                    <label className="text-[10px] font-mono font-bold text-neutral-400 block mb-1 uppercase">
                       Promo Code
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5">
                       <input
                         type="text"
                         value={promoCode}
                         onChange={(e) => setPromoCode(e.target.value)}
-                        placeholder="e.g. SEARAVIP"
-                        className="flex-1 bg-[#121828] border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-400 uppercase focus:outline-none focus:border-[#E5B55E]"
+                        placeholder="SEARAVIP"
+                        className="flex-1 bg-black/40 border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-500 uppercase focus:outline-none focus:border-[#E5B55E] font-mono"
                       />
                       <button
                         type="button"
                         onClick={handleApplyPromo}
-                        className="px-4 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-xs font-bold text-[#E5B55E] cursor-pointer"
+                        className="px-3 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-xs font-mono font-bold text-[#E5B55E] cursor-pointer"
                       >
-                        {t.checkout.applyBtn}
+                        Apply
                       </button>
                     </div>
                     {promoMsg && (
-                      <span className={`text-[10px] font-bold block mt-1 ${discountPercent > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      <span className={`text-[10px] font-mono font-bold block mt-1 ${discountPercent > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                         {promoMsg}
                       </span>
                     )}
@@ -689,37 +795,29 @@ export default function TopUpModal() {
         </div>
 
         {/* =============================================================== */}
-        {/* STICKY BOTTOM CHECKOUT FOOTER BAR                               */}
+        {/* 3. STICKY BOTTOM CHECKOUT ACTION BAR                            */}
         {/* =============================================================== */}
         {!currentOrder && (
-          <div className="p-4 sm:p-5 bg-[#090D18] border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4 w-full sm:w-auto">
-              <div>
-                <span className="text-[10px] text-neutral-400 uppercase font-mono block">
-                  {t.checkout.total}
+          <div className="p-4 sm:p-5 bg-[#060913] border-t border-white/[0.1] flex items-center justify-between gap-4">
+            <div>
+              <span className="text-[10px] font-mono text-neutral-400 uppercase block">
+                {t.checkout.total}
+              </span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-xl sm:text-2xl font-black text-[#E5B55E] font-mono">
+                  ${discountedUSD.toFixed(2)}
                 </span>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-xl sm:text-2xl font-black text-[#E5B55E] font-mono">
-                    ${discountedUSD.toFixed(2)}
-                  </span>
-                  <span className="text-xs text-neutral-400 font-mono">
-                    ≈ {discountedKHR.toLocaleString()} ៛
-                  </span>
-                </div>
+                <span className="text-xs font-mono text-neutral-400">
+                  ≈ {discountedKHR.toLocaleString()} ៛
+                </span>
               </div>
-
-              {discountPercent > 0 && (
-                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[10px] border border-emerald-500/30">
-                  10% OFF
-                </span>
-              )}
             </div>
 
-            <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={closeTopUp}
-                className="px-5 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-neutral-300 font-bold text-xs cursor-pointer"
+                className="px-4 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-neutral-300 font-bold text-xs cursor-pointer"
               >
                 {t.checkout.closeBtn}
               </button>
@@ -727,7 +825,7 @@ export default function TopUpModal() {
               <button
                 type="button"
                 onClick={handleProceedCheckout}
-                className="flex-1 sm:flex-initial px-8 py-3 rounded-xl bg-gradient-to-r from-[#E5B55E] via-[#FBBF24] to-[#D97706] hover:from-[#FBBF24] hover:to-[#B45309] text-black font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(229,181,94,0.35)] hover:shadow-[0_0_28px_rgba(229,181,94,0.55)] transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#E5B55E] via-[#FBBF24] to-[#F59E0B] hover:from-[#FBBF24] hover:to-[#D97706] text-black font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(229,181,94,0.4)] hover:shadow-[0_0_30px_rgba(229,181,94,0.7)] transition-all cursor-pointer flex items-center gap-2"
               >
                 <QrCode className="w-4 h-4" />
                 <span>{t.checkout.payBtn}</span>

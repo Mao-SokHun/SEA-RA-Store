@@ -74,6 +74,62 @@ export default function Footer() {
               <ShieldCheck className="w-4 h-4 shrink-0" />
               <span>Official Smile.One API Authorized Gateway</span>
             </div>
+
+            {/* Official Contact & Community Channels (Facebook & Telegram) */}
+            <div className="pt-2 space-y-2.5">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#E5B55E]" />
+                <span>{language === 'km' ? 'ទំនាក់ទំនង & សហគមន៍ផ្លូវការ' : 'Official Contact & Community'}</span>
+              </span>
+              <div className="flex flex-wrap items-center gap-2.5">
+                {/* Facebook Page Button */}
+                <a
+                  href="https://facebook.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[#1877F2]/10 hover:bg-[#1877F2]/20 border border-[#1877F2]/30 hover:border-[#1877F2]/60 text-white text-xs font-semibold transition-all shadow-[0_0_15px_rgba(24,119,242,0.15)] hover:shadow-[0_0_22px_rgba(24,119,242,0.35)] group"
+                >
+                  <div className="w-6 h-6 rounded-lg bg-[#1877F2] flex items-center justify-center shrink-0 shadow-sm">
+                    <svg className="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col text-left leading-tight">
+                    <span className="text-xs font-bold text-white group-hover:text-[#60a5fa] transition-colors">
+                      Facebook Page
+                    </span>
+                    <span className="text-[10px] font-mono text-neutral-400">
+                      @searacambodia
+                    </span>
+                  </div>
+                  <ExternalLink className="w-3 h-3 text-neutral-500 group-hover:text-white transition-colors ml-0.5" />
+                </a>
+
+                {/* Telegram Contact & Support Button */}
+                <a
+                  href="https://t.me/seara_support_kh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[#229ED9]/10 hover:bg-[#229ED9]/20 border border-[#229ED9]/30 hover:border-[#229ED9]/60 text-white text-xs font-semibold transition-all shadow-[0_0_15px_rgba(34,158,217,0.15)] hover:shadow-[0_0_22px_rgba(34,158,217,0.35)] group"
+                >
+                  <div className="w-6 h-6 rounded-lg bg-[#229ED9] flex items-center justify-center shrink-0 shadow-sm">
+                    <svg className="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24">
+                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18.718-1.574 7.42-2.28 10.741-.299 1.405-.866 1.636-1.411 1.636-.928 0-1.633-.697-2.533-1.288-1.408-.925-2.204-1.499-3.572-2.4-1.58-1.042-.556-1.615.345-2.551.236-.245 4.331-3.971 4.41-4.309.01-.042.019-.2-.075-.283-.095-.083-.233-.055-.334-.032-.142.032-2.408 1.531-6.797 4.493-.643.442-1.226.657-1.748.646-.576-.012-1.684-.325-2.508-.593-1.01-.329-1.213-.503-1.143-.889.037-.202.327-.409.871-.622 3.415-1.488 5.694-2.469 6.837-2.943 3.256-1.354 3.933-1.59 4.375-1.598.097-.002.314.022.455.137.118.097.151.228.163.323.013.109.006.284-.002.392z" />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col text-left leading-tight">
+                    <span className="text-xs font-bold text-white group-hover:text-[#38bdf8] transition-colors">
+                      Telegram Contact
+                    </span>
+                    <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      @seara_support_kh
+                    </span>
+                  </div>
+                  <ExternalLink className="w-3 h-3 text-neutral-500 group-hover:text-white transition-colors ml-0.5" />
+                </a>
+              </div>
+            </div>
           </div>
 
           {/* Card 2: Quick Operations (3 Cols) */}

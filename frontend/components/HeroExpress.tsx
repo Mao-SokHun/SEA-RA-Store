@@ -153,7 +153,7 @@ export default function HeroExpress() {
 
   return (
     <section
-      className="relative isolate -mt-20 sm:-mt-24 pt-24 sm:pt-32 pb-16 select-none overflow-hidden"
+      className="relative isolate pt-6 sm:pt-10 pb-16 select-none overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

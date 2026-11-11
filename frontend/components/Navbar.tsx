@@ -41,7 +41,17 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [suggestionIdx, setSuggestionIdx] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Track scroll position to enhance glassmorphism on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 15);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Cycling search placeholder every 2.8s
   useEffect(() => {
@@ -93,15 +103,21 @@ export default function Navbar() {
     : [];
 
   return (
-    <header className="sticky top-2 sm:top-4 z-50 px-3 sm:px-6 max-w-7xl mx-auto w-full select-none">
-      {/* ================================================================= */}
-      {/* FLOATING ISLAND CAPSULE (BENTO GLASSMORPHISM WITH LASER GLOW)     */}
-      {/* ================================================================= */}
-      <div className="relative rounded-2xl sm:rounded-3xl bg-[#080D1A]/85 backdrop-blur-2xl border border-white/[0.12] shadow-[0_12px_40px_rgba(0,0,0,0.65)] px-3.5 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-3 sm:gap-6 transition-all">
-        
-        {/* Laser Underline Glow */}
-        <div className="absolute bottom-0 inset-x-8 h-[1px] bg-gradient-to-r from-transparent via-[#E5B55E]/60 via-[#00D4FF]/40 to-transparent pointer-events-none" />
+    <header
+      className={`sticky top-0 z-50 w-full select-none transition-all duration-300 ${
+        scrolled
+          ? 'bg-[#070B16]/75 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_12px_40px_rgba(0,0,0,0.65)]'
+          : 'bg-[#070B16]/50 backdrop-blur-xl border-b border-white/[0.05] shadow-[0_4px_24px_rgba(0,0,0,0.3)]'
+      }`}
+    >
+      {/* Laser Gradient Accent Line along the bottom of the header */}
+      <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#E5B55E]/40 via-[#00D4FF]/30 to-transparent pointer-events-none" />
 
+      {/* ================================================================= */}
+      {/* MAIN GLASS NAVBAR CONTENT CONTAINER                               */}
+      {/* ================================================================= */}
+      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3 sm:gap-6">
+        
         {/* ================================================================= */}
         {/* BRAND EMBLEM: SEA RA PRESTIGE                                    */}
         {/* ================================================================= */}
@@ -154,7 +170,7 @@ export default function Navbar() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setSearchFocused(true)}
               placeholder={`ស្វែងរក ${SEARCH_SUGGESTIONS[suggestionIdx]}`}
-              className="w-full bg-[#0D1424]/80 hover:bg-[#10182C] focus:bg-[#10182C] border border-white/[0.1] focus:border-[#E5B55E]/80 rounded-xl sm:rounded-2xl pl-10 pr-16 py-2 sm:py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none transition-all shadow-inner"
+              className="w-full bg-white/[0.05] hover:bg-white/[0.08] focus:bg-white/[0.1] border border-white/[0.08] focus:border-[#E5B55E]/70 rounded-xl sm:rounded-2xl pl-10 pr-16 py-2 sm:py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none transition-all backdrop-blur-md shadow-inner"
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
               {searchQuery ? (
@@ -230,14 +246,14 @@ export default function Navbar() {
           <button
             type="button"
             onClick={openTrack}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-[#E5B55E]/50 text-xs font-semibold text-neutral-200 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] hover:border-[#E5B55E]/50 text-xs font-semibold text-neutral-200 backdrop-blur-md transition-all cursor-pointer shadow-sm"
           >
             <Receipt className="w-3.5 h-3.5 text-[#E5B55E]" />
             <span className="hidden sm:inline">{t.nav.trackOrder}</span>
           </button>
 
           {/* Smooth Sliding Toggle Pill for USD / KHR */}
-          <div className="hidden sm:flex items-center relative bg-black/60 p-0.5 rounded-xl border border-white/[0.1] shadow-inner">
+          <div className="hidden sm:flex items-center relative bg-black/50 backdrop-blur-md p-0.5 rounded-xl border border-white/[0.08] shadow-inner">
             <div
               className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-lg bg-gradient-to-r from-[#E5B55E] to-[#F59E0B] shadow-sm transition-transform duration-300 ease-out ${
                 currency === 'KHR' ? 'translate-x-full' : 'translate-x-0'
@@ -267,7 +283,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setLanguage(language === 'km' ? 'en' : 'km')}
-            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-[#111726] hover:bg-[#182035] border border-white/[0.08] text-xs font-bold text-neutral-200 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] backdrop-blur-md text-xs font-bold text-neutral-200 transition-all cursor-pointer shadow-sm"
           >
             <Globe className="w-3.5 h-3.5 text-[#00D4FF]" />
             <span>{language === 'km' ? '🇰🇭 ខ្មែរ' : '🇺🇸 EN'}</span>
@@ -278,7 +294,7 @@ export default function Navbar() {
             href="https://t.me/seara_support_kh"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-bold text-white transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] group"
+            className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-md text-xs font-bold text-white transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] group"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -303,40 +319,42 @@ export default function Navbar() {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden mt-2 bg-[#090E1B]/95 backdrop-blur-2xl border border-white/[0.12] rounded-2xl p-4 space-y-4 shadow-2xl">
-          {/* Mobile Search */}
-          <div className="relative">
-            <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ស្វែងរកហ្គេម..."
-              className="w-full bg-[#10182C] border border-white/[0.1] rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-400 focus:outline-none focus:border-[#E5B55E]"
-            />
-          </div>
+        <div className="md:hidden max-w-7xl mx-auto px-4 pb-4">
+          <div className="bg-[#090E1B]/95 backdrop-blur-2xl border border-white/[0.12] rounded-2xl p-4 space-y-4 shadow-2xl">
+            {/* Mobile Search */}
+            <div className="relative">
+              <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="ស្វែងរកហ្គេម..."
+                className="w-full bg-[#10182C] border border-white/[0.1] rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-400 focus:outline-none focus:border-[#E5B55E]"
+              />
+            </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-white/[0.08]">
-            <span className="text-xs font-bold text-neutral-400">Currency</span>
-            <div className="flex items-center bg-black/60 p-0.5 rounded-lg border border-white/[0.1]">
-              <button
-                type="button"
-                onClick={() => setCurrency('USD')}
-                className={`px-3 py-1 rounded text-xs font-mono font-black ${
-                  currency === 'USD' ? 'bg-[#E5B55E] text-black' : 'text-neutral-400'
-                }`}
-              >
-                USD
-              </button>
-              <button
-                type="button"
-                onClick={() => setCurrency('KHR')}
-                className={`px-3 py-1 rounded text-xs font-mono font-black ${
-                  currency === 'KHR' ? 'bg-[#E5B55E] text-black' : 'text-neutral-400'
-                }`}
-              >
-                KHR
-              </button>
+            <div className="flex items-center justify-between pt-2 border-t border-white/[0.08]">
+              <span className="text-xs font-bold text-neutral-400">Currency</span>
+              <div className="flex items-center bg-black/60 p-0.5 rounded-lg border border-white/[0.1]">
+                <button
+                  type="button"
+                  onClick={() => setCurrency('USD')}
+                  className={`px-3 py-1 rounded text-xs font-mono font-black ${
+                    currency === 'USD' ? 'bg-[#E5B55E] text-black' : 'text-neutral-400'
+                  }`}
+                >
+                  USD
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrency('KHR')}
+                  className={`px-3 py-1 rounded text-xs font-mono font-black ${
+                    currency === 'KHR' ? 'bg-[#E5B55E] text-black' : 'text-neutral-400'
+                  }`}
+                >
+                  KHR
+                </button>
+              </div>
             </div>
           </div>
         </div>

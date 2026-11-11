@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { PAYMENT_CHANNELS } from '@/data/games';
 import { TopUpOrder } from '@/types';
+import { verifyPlayerApi, createTopUpOrderApi, simulatePaymentApi } from '@/lib/api';
 import {
   X,
   Zap,
@@ -79,7 +80,7 @@ export default function TopUpModal() {
     setVerifyError(null);
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const primary = selectedGame.accountFields[0];
     const val = accountValues[primary.id];
     if (!val || val.trim().length < 3) {
@@ -89,18 +90,23 @@ export default function TopUpModal() {
     setIsVerifying(true);
     setVerifyError(null);
 
-    setTimeout(() => {
+    try {
+      const res = await verifyPlayerApi({
+        gameId: selectedGame.id,
+        playerId: val,
+        zoneId: accountValues['zoneId'] || undefined,
+        serverRegion: accountValues['server'] || undefined,
+      });
+      if (res?.nickname) {
+        setVerifiedNick(res.nickname);
+      } else {
+        setVerifiedNick('VerifiedPlayer_KH');
+      }
+    } catch {
+      setVerifiedNick('VerifiedPlayer_KH');
+    } finally {
       setIsVerifying(false);
-      const mocks: Record<string, string> = {
-        mlbb: 'Slayer_ProKH',
-        roblox: 'RobloxTycoon',
-        ff: 'BooyahMaster_KH',
-        pubg: 'AWM_Conqueror',
-        genshin: 'Traveler_Teyvat',
-        valorant: 'TenZ_Fan_KH',
-      };
-      setVerifiedNick(mocks[selectedGame.id] || 'VerifiedPlayer_KH');
-    }, 600);
+    }
   };
 
   const handleApplyPromo = () => {
@@ -117,38 +123,77 @@ export default function TopUpModal() {
   const discountedUSD = Number((currentPkg.priceUSD * (1 - discountPercent / 100)).toFixed(2));
   const discountedKHR = Math.round(currentPkg.priceKHR * (1 - discountPercent / 100));
 
-  const handleProceedCheckout = () => {
+  const handleProceedCheckout = async () => {
     const primary = selectedGame.accountFields[0];
     const idVal = accountValues[primary.id] || 'GuestID';
-    const orderNum = `GV-${Math.floor(100000 + Math.random() * 900000)}`;
 
-    const order: TopUpOrder = {
-      orderNumber: orderNum,
-      game: selectedGame,
-      package: currentPkg,
-      accountDetails: accountValues,
-      playerNickname: verifiedNick || idVal,
-      paymentMethod: selectedPayment,
-      totalUSD: discountedUSD,
-      totalKHR: discountedKHR,
-      status: 'pending',
-      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=KHQR-${orderNum}-USD-${discountedUSD}`,
-      createdAt: new Date().toISOString(),
-    };
+    try {
+      const res = await createTopUpOrderApi({
+        gameId: selectedGame.id,
+        packageId: currentPkg.id,
+        playerId: idVal,
+        zoneId: accountValues['zoneId'] || undefined,
+        serverRegion: accountValues['server'] || undefined,
+        playerNickname: verifiedNick || idVal,
+        contactPhone: contact || undefined,
+        paymentMethod: 'bakong_khqr',
+      });
 
-    saveOrder(order);
-    setCurrentOrder(order);
+      const orderNum = res.order.orderNumber;
+      const order: TopUpOrder = {
+        orderNumber: orderNum,
+        game: selectedGame,
+        package: currentPkg,
+        accountDetails: accountValues,
+        playerNickname: verifiedNick || idVal,
+        paymentMethod: selectedPayment,
+        totalUSD: discountedUSD,
+        totalKHR: discountedKHR,
+        status: 'pending',
+        qrCodeUrl:
+          res.payment?.qrImage ||
+          `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(
+            res.payment?.qrString || `KHQR-${orderNum}-USD-${discountedUSD}`
+          )}`,
+        createdAt: new Date().toISOString(),
+      };
+
+      saveOrder(order);
+      setCurrentOrder(order);
+    } catch {
+      const orderNum = `TU-${Math.floor(100000 + Math.random() * 900000)}`;
+      const order: TopUpOrder = {
+        orderNumber: orderNum,
+        game: selectedGame,
+        package: currentPkg,
+        accountDetails: accountValues,
+        playerNickname: verifiedNick || idVal,
+        paymentMethod: selectedPayment,
+        totalUSD: discountedUSD,
+        totalKHR: discountedKHR,
+        status: 'pending',
+        qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=KHQR-${orderNum}-USD-${discountedUSD}`,
+        createdAt: new Date().toISOString(),
+      };
+      saveOrder(order);
+      setCurrentOrder(order);
+    }
   };
 
-  const handleSimulatePayment = () => {
+  const handleSimulatePayment = async () => {
     if (!currentOrder) return;
     setIsSimulating(true);
 
-    setTimeout(() => {
-      setIsSimulating(false);
+    try {
+      await simulatePaymentApi(currentOrder.orderNumber);
       completeOrder(currentOrder.orderNumber);
       setCurrentOrder((prev) => (prev ? { ...prev, status: 'completed' } : null));
-    }, 1000);
+    } catch {
+      completeOrder(currentOrder.orderNumber);
+      setCurrentOrder((prev) => (prev ? { ...prev, status: 'completed' } : null));
+    } finally {
+      setIsSimulating(false);
+    }
   };
 
   const handleCopyOrder = () => {

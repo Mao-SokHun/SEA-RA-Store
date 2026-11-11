@@ -101,7 +101,7 @@ export default function Navbar() {
           </div>
 
           <div className="flex flex-col">
-            <div className="flex items-center gap-1.5 leading-none">
+            <div className="flex items-center gap-1.5 leading-snug">
               <span className="font-extrabold text-xl tracking-wider text-white">
                 SEA RA
               </span>
@@ -109,7 +109,7 @@ export default function Navbar() {
                 PRESTIGE
               </span>
             </div>
-            <span className="text-[10px] text-neutral-400 font-medium tracking-wide mt-1">
+            <span className="text-[10px] text-neutral-400 font-medium tracking-wide mt-0.5">
               {language === 'km' ? 'សេវាបញ្ចូលលុយហ្គេមផ្លូវការ' : 'Official Game Reload'}
             </span>
           </div>

@@ -42,12 +42,12 @@ export default function TrustGuarantees() {
     <section className="py-12 select-none border-t border-white/[0.06]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <h2 className="text-xl sm:text-2xl font-extrabold uppercase tracking-wider text-white">
+        {/* Header with adequate spacing for Khmer script */}
+        <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-white leading-snug">
             {t.trust.title}
           </h2>
-          <p className="text-xs sm:text-sm text-neutral-400 mt-1.5">
+          <p className="text-xs sm:text-sm text-neutral-400 leading-normal">
             {t.trust.subtitle}
           </p>
         </div>
@@ -61,11 +61,11 @@ export default function TrustGuarantees() {
                 key={idx}
                 className="p-6 rounded-3xl bg-[#0F1424] border border-white/[0.08] hover:border-white/[0.2] transition-all flex flex-col justify-between shadow-lg"
               >
-                <div className="space-y-4">
+                <div className="space-y-3.5">
                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${item.bg}`}>
                     <Icon className={`w-6 h-6 ${item.color}`} />
                   </div>
-                  <h3 className="text-sm sm:text-base font-extrabold text-white">
+                  <h3 className="text-sm sm:text-base font-extrabold text-white leading-snug">
                     {item.title}
                   </h3>
                   <p className="text-xs text-neutral-400 leading-relaxed">

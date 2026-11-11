@@ -16,9 +16,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         
         {/* Row 1: Brand & Publisher Partners */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 pb-12 border-b border-white/[0.06]">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-10 pb-12 border-b border-white/[0.06]">
           {/* Brand info */}
-          <div className="lg:col-span-4 space-y-4">
+          <div className="md:col-span-5 lg:col-span-4 space-y-4">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#E5B55E] to-[#C49740] flex items-center justify-center text-black font-black text-xs">
                 SR
@@ -27,35 +27,36 @@ export default function Footer() {
                 SEA RA PRESTIGE
               </span>
             </div>
-            <p className="text-xs text-neutral-400 leading-relaxed max-w-sm">
+            <p className="text-xs text-neutral-300 leading-relaxed max-w-sm">
               {t.footer.desc}
             </p>
             <div className="flex items-center gap-2 pt-1 text-xs text-emerald-400 font-bold">
-              <ShieldCheck className="w-4 h-4" />
+              <ShieldCheck className="w-4 h-4 shrink-0" />
               <span>Official Direct API Verified Gateway</span>
             </div>
           </div>
 
           {/* Quick Navigation */}
-          <div className="lg:col-span-3 space-y-3">
+          <div className="md:col-span-3 lg:col-span-3 space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-white">
               {t.footer.quickLinks}
             </h4>
             <div className="flex flex-col space-y-2 text-xs font-semibold text-neutral-300">
-              <a href="#game-catalog" className="hover:text-[#E5B55E] transition-colors">
+              <a href="#game-catalog" className="hover:text-[#E5B55E] transition-colors py-0.5">
                 {t.nav.games}
               </a>
               <button
                 type="button"
                 onClick={openTrack}
-                className="text-left hover:text-[#E5B55E] transition-colors cursor-pointer"
+                className="text-left hover:text-[#E5B55E] transition-colors cursor-pointer py-0.5"
               >
                 {t.nav.trackOrder}
               </button>
               <a
                 href="https://t.me/seara_support_kh"
                 target="_blank"
-                className="hover:text-[#E5B55E] transition-colors flex items-center gap-1"
+                rel="noopener noreferrer"
+                className="hover:text-[#E5B55E] transition-colors flex items-center gap-1 py-0.5"
               >
                 <span>{t.nav.support}</span>
                 <ExternalLink className="w-3 h-3 text-neutral-500" />
@@ -64,7 +65,7 @@ export default function Footer() {
           </div>
 
           {/* Official Game Publisher Gateways */}
-          <div className="lg:col-span-5 space-y-3">
+          <div className="md:col-span-4 lg:col-span-5 space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-white">
               {t.footer.officialPartners}
             </h4>
@@ -103,7 +104,7 @@ export default function Footer() {
                 ].map((bank) => (
                   <span
                     key={bank}
-                    className="px-2 py-0.5 rounded-md bg-[#111726] border border-white/[0.06] text-[10px] font-mono text-[#E5B55E]"
+                    className="px-2.5 py-1 rounded-md bg-[#111726] border border-white/[0.06] text-[10px] font-semibold text-[#E5B55E]"
                   >
                     {bank}
                   </span>

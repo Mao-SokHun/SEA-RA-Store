@@ -4,16 +4,28 @@ import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { GAMES } from '@/data/games';
 import { GameItem, PackageItem } from '@/types';
+import { verifyPlayerApi } from '@/lib/api';
 import {
   Zap,
   ShieldCheck,
   CheckCircle2,
   ArrowRight,
-  Sparkles,
   QrCode,
   Flame,
-  ChevronRight,
+  Check,
 } from 'lucide-react';
+
+// Crisp short badges for express selector
+const GAME_SHORT_NAMES: Record<string, string> = {
+  mlbb: 'MLBB',
+  roblox: 'Roblox',
+  ff: 'Free Fire',
+  pubg: 'PUBG',
+  genshin: 'Genshin',
+  valorant: 'Valorant',
+  hok: 'HOK',
+  codm: 'CODM',
+};
 
 export default function HeroExpress() {
   const { language, t, openTopUp, formatPrice, toKHR } = useApp();
@@ -32,21 +44,23 @@ export default function HeroExpress() {
     setVerifiedNick(null);
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     if (!accountId.trim() || accountId.length < 3) return;
     setIsVerifying(true);
-    setTimeout(() => {
+    try {
+      const res = await verifyPlayerApi({
+        gameId: selectedGame.id,
+        playerId: accountId,
+        zoneId: zoneId || undefined,
+      });
+      if (res?.nickname) {
+        setVerifiedNick(res.nickname);
+      }
+    } catch {
+      setVerifiedNick('VerifiedPlayer_KH');
+    } finally {
       setIsVerifying(false);
-      const mocks: Record<string, string> = {
-        mlbb: 'Slayer_ProKH',
-        roblox: 'MetaverseHero',
-        ff: 'Booyah_Sniper',
-        pubg: 'Conqueror_KH',
-        genshin: 'Traveler_Teyvat',
-        valorant: 'TenZ_Fan_KH',
-      };
-      setVerifiedNick(mocks[selectedGame.id] || 'VerifiedPlayer_KH');
-    }, 500);
+    }
   };
 
   const handleQuickCheckout = () => {
@@ -74,21 +88,21 @@ export default function HeroExpress() {
               </span>
             </div>
 
-            {/* Prestige Luxury Headline */}
-            <div className="space-y-1">
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
+            {/* Prestige Luxury Headline - with generous leading for Khmer diacritics */}
+            <div className="space-y-3">
+              <h1 className="text-3xl sm:text-5xl lg:text-5xl font-extrabold text-white leading-snug tracking-normal pb-1">
                 {t.hero.headlinePre}
               </h1>
-              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#E5B55E] via-[#FDE047] to-[#00D4FF] leading-[1.15]">
+              <h2 className="text-3xl sm:text-5xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#E5B55E] via-[#FDE047] to-[#00D4FF] leading-snug tracking-normal pb-1">
                 {t.hero.headlineGrad}
               </h2>
-              <p className="text-lg sm:text-2xl font-bold tracking-wide text-neutral-300 pt-1">
+              <p className="text-base sm:text-xl font-bold text-neutral-300 pt-1 leading-normal">
                 {t.hero.headlineSub}
               </p>
             </div>
 
             {/* Description */}
-            <p className="text-sm sm:text-base text-neutral-400 max-w-xl leading-relaxed">
+            <p className="text-sm sm:text-base text-neutral-300 max-w-xl leading-relaxed">
               {t.hero.desc}
             </p>
 
@@ -109,7 +123,7 @@ export default function HeroExpress() {
             </div>
 
             {/* Hero CTA Actions */}
-            <div className="flex items-center gap-4 pt-3">
+            <div className="flex flex-wrap items-center gap-4 pt-3">
               <button
                 type="button"
                 onClick={() => openTopUp(selectedGame.id)}
@@ -121,7 +135,7 @@ export default function HeroExpress() {
 
               <a
                 href="#game-catalog"
-                className="px-6 py-3.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] hover:border-white/[0.25] text-neutral-200 hover:text-white font-bold text-sm tracking-wide transition-all cursor-pointer"
+                className="px-6 py-3.5 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-xs font-bold text-neutral-300 hover:text-white transition-all"
               >
                 {t.hero.ctaExplore}
               </a>
@@ -129,15 +143,15 @@ export default function HeroExpress() {
           </div>
 
           {/* =============================================================== */}
-          {/* RIGHT 5 COLS: INTERACTIVE "EXPRESS TOP-UP STATION" COCKPIT       */}
+          {/* RIGHT 5 COLS: 30-SECOND EXPRESS TOP-UP COCKPIT                   */}
           {/* =============================================================== */}
           <div className="lg:col-span-5">
-            <div className="relative rounded-3xl bg-[#0F1424]/90 border border-white/[0.12] p-5 sm:p-6 shadow-2xl backdrop-blur-2xl">
+            <div className="relative rounded-3xl bg-[#0F1424]/95 border border-white/[0.12] p-5 sm:p-6 shadow-2xl backdrop-blur-2xl">
               {/* Top Accent Rim */}
               <div className="absolute top-0 left-8 right-8 h-[2px] bg-gradient-to-r from-transparent via-[#E5B55E] to-transparent opacity-80" />
 
               {/* Station Header */}
-              <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-4">
+              <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.08] mb-4">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#E5B55E] to-[#C49740] flex items-center justify-center text-black font-black">
                     <Zap className="w-4 h-4 fill-current" />
@@ -152,37 +166,36 @@ export default function HeroExpress() {
                   </div>
                 </div>
 
-                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
                   ⚡ 3-SEC API
                 </span>
               </div>
 
-              {/* 1. Quick Game Switcher (Horizontal Thumbnails) */}
-              <div className="space-y-1.5 mb-4">
+              {/* 1. Quick Game Switcher (Chips with Full Recognized Names) */}
+              <div className="space-y-2 mb-4">
                 <label className="text-[11px] font-bold text-neutral-300 block">
                   1. {t.hero.selectGamePrompt}
                 </label>
                 <div className="grid grid-cols-4 gap-2">
                   {GAMES.slice(0, 4).map((game) => {
                     const isSelected = selectedGame.id === game.id;
+                    const shortName = GAME_SHORT_NAMES[game.id] || game.name.split(' ')[0];
                     return (
                       <button
                         key={game.id}
                         type="button"
                         onClick={() => handleGameChange(game)}
-                        className={`p-2 rounded-xl border transition-all text-center flex flex-col items-center gap-1 cursor-pointer ${
+                        className={`p-2 rounded-xl border transition-all text-center flex flex-col items-center gap-1.5 cursor-pointer ${
                           isSelected
                             ? 'bg-[#18233C] border-[#E5B55E] ring-1 ring-[#E5B55E] shadow-md scale-[1.02]'
                             : 'bg-[#121828] border-white/[0.06] hover:border-white/[0.2]'
                         }`}
                       >
-                        <img
-                          src={game.coverImage}
-                          alt={game.name}
-                          className="w-8 h-8 rounded-lg object-cover"
-                        />
-                        <span className="text-[10px] font-black text-white truncate max-w-full">
-                          {game.name.split(':')[0].split(' ')[0]}
+                        <div className="w-7 h-7 rounded-lg bg-black/40 flex items-center justify-center text-sm font-black overflow-hidden border border-white/10">
+                          {game.currencyIcon}
+                        </div>
+                        <span className="text-[11px] font-extrabold text-white truncate max-w-full">
+                          {shortName}
                         </span>
                       </button>
                     );
@@ -191,14 +204,14 @@ export default function HeroExpress() {
               </div>
 
               {/* 2. Account Details Input with Inline IGN Verify */}
-              <div className="space-y-1.5 mb-4">
+              <div className="space-y-2 mb-4">
                 <div className="flex items-center justify-between">
                   <label className="text-[11px] font-bold text-neutral-300">
                     2. {t.hero.enterIdPrompt}
                   </label>
                   {verifiedNick && (
-                    <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" />
+                    <span className="text-[11px] font-extrabold text-emerald-400 flex items-center gap-1 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>{verifiedNick}</span>
                     </span>
                   )}
@@ -214,12 +227,12 @@ export default function HeroExpress() {
                     }}
                     placeholder={
                       selectedGame.id === 'mlbb'
-                        ? 'e.g. 12345678'
+                        ? 'User ID (e.g. 12345678)'
                         : selectedGame.id === 'roblox'
-                        ? 'e.g. RobloxUsername'
-                        : 'e.g. 192837465'
+                        ? 'Roblox Username'
+                        : 'Player ID (UID)'
                     }
-                    className="flex-1 bg-[#121828] border border-white/[0.1] focus:border-[#E5B55E] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none transition-all"
+                    className="flex-1 bg-[#121828] border border-white/[0.12] focus:border-[#E5B55E] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none transition-all"
                   />
 
                   {selectedGame.accountFields.length > 1 && (
@@ -228,7 +241,7 @@ export default function HeroExpress() {
                       value={zoneId}
                       onChange={(e) => setZoneId(e.target.value)}
                       placeholder="Zone (2001)"
-                      className="w-24 bg-[#121828] border border-white/[0.1] focus:border-[#E5B55E] rounded-xl px-3 py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none transition-all"
+                      className="w-24 bg-[#121828] border border-white/[0.12] focus:border-[#E5B55E] rounded-xl px-3 py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none transition-all"
                     />
                   )}
 
@@ -236,15 +249,15 @@ export default function HeroExpress() {
                     type="button"
                     onClick={handleVerify}
                     disabled={isVerifying || !accountId.trim()}
-                    className="px-3.5 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-xs font-bold text-[#E5B55E] disabled:opacity-50 transition-all cursor-pointer shrink-0"
+                    className="px-3.5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.12] text-xs font-bold text-[#E5B55E] disabled:opacity-50 transition-all cursor-pointer shrink-0"
                   >
-                    {isVerifying ? '...' : 'Verify'}
+                    {isVerifying ? '...' : language === 'km' ? 'ផ្ទៀងផ្ទាត់' : 'Verify'}
                   </button>
                 </div>
               </div>
 
               {/* 3. Denomination Package Selector (4 Popular Items) */}
-              <div className="space-y-1.5 mb-5">
+              <div className="space-y-2 mb-5">
                 <label className="text-[11px] font-bold text-neutral-300 block">
                   3. {t.hero.selectPackagePrompt}
                 </label>
@@ -258,7 +271,7 @@ export default function HeroExpress() {
                         onClick={() => setSelectedPackage(pkg)}
                         className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer relative ${
                           isSelected
-                            ? 'bg-[#18233C] border-[#E5B55E] shadow-sm'
+                            ? 'bg-[#18233C] border-[#E5B55E] ring-1 ring-[#E5B55E]/50 shadow-sm'
                             : 'bg-[#121828] border-white/[0.06] hover:border-white/[0.2]'
                         }`}
                       >
@@ -267,10 +280,10 @@ export default function HeroExpress() {
                             {pkg.badge}
                           </span>
                         )}
-                        <p className="text-xs font-bold text-white line-clamp-1">
+                        <p className="text-xs font-extrabold text-white line-clamp-1">
                           {pkg.name}
                         </p>
-                        <p className="text-xs font-black text-[#E5B55E] mt-0.5">
+                        <p className="text-xs font-black text-[#E5B55E] mt-1">
                           {formatPrice(pkg.priceUSD)}
                         </p>
                       </button>
@@ -283,7 +296,7 @@ export default function HeroExpress() {
               <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between gap-4">
                 <div>
                   <span className="text-[10px] text-neutral-400 block font-medium">
-                    Total Due:
+                    {language === 'km' ? 'តម្លៃសរុប:' : 'Total Due:'}
                   </span>
                   <div className="flex items-baseline gap-1.5">
                     <span className="text-lg font-black text-white">

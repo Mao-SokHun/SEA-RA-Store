@@ -49,14 +49,14 @@ export default function GameCatalog() {
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <div className="w-1.5 h-4 bg-[#E5B55E] rounded-full" />
-              <h2 className="text-xl sm:text-2xl font-extrabold uppercase tracking-wider text-white">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-5 bg-[#E5B55E] rounded-full" />
+              <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-wide">
                 {t.catalog.title}
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-neutral-400">
+            <p className="text-xs sm:text-sm text-neutral-400 pl-3.5">
               {t.catalog.subtitle}
             </p>
           </div>
@@ -107,16 +107,16 @@ export default function GameCatalog() {
                       alt={game.name}
                       className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0F1424] via-[#0F1424]/30 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0F1424] via-[#0F1424]/40 to-transparent" />
 
                     {/* Instant Speed Top Badge */}
-                    <div className="absolute top-3 left-3 px-2 py-0.5 rounded-lg bg-black/70 border border-white/20 backdrop-blur-md text-[9px] font-black uppercase text-emerald-400 flex items-center gap-1 shadow-sm">
+                    <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-lg bg-black/75 border border-white/20 backdrop-blur-md text-[9px] font-black uppercase text-emerald-400 flex items-center gap-1 shadow-sm">
                       <Zap className="w-2.5 h-2.5 fill-current" />
                       <span>⚡ 3s API</span>
                     </div>
 
                     {/* Today Reloads Count */}
-                    <div className="absolute top-3 right-3 px-2 py-0.5 rounded-lg bg-black/60 border border-white/10 backdrop-blur-md text-[9px] font-bold text-neutral-300">
+                    <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-lg bg-black/70 border border-white/10 backdrop-blur-md text-[9px] font-bold text-neutral-300">
                       {game.ordersToday.toLocaleString()} {t.catalog.ordersTodaySuffix}
                     </div>
                   </div>
@@ -125,7 +125,7 @@ export default function GameCatalog() {
                   <div className="p-4 space-y-3 flex-1 flex flex-col justify-between -mt-3 relative z-10">
                     <div>
                       {/* Publisher Subtitle */}
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 truncate">
+                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 truncate">
                         {game.publisher}
                       </p>
 
@@ -136,7 +136,7 @@ export default function GameCatalog() {
 
                       {/* Currency & Package Count */}
                       <div className="flex items-center justify-between text-xs text-neutral-300 font-semibold mt-1">
-                        <span className="text-[#00D4FF] text-[11px]">
+                        <span className="text-[#00D4FF] text-[11px] font-bold">
                           {game.currencyName}
                         </span>
                         <span className="text-neutral-400 text-[10px]">
@@ -146,12 +146,12 @@ export default function GameCatalog() {
                     </div>
 
                     {/* Bottom Pricing & Top-Up Button */}
-                    <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2">
-                      <div>
-                        <span className="text-[9px] text-neutral-400 block font-medium">
+                    <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between gap-2">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] text-neutral-400 font-medium">
                           {t.catalog.startingFrom}
                         </span>
-                        <span className="text-xs sm:text-sm font-black text-[#E5B55E] font-mono">
+                        <span className="text-xs sm:text-sm font-black text-[#E5B55E]">
                           {formatPrice(lowestPrice)}
                         </span>
                       </div>
@@ -162,7 +162,7 @@ export default function GameCatalog() {
                           e.stopPropagation();
                           openTopUp(game.id);
                         }}
-                        className="px-3.5 py-2 rounded-xl bg-white/[0.06] group-hover:bg-[#E5B55E] group-hover:text-black border border-white/[0.1] group-hover:border-[#E5B55E] text-xs font-black uppercase tracking-wider text-neutral-200 transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
+                        className="px-3 py-1.5 rounded-xl bg-white/[0.06] group-hover:bg-[#E5B55E] group-hover:text-black border border-white/[0.1] group-hover:border-[#E5B55E] text-xs font-black text-neutral-200 transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
                       >
                         <span>{t.catalog.instantBtn}</span>
                         <ArrowRight className="w-3.5 h-3.5" />

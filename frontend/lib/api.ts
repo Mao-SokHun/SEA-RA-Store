@@ -4,7 +4,10 @@
  */
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+  process.env.NEXT_PUBLIC_API_URL ||
+  (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app')
+    ? 'https://game-marketplace-backend-xbyk.onrender.com/api/v1'
+    : 'http://localhost:5000/api/v1');
 
 export interface VerifyPlayerRequest {
   gameId: number | string;

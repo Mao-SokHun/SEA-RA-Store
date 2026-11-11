@@ -140,14 +140,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* ================================================================= */}
-        {/* 5. PUBLISHER DISCLAIMER BAR (NO MOONTON DIRECT CLAIM)             */}
-        {/* ================================================================= */}
-        <div className="p-3.5 rounded-xl bg-black/40 border border-white/[0.06] text-[10px] sm:text-[11px] text-neutral-400 leading-relaxed font-mono">
-          <p>
-            <strong className="text-neutral-300">PUBLISHER TRADEMARK NOTICE:</strong> Mobile Legends: Bang Bang, Roblox, Free Fire, PUBG Mobile, Genshin Impact, and Valorant are registered trademarks of their respective publishers (Smile.One Reseller API, Garena, Tencent Games, Roblox Corp, HoYoverse, Riot Games). SEA RA Prestige operates as an independent authorized direct top-up reseller gateway in Cambodia.
-          </p>
-        </div>
 
         {/* ================================================================= */}
         {/* 6. BOTTOM COPYRIGHT & ASCEND BACK-TO-TOP ROCKET BUTTON            */}

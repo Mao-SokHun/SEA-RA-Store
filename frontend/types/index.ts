@@ -62,6 +62,7 @@ export interface PaymentChannel {
   type: 'khqr' | 'bank' | 'wallet' | 'crypto';
   fee: string;
   isPopular?: boolean;
+  disabled?: boolean;
 }
 
 export interface TopUpOrder {

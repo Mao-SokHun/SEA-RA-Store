@@ -1,0 +1,219 @@
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { useApp } from '@/context/AppContext';
+import {
+  Receipt,
+  Search,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+  ShieldCheck,
+  AlertCircle,
+  Copy,
+  Check,
+  ArrowLeft,
+} from 'lucide-react';
+
+export default function TrackOrderPage() {
+  const { language, recentOrders = [] } = useApp();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const ordersList = recentOrders || [];
+  const cleanQuery = searchQuery.trim().toLowerCase();
+  const matchedOrders = cleanQuery
+    ? ordersList.filter(
+        (o) =>
+          o.orderNumber.toLowerCase().includes(cleanQuery) ||
+          o.playerNickname.toLowerCase().includes(cleanQuery) ||
+          (o.game?.name && o.game.name.toLowerCase().includes(cleanQuery)) ||
+          (o.accountDetails &&
+            Object.values(o.accountDetails).some((v) => v.toLowerCase().includes(cleanQuery)))
+      )
+    : ordersList;
+
+  const handleCopy = (id: string) => {
+    navigator.clipboard.writeText(id);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  return (
+    <div className="min-h-screen py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto select-none">
+      
+      {/* Back button */}
+      <Link
+        href="/"
+        className="inline-flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-white mb-8 transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span>{language === 'km' ? 'ត្រឡប់ទៅទំព័រដើម' : 'Back to Home'}</span>
+      </Link>
+
+      <div className="space-y-4 mb-8">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold">
+          <Receipt className="w-4 h-4" />
+          <span>ORDER TRACKING & RECEIPT LOOKUP</span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl font-black text-white">
+          {language === 'km' ? 'ពិនិត្យស្ថានភាពការបញ្ជាទិញ' : 'Track Your Order'}
+        </h1>
+        <p className="text-xs sm:text-sm text-neutral-400">
+          {language === 'km'
+            ? 'ស្វែងរកតាមរយៈលេខវិក្កយបត្រ (Order ID) ឬលេខសម្គាល់គណនី (Player ID) របស់អ្នក'
+            : 'Look up real-time delivery status using your Order ID or Player ID.'}
+        </p>
+      </div>
+
+      {/* Search Input Box */}
+      <div className="bg-[#090E1E] rounded-3xl border border-white/[0.1] p-4 sm:p-6 shadow-xl mb-8 space-y-3">
+        <div className="flex gap-2.5">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
+              placeholder={language === 'km' ? 'បញ្ចូលលេខ Order ID (ឧ. TU-ML-98421) ឬ User ID...' : 'Enter Order ID (e.g. TU-ML-98421) or User ID...'}
+              className="w-full bg-black/40 border border-white/[0.12] focus:border-cyan-400 rounded-2xl pl-11 pr-4 py-3 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none transition-all font-mono"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Orders List / Empty State */}
+      <div className="space-y-4">
+        {matchedOrders.length === 0 ? (
+          <div className="text-center py-16 bg-[#090E1E] rounded-3xl border border-white/[0.08] p-8 space-y-4">
+            <div className="w-16 h-16 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mx-auto text-neutral-500">
+              <Receipt className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-white">
+                {language === 'km' ? 'មិនមានទិន្នន័យបញ្ជាទិញឡើយ' : 'No Orders Found'}
+              </h3>
+              <p className="text-xs text-neutral-400 mt-1 max-w-sm mx-auto">
+                {language === 'km'
+                  ? 'ប្រសិនបើអ្នកទើបតែបានទិញ សូមប្រាកដថាអ្នកបានវាយបញ្ចូលលេខ Order ID ត្រឹមត្រូវ។'
+                  : 'Ensure you typed the exact Order Number from your payment receipt.'}
+              </p>
+            </div>
+            <Link
+              href="/#game-catalog"
+              className="inline-block px-6 py-2.5 rounded-xl bg-[#E5B55E] text-black font-black text-xs uppercase tracking-wider"
+            >
+              {language === 'km' ? 'ទៅកាន់កាតាឡុកហ្គេម' : 'Browse Games'}
+            </Link>
+          </div>
+        ) : (
+          matchedOrders.map((ord) => (
+            <div
+              key={ord.orderNumber}
+              className="bg-[#090E1E] rounded-3xl border border-white/[0.1] hover:border-cyan-400/40 p-5 sm:p-6 shadow-xl space-y-4 transition-all"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={ord.game?.coverImage || '/placeholder.png'}
+                    alt={ord.game?.name || 'Game'}
+                    className="w-10 h-10 rounded-xl object-cover border border-white/[0.1]"
+                  />
+                  <div>
+                    <h3 className="text-sm font-black text-white">
+                      {ord.game?.name || 'Game'} • {ord.package?.name || 'Top-Up'}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs font-mono text-cyan-300 font-bold">
+                        #{ord.orderNumber}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy(ord.orderNumber)}
+                        className="text-neutral-500 hover:text-white transition-colors cursor-pointer"
+                      >
+                        {copiedId === ord.orderNumber ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-mono ${
+                      ord.status === 'completed'
+                        ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
+                        : 'bg-amber-500/15 border border-amber-500/30 text-amber-400'
+                    }`}
+                  >
+                    {ord.status === 'completed' ? (
+                      <>
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>COMPLETED (INJECTED)</span>
+                      </>
+                    ) : (
+                      <>
+                        <Clock className="w-3.5 h-3.5 animate-spin" />
+                        <span>PENDING PAYMENT</span>
+                      </>
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              {/* Order Info Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div>
+                  <span className="text-[10px] text-neutral-400 font-mono block">COMBATANT ID:</span>
+                  <span className="text-white font-bold font-mono truncate block">
+                    {ord.playerNickname}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-neutral-400 font-mono block">AMOUNT:</span>
+                  <span className="text-[#E5B55E] font-black font-mono block">
+                    ${ord.totalUSD.toFixed(2)} ({ord.totalKHR.toLocaleString()} ៛)
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-neutral-400 font-mono block">GATEWAY:</span>
+                  <span className="text-neutral-300 font-mono block">Bakong KHQR</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-neutral-400 font-mono block">DATE:</span>
+                  <span className="text-neutral-400 font-mono block">
+                    {new Date(ord.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Telegram Support Button if needed */}
+              <div className="pt-2 flex items-center justify-between text-xs">
+                <span className="text-[11px] text-neutral-500">
+                  {language === 'km' ? 'ត្រូវការជំនួយសម្រាប់ Order នេះ?' : 'Need assistance with this order?'}
+                </span>
+                <a
+                  href={`https://t.me/sokhunmao?text=${encodeURIComponent(`Hello SEA RA Support, I need help with Order #${ord.orderNumber}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs text-[#38bdf8] hover:underline"
+                >
+                  <span>Telegram Support</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+    </div>
+  );
+}

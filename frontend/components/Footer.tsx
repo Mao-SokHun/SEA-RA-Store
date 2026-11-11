@@ -72,14 +72,14 @@ export default function Footer() {
 
             {/* Official Contact & Community Channels (Facebook & Telegram) */}
             <div className="pt-2 space-y-2.5">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
+              <span className="text-[11px] font-bold tracking-wider text-neutral-400 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#E5B55E]" />
                 <span>{language === 'km' ? 'ទំនាក់ទំនង & សហគមន៍ផ្លូវការ' : 'Official Contact & Community'}</span>
               </span>
               <div className="flex flex-wrap items-center gap-2.5">
                 {/* Facebook Page Button */}
                 <a
-                  href="https://facebook.com"
+                  href="https://www.facebook.com/share/1FNKuGBCrq/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[#1877F2]/10 hover:bg-[#1877F2]/20 border border-[#1877F2]/30 hover:border-[#1877F2]/60 text-white text-xs font-semibold transition-all shadow-[0_0_15px_rgba(24,119,242,0.15)] hover:shadow-[0_0_22px_rgba(24,119,242,0.35)] group"
@@ -93,8 +93,8 @@ export default function Footer() {
                     <span className="text-xs font-bold text-white group-hover:text-[#60a5fa] transition-colors">
                       Facebook Page
                     </span>
-                    <span className="text-[10px] font-mono text-neutral-400">
-                      @searacambodia
+                    <span className="text-[10px] text-neutral-400">
+                      Official Page
                     </span>
                   </div>
                   <ExternalLink className="w-3 h-3 text-neutral-500 group-hover:text-white transition-colors ml-0.5" />
@@ -102,7 +102,7 @@ export default function Footer() {
 
                 {/* Telegram Contact & Support Button */}
                 <a
-                  href="https://t.me/seara_support_kh"
+                  href="https://t.me/sokhunmao"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[#229ED9]/10 hover:bg-[#229ED9]/20 border border-[#229ED9]/30 hover:border-[#229ED9]/60 text-white text-xs font-semibold transition-all shadow-[0_0_15px_rgba(34,158,217,0.15)] hover:shadow-[0_0_22px_rgba(34,158,217,0.35)] group"
@@ -116,9 +116,9 @@ export default function Footer() {
                     <span className="text-xs font-bold text-white group-hover:text-[#38bdf8] transition-colors">
                       Telegram Contact
                     </span>
-                    <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
+                    <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      @seara_support_kh
+                      @sokhunmao
                     </span>
                   </div>
                   <ExternalLink className="w-3 h-3 text-neutral-500 group-hover:text-white transition-colors ml-0.5" />
@@ -129,38 +129,31 @@ export default function Footer() {
 
           {/* Card 2: Quick Operations (3 Cols) */}
           <div className="md:col-span-3 space-y-3">
-            <h4 className="text-xs font-mono font-black uppercase tracking-wider text-white flex items-center gap-1.5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
               <span className="w-1 h-3 bg-[#E5B55E] rounded-full" />
               <span>{t.footer.quickLinks}</span>
             </h4>
             <div className="flex flex-col space-y-2 text-xs font-semibold text-neutral-300">
-              <a href="#game-catalog" className="hover:text-[#E5B55E] transition-colors py-0.5 flex items-center gap-1.5">
+              <Link href="/games" className="hover:text-[#E5B55E] transition-colors py-0.5 flex items-center gap-1.5">
                 <span>{t.nav.games}</span>
-              </a>
-              <button
-                type="button"
-                onClick={openTrack}
-                className="text-left hover:text-[#E5B55E] transition-colors cursor-pointer py-0.5 flex items-center gap-1.5"
-              >
+              </Link>
+              <Link href="/how-to-buy" className="hover:text-[#E5B55E] transition-colors py-0.5 flex items-center gap-1.5">
+                <span>{language === 'km' ? 'របៀបទិញ (How to Buy)' : 'How to Buy Guide'}</span>
+              </Link>
+              <Link href="/track-order" className="hover:text-[#E5B55E] transition-colors py-0.5 flex items-center gap-1.5">
                 <Receipt className="w-3.5 h-3.5 text-[#E5B55E]" />
                 <span>{t.nav.trackOrder}</span>
-              </button>
-              <a
-                href="https://t.me/seara_support_kh"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-[#E5B55E] transition-colors flex items-center gap-1.5 py-0.5"
-              >
+              </Link>
+              <Link href="/support" className="hover:text-[#E5B55E] transition-colors flex items-center gap-1.5 py-0.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span>{t.nav.support} (Telegram 24/7)</span>
-                <ExternalLink className="w-3 h-3 text-neutral-500" />
-              </a>
+              </Link>
             </div>
           </div>
 
           {/* Card 3: Secured Payment Infrastructure (4 Cols) */}
           <div className="md:col-span-4 space-y-3">
-            <h4 className="text-xs font-mono font-black uppercase tracking-wider text-white flex items-center gap-1.5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
               <span className="w-1 h-3 bg-[#00D4FF] rounded-full" />
               <span>{t.footer.bankingPartners}</span>
             </h4>
@@ -195,16 +188,24 @@ export default function Footer() {
         {/* ================================================================= */}
         {/* 6. BOTTOM COPYRIGHT & ASCEND BACK-TO-TOP ROCKET BUTTON            */}
         {/* ================================================================= */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-neutral-400 pt-2">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-400 pt-2">
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             <p>{t.footer.copyright}</p>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px]">
-            <span>Privacy Policy</span>
+          <div className="flex items-center gap-3 sm:gap-4 text-[11px]">
+            <Link href="/privacy" className="hover:text-[#E5B55E] transition-colors">
+              Privacy Policy
+            </Link>
             <span>•</span>
-            <span>Terms of Service</span>
+            <Link href="/terms" className="hover:text-[#E5B55E] transition-colors">
+              Terms of Service
+            </Link>
+            <span>•</span>
+            <Link href="/refund" className="hover:text-[#E5B55E] transition-colors">
+              Refund Policy
+            </Link>
             <span>•</span>
             
             {/* ASCEND ROCKET BUTTON */}

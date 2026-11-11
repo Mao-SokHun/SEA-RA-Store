@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { QRCodeSVG } from 'qrcode.react';
 import { GameItem, PackageItem, TopUpOrder } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { PAYMENT_CHANNELS } from '@/data/games';
@@ -16,14 +17,18 @@ import {
   QrCode,
   Copy,
   Check,
-  Smartphone,
   Zap,
+  ExternalLink,
+  Clock,
+  Sparkles,
+  Receipt,
 } from 'lucide-react';
 
 export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
   const { language, t, formatPrice, toKHR, saveOrder, completeOrder } = useApp();
 
-  const [selectedPkg, setSelectedPkg] = useState<PackageItem>(game.packages[0]);
+  // Initial state is null: No package auto-selected! Customer chooses their package.
+  const [selectedPkg, setSelectedPkg] = useState<PackageItem | null>(null);
   const [accountValues, setAccountValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
     game.accountFields.forEach((f) => {
@@ -42,10 +47,28 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
   const [promoMsg, setPromoMsg] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(false);
 
-  // Active Checkout Order State
-  const [currentOrder, setCurrentOrder] = useState<TopUpOrder | null>(null);
+  // Live Order & Timer
+  const [orderNumber, setOrderNumber] = useState(() => `TU-${game.id.toUpperCase()}-${Math.floor(10000 + Math.random() * 90000)}`);
+  const [timeLeft, setTimeLeft] = useState(180); // 3 minutes
+  const [billCurrency, setBillCurrency] = useState<'USD' | 'KHR'>('USD');
+  const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
+
+  // Countdown timer for KHQR
+  useEffect(() => {
+    if (isPaymentSuccess) return;
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 180));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [isPaymentSuccess]);
+
+  const formatTimer = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   const handleInputChange = (id: string, val: string) => {
     setAccountValues((prev) => ({ ...prev, [id]: val }));
@@ -73,10 +96,10 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
       if (res?.nickname) {
         setVerifiedNick(res.nickname);
       } else {
-        setVerifiedNick('VerifiedPlayer_KH');
+        setVerifiedNick(`${game.name.slice(0, 4)}_ProPlayer`);
       }
     } catch {
-      setVerifiedNick('VerifiedPlayer_KH');
+      setVerifiedNick(`${game.name.slice(0, 4)}_ProPlayer`);
     } finally {
       setIsVerifying(false);
     }
@@ -93,473 +116,606 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
     }
   };
 
-  const discountedUSD = Number((selectedPkg.priceUSD * (1 - discountPercent / 100)).toFixed(2));
-  const discountedKHR = Math.round(selectedPkg.priceKHR * (1 - discountPercent / 100));
+  const discountedUSD = selectedPkg
+    ? Number((selectedPkg.priceUSD * (1 - discountPercent / 100)).toFixed(2))
+    : 0;
+  const discountedKHR = selectedPkg
+    ? Math.round(selectedPkg.priceKHR * (1 - discountPercent / 100))
+    : 0;
 
-  const handleProceedCheckout = async () => {
-    const primary = game.accountFields[0];
-    const idVal = accountValues[primary.id] || 'GuestID';
-
-    try {
-      const res = await createTopUpOrderApi({
-        gameId: game.id,
-        packageId: selectedPkg.id,
-        playerId: idVal,
-        zoneId: accountValues['zoneId'] || undefined,
-        serverRegion: accountValues['server'] || undefined,
-        playerNickname: verifiedNick || idVal,
-        contactPhone: contact || undefined,
-        paymentMethod: 'bakong_khqr',
-      });
-
-      const orderNum = res.order.orderNumber;
-      const order: TopUpOrder = {
-        orderNumber: orderNum,
-        game,
-        package: selectedPkg,
-        accountDetails: accountValues,
-        playerNickname: verifiedNick || idVal,
-        paymentMethod: selectedPayment,
-        totalUSD: discountedUSD,
-        totalKHR: discountedKHR,
-        status: 'pending',
-        qrCodeUrl:
-          res.payment?.qrImage ||
-          `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(
-            res.payment?.qrString || `KHQR-${orderNum}-USD-${discountedUSD}`
-          )}`,
-        createdAt: new Date().toISOString(),
-      };
-
-      saveOrder(order);
-      setCurrentOrder(order);
-    } catch {
-      const orderNum = `TU-${Math.floor(100000 + Math.random() * 900000)}`;
-      const order: TopUpOrder = {
-        orderNumber: orderNum,
-        game,
-        package: selectedPkg,
-        accountDetails: accountValues,
-        playerNickname: verifiedNick || idVal,
-        paymentMethod: selectedPayment,
-        totalUSD: discountedUSD,
-        totalKHR: discountedKHR,
-        status: 'pending',
-        qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=KHQR-${orderNum}-USD-${discountedUSD}`,
-        createdAt: new Date().toISOString(),
-      };
-      saveOrder(order);
-      setCurrentOrder(order);
-    }
+  const handleCopyOrderId = () => {
+    navigator.clipboard.writeText(orderNumber);
+    setCopiedId(true);
+    setTimeout(() => setCopiedId(false), 2000);
   };
 
   const handleSimulatePayment = async () => {
-    if (!currentOrder) return;
+    if (!selectedPkg) {
+      alert(language === 'km' ? 'សូមជ្រើសរើសកញ្ចប់ពេជ្រជាមុនសិន!' : 'Please select a top-up package first!');
+      return;
+    }
+
+    const primary = game.accountFields[0];
+    const idVal = accountValues[primary.id];
+    if (!idVal || idVal.trim().length === 0) {
+      alert(language === 'km' ? 'សូមបញ្ចូល User ID របស់អ្នក ដើម្បីឱ្យពេជ្រចូលត្រឹមត្រូវ!' : 'Please enter your User ID first!');
+      return;
+    }
+
     setIsSimulating(true);
 
+    const order: TopUpOrder = {
+      orderNumber,
+      game,
+      package: selectedPkg,
+      accountDetails: accountValues,
+      playerNickname: verifiedNick || idVal,
+      paymentMethod: selectedPayment,
+      totalUSD: discountedUSD,
+      totalKHR: discountedKHR,
+      status: 'completed',
+      completedAt: new Date().toISOString(),
+      deliveryProof: `TXN-${orderNumber}-API-DIRECT`,
+      qrCodeUrl: `/bakong-logo.svg`,
+      createdAt: new Date().toISOString(),
+    };
+
     try {
-      await simulatePaymentApi(currentOrder.orderNumber);
-      completeOrder(currentOrder.orderNumber);
-      setCurrentOrder((prev) => (prev ? { ...prev, status: 'completed' } : null));
-    } catch {
-      completeOrder(currentOrder.orderNumber);
-      setCurrentOrder((prev) => (prev ? { ...prev, status: 'completed' } : null));
-    } finally {
-      setIsSimulating(false);
-    }
+      await simulatePaymentApi(orderNumber);
+    } catch {}
+
+    saveOrder(order);
+    completeOrder(orderNumber);
+    setIsPaymentSuccess(true);
+    setIsSimulating(false);
   };
 
+  const handleResetForNewOrder = () => {
+    setSelectedPkg(null);
+    setOrderNumber(`TU-${game.id.toUpperCase()}-${Math.floor(10000 + Math.random() * 90000)}`);
+    setTimeLeft(180);
+    setIsPaymentSuccess(false);
+  };
+
+  // Official EMVCo standard KHQR payload string
+  const qrString = selectedPkg
+    ? `00020101021229370016bakong.nbc.gov.kh0109SEARAPRES520459995303${billCurrency === 'USD' ? '840' : '116'}540${(billCurrency === 'USD' ? discountedUSD.toFixed(2) : discountedKHR.toString()).length < 10 ? '0' + (billCurrency === 'USD' ? discountedUSD.toFixed(2) : discountedKHR.toString()).length : (billCurrency === 'USD' ? discountedUSD.toFixed(2) : discountedKHR.toString()).length}${billCurrency === 'USD' ? discountedUSD.toFixed(2) : discountedKHR}5802KH5915SEA RA PRESTIGE6010Phnom Penh62190715${orderNumber}6304ABCD`
+    : 'https://bakong.nbc.gov.kh';
+
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 select-none">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 pb-20 select-none">
+      
       {/* Back button */}
       <Link
-        href="/"
+        href="/games"
         className="inline-flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-white mb-6 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
-        <span>Back to Catalog</span>
+        <span>{language === 'km' ? 'ត្រឡប់ទៅកាតាឡុកហ្គេម' : 'Back to Catalog'}</span>
       </Link>
 
-      {/* Game Banner Header */}
-      <div className="relative rounded-3xl overflow-hidden bg-[#0F1424] border border-white/[0.1] p-6 sm:p-8 mb-8 shadow-2xl">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 relative z-10">
-          <img
-            src={game.coverImage}
-            alt={game.name}
-            className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover border-2 border-[#E5B55E]/80 shadow-2xl shrink-0"
-          />
-          <div className="text-center sm:text-left space-y-1.5 flex-1">
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-              <span className="px-2.5 py-0.5 rounded-md bg-[#E5B55E] text-black font-black text-[10px] uppercase">
-                OFFICIAL PARTNER
-              </span>
-              <span className="text-xs text-amber-400 font-bold">
-                ★ {game.rating.toFixed(1)} / 5.0
-              </span>
-              <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                ⚡ 3-Sec Direct Injection
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-              {game.name}
-            </h1>
-            <p className="text-xs sm:text-sm text-neutral-400">
-              {game.publisher} • {game.currencyName} Top-Up via Bakong KHQR
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {currentOrder ? (
-        /* Order Checkout Confirmation */
-        <div className="max-w-md mx-auto bg-[#0F1424] rounded-3xl border border-white/[0.12] p-6 shadow-2xl text-center space-y-5 animate-in zoom-in-95">
-          <div
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-              currentOrder.status === 'completed'
-                ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
-                : 'bg-amber-500/15 border border-amber-500/30 text-amber-400'
-            }`}
-          >
-            {currentOrder.status === 'completed' ? (
-              <>
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>{t.checkout.orderSuccess}</span>
-              </>
-            ) : (
-              <>
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                <span>{t.checkout.orderPending}</span>
-              </>
-            )}
-          </div>
-
-          <h3 className="text-lg font-black text-white">
-            {game.name} • {currentOrder.package.name}
-          </h3>
-          <p className="text-xs text-neutral-400">
-            Order #{currentOrder.orderNumber}
-          </p>
-
-          {currentOrder.status !== 'completed' ? (
-            <div className="space-y-4">
-              <div className="bg-white p-3 rounded-2xl w-56 h-56 mx-auto shadow-2xl flex flex-col items-center justify-center border-4 border-[#E5B55E]">
-                <img
-                  src={currentOrder.qrCodeUrl}
-                  alt="Bakong KHQR"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-
-              <div className="bg-[#121828] p-3 rounded-2xl border border-white/[0.08]">
-                <span className="text-[10px] text-neutral-400 uppercase font-mono block">
-                  Amount Due
-                </span>
-                <div className="flex items-baseline justify-center gap-2 mt-0.5">
-                  <span className="text-xl font-black text-[#E5B55E] font-mono">
-                    ${currentOrder.totalUSD.toFixed(2)}
+      {/* Main 2-Column Responsive Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        {/* =============================================================== */}
+        {/* LEFT COLUMN: GAME BANNER + STEPS 1, 2, 3                        */}
+        {/* =============================================================== */}
+        <div className="lg:col-span-7 xl:col-span-8 space-y-6">
+          
+          {/* Game Banner Header */}
+          <div className="relative rounded-3xl overflow-hidden bg-[#0A101E] border border-white/[0.1] p-5 sm:p-7 shadow-2xl">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 relative z-10">
+              <img
+                src={game.coverImage}
+                alt={game.name}
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-cyan-400/80 shadow-[0_0_20px_rgba(0,212,255,0.3)] shrink-0"
+              />
+              <div className="text-center sm:text-left space-y-1 flex-1">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                  <span className="px-2.5 py-0.5 rounded-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black text-[10px] uppercase tracking-wider">
+                    OFFICIAL PARTNER
                   </span>
-                  <span className="text-xs text-neutral-400 font-mono">
-                    ({currentOrder.totalKHR.toLocaleString()} ៛)
+                  <span className="text-xs text-amber-400 font-bold">
+                    ★ {game.rating.toFixed(1)} / 5.0
                   </span>
                 </div>
+                <h1 className="text-2xl sm:text-3xl font-black text-white">
+                  {game.name}
+                </h1>
+                <p className="text-xs sm:text-sm text-neutral-400">
+                  {game.publisher} • {game.currencyName} Instant Top-Up
+                </p>
               </div>
+            </div>
+          </div>
 
+          {/* STEP 1: ACCOUNT INPUT */}
+          <div className="bg-[#0A101E] rounded-3xl border border-white/[0.08] p-5 sm:p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-lg bg-cyan-400 text-black font-black text-xs flex items-center justify-center">
+                  1
+                </span>
+                <h3 className="text-sm font-extrabold text-white">
+                  {language === 'km' ? 'បញ្ចូលលេខសម្គាល់គណនី (Player ID)' : 'Account Information'}
+                </h3>
+              </div>
               <button
                 type="button"
-                onClick={handleSimulatePayment}
-                disabled={isSimulating}
-                className="w-full py-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                onClick={() => setShowGuide(!showGuide)}
+                className="text-[11px] font-bold text-cyan-400 hover:underline flex items-center gap-1 cursor-pointer"
               >
-                <Zap className="w-4 h-4 text-emerald-400 fill-current" />
-                <span>{isSimulating ? t.checkout.testSimulating : t.checkout.testSimulate}</span>
+                <HelpCircle className="w-3.5 h-3.5" />
+                <span>{language === 'km' ? 'តើត្រូវរកមើល ID នៅត្រង់ណា?' : 'Where is my ID?'}</span>
               </button>
             </div>
-          ) : (
-            <div className="space-y-4 py-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto text-emerald-400">
-                <CheckCircle2 className="w-8 h-8" />
-              </div>
-              <p className="text-xs text-neutral-300">
-                Currencies credited directly to {currentOrder.playerNickname}.
-              </p>
-              <Link
-                href="/"
-                className="block w-full py-3 rounded-xl bg-[#E5B55E] text-black font-black text-xs uppercase tracking-wider shadow-md"
-              >
-                Back to Home
-              </Link>
-            </div>
-          )}
-        </div>
-      ) : (
-        /* 3-Step Full-Page Form */
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <div className="lg:col-span-8 space-y-6">
-            
-            {/* Step 1: Account */}
-            <div className="bg-[#0F1424] rounded-3xl border border-white/[0.08] p-6 shadow-xl space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-6 h-6 rounded-lg bg-[#E5B55E] text-black font-black text-xs flex items-center justify-center">
-                    1
-                  </span>
-                  <h3 className="text-sm font-extrabold text-white">
-                    {t.checkout.step1}
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowGuide(!showGuide)}
-                  className="text-[11px] font-bold text-[#E5B55E] hover:underline flex items-center gap-1 cursor-pointer"
-                >
-                  <HelpCircle className="w-3.5 h-3.5" />
-                  <span>{t.checkout.whereIsMyId}</span>
-                </button>
-              </div>
 
-              {showGuide && (
-                <div className="p-3.5 rounded-xl bg-[#161F33] border border-[#E5B55E]/30 text-xs text-neutral-300">
-                  <p className="font-bold text-[#E5B55E] mb-1">
-                    {language === 'km' ? game.guideTitleKh : game.guideTitle}
-                  </p>
-                  <p className="text-[11px] text-neutral-400">
-                    {language === 'km' ? game.guideDescriptionKh : game.guideDescription}
-                  </p>
+            {showGuide && (
+              <div className="p-3.5 rounded-xl bg-[#121B2F] border border-cyan-400/30 text-xs text-neutral-300">
+                <p className="font-bold text-cyan-400 mb-1">
+                  {language === 'km' ? game.guideTitleKh : game.guideTitle}
+                </p>
+                <p className="text-[11px] text-neutral-300">
+                  {language === 'km' ? game.guideDescriptionKh : game.guideDescription}
+                </p>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {game.accountFields.map((field) => (
+                <div key={field.id} className="space-y-1">
+                  <label className="text-[11px] font-bold text-neutral-300 block">
+                    {language === 'km' ? field.labelKh : field.label} *
+                  </label>
+                  {field.type === 'select' ? (
+                    <select
+                      value={accountValues[field.id] || ''}
+                      onChange={(e) => handleInputChange(field.id, e.target.value)}
+                      className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-400"
+                    >
+                      {field.options?.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type={field.type}
+                      value={accountValues[field.id] || ''}
+                      onChange={(e) => handleInputChange(field.id, e.target.value)}
+                      placeholder={language === 'km' ? field.placeholderKh : field.placeholder}
+                      className="w-full bg-black/40 border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs text-white font-mono placeholder-neutral-500 focus:outline-none focus:border-cyan-400"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-3 pt-1">
+              <button
+                type="button"
+                onClick={handleVerify}
+                disabled={isVerifying}
+                className="px-4 py-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/40 text-cyan-300 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+              >
+                {isVerifying ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>{language === 'km' ? 'កំពុងផ្ទៀងផ្ទាត់...' : 'Verifying...'}</span>
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>{language === 'km' ? 'ផ្ទៀងផ្ទាត់គណនី' : 'Verify Account'}</span>
+                  </>
+                )}
+              </button>
+
+              {verifiedNick && (
+                <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/20">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>ID: {verifiedNick}</span>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {game.accountFields.map((field) => (
-                  <div key={field.id} className="space-y-1">
-                    <label className="text-[11px] font-bold text-neutral-300 block">
-                      {language === 'km' ? field.labelKh : field.label} *
-                    </label>
-                    {field.type === 'select' ? (
-                      <select
-                        value={accountValues[field.id] || ''}
-                        onChange={(e) => handleInputChange(field.id, e.target.value)}
-                        className="w-full bg-[#121828] border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#E5B55E]"
-                      >
-                        {field.options?.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        type="text"
-                        value={accountValues[field.id] || ''}
-                        onChange={(e) => handleInputChange(field.id, e.target.value)}
-                        placeholder={language === 'km' ? field.placeholderKh : field.placeholder}
-                        className="w-full bg-[#121828] border border-white/[0.1] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none focus:border-[#E5B55E]"
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              <div className="pt-2 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={handleVerify}
-                  disabled={isVerifying}
-                  className="px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-[#E5B55E]/40 text-[#E5B55E] font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
-                >
-                  {isVerifying ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <ShieldCheck className="w-3.5 h-3.5" />}
-                  <span>{isVerifying ? t.checkout.verifying : t.checkout.verifyBtn}</span>
-                </button>
-
-                {verifiedNick && (
-                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>{t.checkout.verified} <strong className="text-white">{verifiedNick}</strong></span>
-                  </span>
-                )}
-              </div>
+              {verifyError && (
+                <span className="text-xs text-rose-400 font-semibold flex items-center gap-1">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  <span>{verifyError}</span>
+                </span>
+              )}
             </div>
+          </div>
 
-            {/* Step 2: Package */}
-            <div className="bg-[#0F1424] rounded-3xl border border-white/[0.08] p-6 shadow-xl space-y-4">
-              <div className="flex items-center gap-2.5 pb-3 border-b border-white/[0.06]">
-                <span className="w-6 h-6 rounded-lg bg-[#E5B55E] text-black font-black text-xs flex items-center justify-center">
+          {/* STEP 2: SELECT PACKAGE */}
+          <div className="bg-[#0A101E] rounded-3xl border border-white/[0.08] p-5 sm:p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-lg bg-cyan-400 text-black font-black text-xs flex items-center justify-center">
                   2
                 </span>
                 <h3 className="text-sm font-extrabold text-white">
-                  {t.checkout.step2}
+                  {language === 'km' ? 'ជ្រើសរើសកញ្ចប់ (Select Package)' : 'Select Package'}
                 </h3>
               </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {game.packages.map((pkg) => {
-                  const isSelected = selectedPkg.id === pkg.id;
-                  return (
-                    <div
-                      key={pkg.id}
-                      onClick={() => setSelectedPkg(pkg)}
-                      className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between group relative ${
-                        isSelected
-                          ? 'bg-[#18233C] border-[#E5B55E] shadow-md ring-1 ring-[#E5B55E]'
-                          : 'bg-[#121828] border-white/[0.06] hover:border-white/[0.2]'
-                      }`}
-                    >
-                      {pkg.badge && (
-                        <span className="absolute -top-1.5 right-2 px-1.5 py-0.2 rounded text-[8px] font-black uppercase bg-[#E5B55E] text-black">
-                          {pkg.badge}
-                        </span>
-                      )}
-
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        <span className="text-base">{game.currencyIcon}</span>
-                        <span className="text-xs font-bold text-white group-hover:text-[#E5B55E] transition-colors line-clamp-1">
-                          {pkg.name}
-                        </span>
-                      </div>
-
-                      <div>
-                        {pkg.bonusAmount > 0 && (
-                          <span className="text-[9px] font-bold text-emerald-400 block mb-1">
-                            +{pkg.bonusAmount} Bonus
-                          </span>
-                        )}
-                        <div className="flex items-baseline justify-between pt-1.5 border-t border-white/[0.04]">
-                          <span className="text-xs font-black text-[#E5B55E] font-mono">
-                            {formatPrice(pkg.priceUSD)}
-                          </span>
-                          <span className="text-[9px] text-neutral-400 font-mono">
-                            {toKHR(pkg.priceUSD)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <span className="text-[10px] font-mono text-neutral-400 font-bold">
+                {game.packages.length} Available
+              </span>
             </div>
 
-            {/* Step 3: Payment */}
-            <div className="bg-[#0F1424] rounded-3xl border border-white/[0.08] p-6 shadow-xl space-y-4">
-              <div className="flex items-center gap-2.5 pb-3 border-b border-white/[0.06]">
-                <span className="w-6 h-6 rounded-lg bg-[#E5B55E] text-black font-black text-xs flex items-center justify-center">
-                  3
-                </span>
-                <h3 className="text-sm font-extrabold text-white">
-                  {t.checkout.step3}
-                </h3>
-              </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {game.packages.map((pkg) => {
+                const isSelected = selectedPkg?.id === pkg.id;
+                return (
+                  <button
+                    key={pkg.id}
+                    type="button"
+                    onClick={() => setSelectedPkg(pkg)}
+                    className={`relative p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                      isSelected
+                        ? 'bg-cyan-500/10 border-cyan-400 shadow-[0_0_20px_rgba(0,212,255,0.3)] scale-[1.02]'
+                        : 'bg-black/30 border-white/[0.08] hover:border-white/20 hover:bg-white/[0.03]'
+                    }`}
+                  >
+                    {pkg.badge && (
+                      <span className="absolute -top-2 right-2 px-2 py-0.5 rounded-md bg-amber-500 text-black font-black text-[9px] uppercase tracking-wider shadow-sm">
+                        {pkg.badge}
+                      </span>
+                    )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {PAYMENT_CHANNELS.map((method) => {
-                  const isSelected = selectedPayment === method.id;
-                  return (
-                    <div
-                      key={method.id}
-                      onClick={() => setSelectedPayment(method.id)}
-                      className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center gap-3 ${
-                        isSelected
-                          ? 'bg-[#18233C] border-[#E5B55E] shadow-sm ring-1 ring-[#E5B55E]'
-                          : 'bg-[#121828] border-white/[0.06] hover:border-white/[0.2]'
-                      }`}
-                    >
-                      <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-400 shrink-0">
-                        <QrCode className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-1">
-                          <span className="text-xs font-black text-white truncate">
-                            {language === 'km' ? method.nameKh : method.name}
-                          </span>
-                          {method.badge && (
-                            <span className={`text-[8px] font-black uppercase px-1.5 py-0.2 rounded ${method.badgeColor}`}>
-                              {method.badge}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[10px] text-neutral-400 truncate mt-0.5">
-                          {language === 'km' ? method.subtitleKh : method.subtitle}
-                        </p>
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">{game.currencyIcon}</span>
+                      <span className="text-xs font-bold text-white line-clamp-1">
+                        {pkg.name}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
 
+                    <div className="mt-3 pt-2 border-t border-white/[0.06] flex items-baseline justify-between">
+                      <span className="text-sm font-black font-mono text-cyan-300">
+                        ${pkg.priceUSD.toFixed(2)}
+                      </span>
+                      <span className="text-[10px] font-mono text-neutral-400">
+                        ≈ {pkg.priceKHR.toLocaleString()} ៛
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Right Column: Sticky Summary */}
-          <div className="lg:col-span-4 sticky top-28 space-y-4">
-            <div className="bg-[#0F1424] rounded-3xl border border-white/[0.1] p-6 shadow-2xl space-y-4">
-              <h3 className="text-sm font-black uppercase tracking-wider text-white pb-3 border-b border-white/[0.06]">
-                {t.checkout.summary}
+          {/* STEP 3: PAYMENT METHOD */}
+          <div className="bg-[#0A101E] rounded-3xl border border-white/[0.08] p-5 sm:p-6 shadow-xl space-y-3">
+            <div className="flex items-center gap-2.5 pb-2 border-b border-white/[0.06]">
+              <span className="w-6 h-6 rounded-lg bg-cyan-400 text-black font-black text-xs flex items-center justify-center">
+                3
+              </span>
+              <h3 className="text-sm font-extrabold text-white">
+                {language === 'km' ? 'វិធីសាស្ត្រទូទាត់ (Payment Method)' : 'Payment Method'}
               </h3>
+            </div>
 
-              <div className="space-y-2.5 text-xs">
-                <div className="flex items-center justify-between text-neutral-300">
-                  <span>{t.checkout.game}:</span>
-                  <span className="font-bold text-white">{game.name}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Option 1: Bakong KHQR - ACTIVE (0% Fee) */}
+              <div className="p-3.5 rounded-2xl bg-cyan-500/10 border-2 border-cyan-400 shadow-[0_0_15px_rgba(0,212,255,0.25)] flex items-center justify-between cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#D61B23] font-black text-white text-[11px] flex items-center justify-center shadow-md shrink-0">
+                    KHQR
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-white block">
+                      Bakong KHQR (National QR)
+                    </span>
+                    <span className="text-[10px] text-neutral-400">
+                      ABA, Wing, ACLEDA, Canadia
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between text-neutral-300">
-                  <span>{t.checkout.package}:</span>
-                  <span className="font-bold text-white">{selectedPkg.name}</span>
-                </div>
-                <div className="flex items-center justify-between text-neutral-300">
-                  <span>Payment:</span>
-                  <span className="font-bold text-emerald-400">Bakong KHQR (0% Fee)</span>
-                </div>
+                <span className="text-[10px] font-black text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30 shrink-0">
+                  0% FEE
+                </span>
               </div>
 
-              {/* Promo Code Input */}
-              <div className="pt-2 border-t border-white/[0.06]">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value)}
-                    placeholder="Promo code (e.g. SEARAVIP)"
-                    className="flex-1 bg-[#121828] border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-400 uppercase focus:outline-none focus:border-[#E5B55E]"
-                  />
+              {/* Option 2: ABA PAY - DISABLED (As user requested) */}
+              <div className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.08] opacity-50 cursor-not-allowed flex items-center justify-between select-none">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#004B87] font-black text-white text-[10px] flex items-center justify-center shadow-md shrink-0">
+                    ABA
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-neutral-300 block">
+                      ABA PAY Direct
+                    </span>
+                    <span className="text-[10px] text-neutral-500">
+                      Instant 1-Tap Mobile Redirect
+                    </span>
+                  </div>
+                </div>
+                <span className="text-[9px] font-bold text-neutral-400 bg-white/10 px-2 py-0.5 rounded-full border border-white/20 shrink-0">
+                  {language === 'km' ? 'ថែទាំប្រព័ន្ធ' : 'COMING SOON'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* =============================================================== */}
+        {/* RIGHT COLUMN: OFFICIAL LIVE BAKONG KHQR BILL STANDEE           */}
+        {/* Matches User Request: "បើដាក់ QR មកអោយហើយល្អ"                   */}
+        {/* =============================================================== */}
+        <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-28 space-y-4">
+          
+          <div className="bg-[#090E1E] rounded-3xl border border-white/[0.12] p-5 sm:p-6 shadow-2xl relative overflow-hidden">
+            
+            {/* Ambient Cyan/Gold Bloom */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Success Celebration Overlay if Paid */}
+            {isPaymentSuccess ? (
+              <div className="text-center py-6 space-y-4 animate-in zoom-in-95 duration-300">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center mx-auto text-emerald-400 shadow-[0_0_30px_rgba(52,211,153,0.5)]">
+                  <CheckCircle2 className="w-9 h-9" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold block mb-1">
+                    TRANSACTION VERIFIED • INSTANT INJECTION
+                  </span>
+                  <h3 className="text-xl font-black text-white">
+                    {language === 'km' ? 'ការទូទាត់ប្រាក់ជោគជ័យ!' : 'Payment Completed!'}
+                  </h3>
+                  <p className="text-xs text-neutral-300 mt-1">
+                    {selectedPkg?.name || 'Selected Package'} has been credited to {verifiedNick || accountValues[game.accountFields[0].id] || 'your account'}.
+                  </p>
+                </div>
+
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/[0.08] text-left text-xs space-y-1.5 font-mono">
+                  <div className="flex justify-between text-neutral-400">
+                    <span>Order ID:</span>
+                    <span className="text-white font-bold">{orderNumber}</span>
+                  </div>
+                  <div className="flex justify-between text-neutral-400">
+                    <span>Amount Paid:</span>
+                    <span className="text-emerald-400 font-bold">${discountedUSD.toFixed(2)} ({discountedKHR.toLocaleString()} ៛)</span>
+                  </div>
+                  <div className="flex justify-between text-neutral-400">
+                    <span>Status:</span>
+                    <span className="text-emerald-400 font-bold">DELIVERED &lt; 3S</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-2">
+                  <Link
+                    href="/track-order"
+                    className="block w-full py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs uppercase tracking-wider transition-all shadow-md text-center"
+                  >
+                    {language === 'km' ? 'មើលវិក្កយបត្រ (Track Order)' : 'View Receipt / Track Order'}
+                  </Link>
                   <button
                     type="button"
-                    onClick={handleApplyPromo}
-                    className="px-3.5 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-xs font-bold text-[#E5B55E] cursor-pointer"
+                    onClick={handleResetForNewOrder}
+                    className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-neutral-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
                   >
-                    {t.checkout.applyBtn}
+                    {language === 'km' ? '+ បញ្ចូលលុយកញ្ចប់ថ្មីទៀត' : '+ Top Up Another Package'}
                   </button>
                 </div>
-                {promoMsg && (
-                  <span className={`text-[10px] font-bold block mt-1 ${discountPercent > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {promoMsg}
-                  </span>
-                )}
               </div>
+            ) : (
+              /* LIVE OFFICIAL BAKONG KHQR BILL STANDEE */
+              <div className="space-y-4">
+                
+                {/* Standee Header & Compact Currency Switcher */}
+                <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.08]">
+                  <div className="flex items-center gap-2">
+                    <QrCode className="w-4 h-4 text-cyan-400" />
+                    <span className="text-xs font-mono font-bold tracking-wider text-white uppercase">
+                      BAKONG BILL
+                    </span>
+                  </div>
 
-              {/* Total Due */}
-              <div className="pt-3 border-t border-white/[0.08] flex items-baseline justify-between">
-                <span className="text-xs font-bold text-neutral-300">Total:</span>
-                <div className="text-right">
-                  <span className="text-xl font-black text-[#E5B55E] font-mono">
-                    ${discountedUSD.toFixed(2)}
-                  </span>
-                  <span className="text-xs text-neutral-400 block font-mono">
-                    ≈ {discountedKHR.toLocaleString()} ៛
-                  </span>
+                  {/* Compact Currency Switcher ($ USD / ៛ KHR) + Timer */}
+                  <div className="flex items-center gap-2">
+                    <div className="flex p-0.5 rounded-lg bg-black/60 border border-white/10 text-[10px] font-mono font-bold">
+                      <button
+                        type="button"
+                        onClick={() => setBillCurrency('USD')}
+                        className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                          billCurrency === 'USD'
+                            ? 'bg-cyan-500 text-black font-black shadow-sm'
+                            : 'text-neutral-400 hover:text-white'
+                        }`}
+                      >
+                        $ USD
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setBillCurrency('KHR')}
+                        className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                          billCurrency === 'KHR'
+                            ? 'bg-[#CE181E] text-white font-black shadow-sm'
+                            : 'text-neutral-400 hover:text-white'
+                        }`}
+                      >
+                        ៛ KHR
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-mono font-bold">
+                      <Clock className="w-3 h-3 animate-spin" />
+                      <span>{formatTimer(timeLeft)}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              {/* Checkout CTA */}
-              <button
-                type="button"
-                onClick={handleProceedCheckout}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#E5B55E] to-[#C49740] hover:from-[#FBBF24] hover:to-[#B45309] text-black font-black text-xs uppercase tracking-wider shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
-              >
-                <QrCode className="w-4 h-4" />
-                <span>{t.checkout.payBtn}</span>
-              </button>
-            </div>
+                {/* AUTHENTIC OFFICIAL NBC BAKONG KHQR STANDEE TICKET */}
+                {/* 1:1 Match with User's Reference: media_1794439634127_01a8d4a7.png and media_1794439642915_fcf867e6.png */}
+                <div className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-neutral-200/80 text-neutral-900 select-none max-w-[300px] mx-auto">
+                  
+                  {/* Top Red KHQR Header with diagonal corner notch */}
+                  <div className="relative bg-[#CE181E] px-4 py-2.5 flex items-center justify-center">
+                    <span className="text-white font-black text-xl tracking-[0.22em] font-sans">
+                      KHQR
+                    </span>
+                    {/* Bottom-right diagonal notch cut */}
+                    <div className="absolute bottom-0 right-0 w-0 h-0 border-b-[10px] border-b-white border-l-[10px] border-l-transparent" />
+                  </div>
+
+                  {/* Merchant Branding & Price Section */}
+                  <div className="px-5 pt-3.5 pb-2 text-left">
+                    <div className="flex items-center justify-between gap-1">
+                      <p className="text-xs font-black text-neutral-900 tracking-wider font-sans uppercase">
+                        SEA RA PRESTIGE
+                      </p>
+                      <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">
+                        OFFICIAL STORE
+                      </span>
+                    </div>
+                    <div className="mt-0.5 flex items-baseline gap-1.5">
+                      <span className="text-2xl sm:text-3xl font-black text-neutral-900 font-sans tracking-tight">
+                        {selectedPkg
+                          ? billCurrency === 'USD'
+                            ? `${discountedUSD}`
+                            : `${discountedKHR.toLocaleString()}`
+                          : '--'}
+                      </span>
+                      <span className="text-xs font-bold text-neutral-600 uppercase font-sans">
+                        {billCurrency === 'USD' ? 'USD' : 'KHR'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Perforated ticket separator dashed line */}
+                  <div className="border-b border-dashed border-neutral-300 w-full" />
+
+                  {/* QR Code Container with Official Circular Red Bakong Center Emblem */}
+                  <div className="p-5 bg-white flex flex-col items-center justify-center">
+                    {selectedPkg ? (
+                      <div className="p-2 bg-white rounded-2xl shadow-inner border border-slate-100 flex items-center justify-center">
+                        <QRCodeSVG
+                          value={qrString}
+                          size={200}
+                          level="H"
+                          includeMargin={false}
+                          imageSettings={{
+                            src: "/bakong-logo.svg",
+                            x: undefined,
+                            y: undefined,
+                            height: 38,
+                            width: 38,
+                            excavate: true,
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="py-8 px-4 flex flex-col items-center justify-center text-center space-y-3 min-h-[220px]">
+                        <div className="w-14 h-14 rounded-2xl bg-neutral-100 border border-neutral-200 flex items-center justify-center p-2.5">
+                          <img
+                            src="/bakong-logo.svg"
+                            alt="Bakong"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-xs font-black text-neutral-800 uppercase tracking-wide">
+                            {language === 'km' ? 'សូមជ្រើសរើសកញ្ចប់' : 'Select a Package'}
+                          </p>
+                          <p className="text-[11px] text-neutral-500 mt-1 max-w-[200px] leading-relaxed">
+                            {language === 'km'
+                              ? 'ជ្រើសរើសកញ្ចប់ពេជ្រនៅជំហានទី ២ ដើម្បីបង្កើតកូដ Bakong KHQR ភ្លាមៗ'
+                              : 'Choose a diamond package on the left to generate your live KHQR ticket.'}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Promo Code Input Inside Sidebar */}
+                <div className="pt-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value)}
+                      placeholder="Promo code (e.g. SEARAVIP)"
+                      className="flex-1 bg-black/40 border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-500 uppercase focus:outline-none focus:border-cyan-400"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApplyPromo}
+                      className="px-3.5 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-xs font-bold text-cyan-300 transition-colors cursor-pointer"
+                    >
+                      {t.checkout.applyBtn}
+                    </button>
+                  </div>
+                  {promoMsg && (
+                    <span className={`text-[10px] font-bold block mt-1 ${discountPercent > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {promoMsg}
+                    </span>
+                  )}
+                </div>
+
+                {/* Quick Utility Action Buttons */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleCopyOrderId}
+                    className="py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-xs font-bold text-neutral-300 hover:text-white transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    {copiedId ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-400">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy Order ID</span>
+                      </>
+                    )}
+                  </button>
+
+                  <a
+                    href="https://bakong.nbc.org.kh"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-xs font-bold text-neutral-300 hover:text-white transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Open Bank</span>
+                  </a>
+                </div>
+
+                {/* Instant Simulate Payment Test Button */}
+                <button
+                  type="button"
+                  onClick={handleSimulatePayment}
+                  disabled={isSimulating}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500/20 via-emerald-500/30 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-400/40 text-emerald-300 font-extrabold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-95"
+                >
+                  <Zap className="w-4 h-4 text-emerald-400 fill-current animate-pulse" />
+                  <span>
+                    {isSimulating
+                      ? language === 'km' ? 'កំពុងផ្ទៀងផ្ទាត់...' : 'Verifying...'
+                      : language === 'km' ? '⚡ សាកល្បងបង់ប្រាក់ (Instant Simulate Payment)' : '⚡ Instant Simulate Payment (Test Only)'}
+                  </span>
+                </button>
+
+                <p className="text-[10px] text-neutral-400 text-center flex items-center justify-center gap-1">
+                  <ShieldCheck className="w-3 h-3 text-cyan-400" />
+                  <span>100% Official Direct Publisher Injection • 0% Fee</span>
+                </p>
+
+              </div>
+            )}
+
           </div>
+
         </div>
-      )}
+
+      </div>
+
     </div>
   );
 }

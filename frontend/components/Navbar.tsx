@@ -14,6 +14,10 @@ import {
   Zap,
   Sparkles,
   Command,
+  Gamepad2,
+  Home,
+  MessageCircle,
+  HelpCircle,
 } from 'lucide-react';
 
 const SEARCH_SUGGESTIONS = [
@@ -42,12 +46,13 @@ export default function Navbar() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [suggestionIdx, setSuggestionIdx] = useState(0);
   const [scrolled, setScrolled] = useState(false);
+  const [activeNav, setActiveNav] = useState('home');
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  // Track scroll position to enhance glassmorphism on scroll
+  // Track scroll position to enhance seamless glassmorphism
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 15);
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -106,27 +111,29 @@ export default function Navbar() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 w-full select-none transition-all duration-300 ${
         scrolled
-          ? 'bg-[#070B16]/80 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_12px_40px_rgba(0,0,0,0.65)]'
-          : 'bg-[#070B16]/55 backdrop-blur-xl border-b border-white/[0.05] shadow-[0_4px_24px_rgba(0,0,0,0.3)]'
+          ? 'bg-[#060913]/90 backdrop-blur-2xl border-b border-white/[0.08] shadow-[0_12px_36px_rgba(0,0,0,0.7)]'
+          : 'bg-transparent border-b border-transparent shadow-none'
       }`}
     >
-      {/* Laser Gradient Accent Line along the bottom of the header */}
-      <div className="absolute bottom-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#E5B55E]/40 via-[#00D4FF]/30 to-transparent pointer-events-none" />
+      {/* Cyberpunk Neon Rim Light: Only appears smoothly on scroll */}
+      {scrolled && (
+        <div className="absolute bottom-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-violet-500/50 via-cyan-400/50 to-transparent pointer-events-none transition-opacity duration-300" />
+      )}
 
       {/* ================================================================= */}
-      {/* MAIN GLASS NAVBAR CONTENT CONTAINER                               */}
+      {/* MINIMAL INTEGRATED TOPBAR / CENTERED-LINK HEADER CONTAINER        */}
       {/* ================================================================= */}
-      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3 sm:gap-6">
+      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 h-16 sm:h-[72px] flex items-center justify-between gap-4 lg:gap-6">
         
         {/* ================================================================= */}
-        {/* BRAND EMBLEM: SEA RA PRESTIGE                                    */}
+        {/* 1. LEFT: BRAND LOGO & VERIFICATION CREST                          */}
         {/* ================================================================= */}
         <Link href="/" className="flex items-center gap-2.5 sm:gap-3 shrink-0 group">
-          {/* Cyber Diamond Crest with Gold Glow */}
-          <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#E5B55E] via-[#C49740] to-[#1E293B] p-[1px] shadow-[0_0_20px_rgba(229,181,94,0.3)] group-hover:shadow-[0_0_28px_rgba(229,181,94,0.55)] transition-all">
-            <div className="w-full h-full bg-[#090E1B] rounded-[11px] sm:rounded-[15px] flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-tr from-[#E5B55E]/20 to-transparent pointer-events-none" />
-              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#E5B55E]" viewBox="0 0 24 24" fill="none">
+          {/* Cyber Shield with Violet & Gold Halo */}
+          <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-violet-500 via-[#E5B55E] to-[#1E293B] p-[1px] shadow-[0_0_20px_rgba(139,92,246,0.3)] group-hover:shadow-[0_0_28px_rgba(139,92,246,0.55)] transition-all">
+            <div className="w-full h-full bg-[#090E1B] rounded-[11px] flex items-center justify-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-tr from-violet-500/20 via-transparent to-[#E5B55E]/15 pointer-events-none" />
+              <svg className="w-5 h-5 text-[#E5B55E]" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 2L3 7V13C3 18.5 6.8 21.8 12 23C17.2 21.8 21 18.5 21 13V7L12 2Z"
                   stroke="currentColor"
@@ -145,172 +152,238 @@ export default function Navbar() {
 
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5 leading-tight">
-              <span className="font-black text-base sm:text-xl tracking-wider text-white">
+              <span className="font-black text-base sm:text-lg tracking-wider text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:via-violet-200 group-hover:to-cyan-200 transition-colors">
                 SEA RA
               </span>
-              <span className="font-mono font-black text-[9px] sm:text-[10px] uppercase px-1.5 py-0.5 rounded bg-gradient-to-r from-[#E5B55E]/25 to-[#E5B55E]/10 border border-[#E5B55E]/50 text-[#E5B55E] tracking-widest shadow-sm">
+              <span className="font-mono font-black text-[9px] uppercase px-1.5 py-0.5 rounded bg-gradient-to-r from-violet-500/25 via-[#E5B55E]/20 to-transparent border border-violet-400/40 text-violet-300 tracking-widest shadow-sm">
                 PRESTIGE
               </span>
             </div>
-            <span className="text-[9px] sm:text-[10px] text-neutral-400 font-mono tracking-wide mt-0.5">
-              {language === 'km' ? '⚡ ស្វ័យប្រវត្តិតាម Smile.One API' : '⚡ Smile.One Reseller API'}
-            </span>
           </div>
         </Link>
 
         {/* ================================================================= */}
-        {/* CENTER COMMAND SEARCH BAR WITH ROTATING PLACEHOLDER & CTRL+K     */}
+        {/* 2. CENTER: CENTER-ALIGNED NAVIGATION MENU LINKS WITH NEON GLOW   */}
         {/* ================================================================= */}
-        <div ref={searchContainerRef} className="relative hidden md:block flex-1 max-w-md mx-2">
-          <div className="relative">
-            <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setSearchFocused(true)}
-              placeholder={`ស្វែងរក ${SEARCH_SUGGESTIONS[suggestionIdx]}`}
-              className="w-full bg-white/[0.05] hover:bg-white/[0.08] focus:bg-white/[0.1] border border-white/[0.08] focus:border-[#E5B55E]/70 rounded-xl sm:rounded-2xl pl-10 pr-16 py-2 sm:py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none transition-all backdrop-blur-md shadow-inner"
-            />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-              {searchQuery ? (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="text-neutral-400 hover:text-white text-xs p-1 cursor-pointer"
-                >
-                  ✕
-                </button>
-              ) : (
-                <div className="hidden lg:flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.1] text-[9px] font-mono text-neutral-400">
-                  <Command className="w-2.5 h-2.5" />
-                  <span>K</span>
-                </div>
-              )}
-            </div>
-          </div>
+        <nav className="hidden lg:flex items-center gap-2 xl:gap-3.5 2xl:gap-5 shrink-0 whitespace-nowrap">
+          {/* Link 1: Home */}
+          <Link
+            href="/"
+            onClick={() => setActiveNav('home')}
+            className={`relative px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
+              activeNav === 'home'
+                ? 'text-white'
+                : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
+            }`}
+          >
+            <span className="whitespace-nowrap">{language === 'km' ? 'ទំព័រដើម' : 'Home'}</span>
+            {activeNav === 'home' && (
+              <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-cyan-400 shadow-[0_0_12px_rgba(139,92,246,0.9)] animate-pulse" />
+            )}
+          </Link>
 
-          {/* Search Dropdown Results Popover */}
-          {searchFocused && searchQuery.trim() && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-[#090E1B]/95 backdrop-blur-2xl border border-white/[0.14] rounded-2xl shadow-2xl p-2 z-50 overflow-hidden">
-              <div className="px-3 py-1.5 text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-wider border-b border-white/[0.06] flex items-center justify-between">
-                <span>{language === 'km' ? 'ហ្គេមដែលត្រូវគ្នា' : 'Matched Games'}</span>
-                <span>{searchResults.length}</span>
-              </div>
-              {searchResults.length === 0 ? (
-                <p className="p-4 text-xs text-neutral-400 text-center">
-                  {language === 'km' ? 'រកមិនឃើញហ្គេមនេះទេ' : 'No matching games found.'}
-                </p>
-              ) : (
-                <div className="max-h-64 overflow-y-auto divide-y divide-white/[0.04]">
-                  {searchResults.map((game) => (
-                    <div
-                      key={game.id}
-                      onClick={() => {
-                        openTopUp(game.id);
-                        setSearchQuery('');
-                        setSearchFocused(false);
-                      }}
-                      className="p-2.5 flex items-center justify-between hover:bg-white/[0.06] rounded-xl cursor-pointer transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={game.coverImage}
-                          alt={game.name}
-                          className="w-10 h-10 rounded-xl object-cover border border-white/[0.1]"
-                        />
-                        <div>
-                          <p className="text-xs font-bold text-white">{game.name}</p>
-                          <span className="text-[10px] text-[#E5B55E] font-mono">
-                            {game.currencyName} • {game.packages.length} Packs
-                          </span>
-                        </div>
-                      </div>
-                      <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                        ⚡ 3s API
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+          {/* Link 2: Games Catalog */}
+          <Link
+            href="/games"
+            onClick={() => setActiveNav('games')}
+            className={`relative px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
+              activeNav === 'games'
+                ? 'text-white'
+                : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
+            }`}
+          >
+            <span className="whitespace-nowrap">{language === 'km' ? 'កាតាឡុកហ្គេម' : 'Games'}</span>
+            {activeNav === 'games' && (
+              <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-cyan-400 shadow-[0_0_12px_rgba(139,92,246,0.9)]" />
+            )}
+          </Link>
+
+          {/* Link 3: Express Top-Up */}
+          <Link
+            href="/top-up/mobile-legends"
+            onClick={() => setActiveNav('express')}
+            className={`relative px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all duration-200 cursor-pointer ${
+              activeNav === 'express'
+                ? 'text-white'
+                : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
+            }`}
+          >
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <Zap className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="whitespace-nowrap">{language === 'km' ? 'បញ្ចូលរហ័ស' : 'Express Top-Up'}</span>
+            </span>
+            {activeNav === 'express' && (
+              <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-cyan-400 shadow-[0_0_12px_rgba(139,92,246,0.9)]" />
+            )}
+          </Link>
+
+          {/* Link 4: Track Order */}
+          <Link
+            href="/track-order"
+            onClick={() => setActiveNav('track')}
+            className={`relative px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
+              activeNav === 'track'
+                ? 'text-white'
+                : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
+            }`}
+          >
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <Receipt className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="whitespace-nowrap">{t.nav.trackOrder}</span>
+            </span>
+            {activeNav === 'track' && (
+              <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-cyan-400 shadow-[0_0_12px_rgba(139,92,246,0.9)]" />
+            )}
+          </Link>
+
+          {/* Link 5: How to Buy */}
+          <Link
+            href="/how-to-buy"
+            onClick={() => setActiveNav('faq')}
+            className={`relative px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
+              activeNav === 'faq'
+                ? 'text-white'
+                : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
+            }`}
+          >
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
+              <HelpCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="whitespace-nowrap">
+                {language === 'km' ? 'របៀបទិញ' : 'How to Buy'}
+              </span>
+            </span>
+            {activeNav === 'faq' && (
+              <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-cyan-400 shadow-[0_0_12px_rgba(139,92,246,0.9)]" />
+            )}
+          </Link>
+
+          {/* Link 6: 24/7 VIP Support */}
+          <Link
+            href="/support"
+            onClick={() => setActiveNav('support')}
+            className={`px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all flex items-center gap-1.5 ${
+              activeNav === 'support'
+                ? 'text-emerald-400 bg-white/[0.06]'
+                : 'text-neutral-400 hover:text-emerald-400 hover:bg-white/[0.04]'
+            }`}
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="whitespace-nowrap">{t.nav.support}</span>
+          </Link>
+        </nav>
 
         {/* ================================================================= */}
-        {/* RIGHT DOCK: TRACK ORDER, SLIDING CURRENCY & LIVE VIP SUPPORT      */}
+        {/* 3. RIGHT: UTILITY & ACTION GROUP (SEARCH, CURRENCY, GRADIENT CTA) */}
         {/* ================================================================= */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           
-          {/* Track Order Button */}
-          <button
-            type="button"
-            onClick={openTrack}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] hover:border-[#E5B55E]/50 text-xs font-semibold text-neutral-200 backdrop-blur-md transition-all cursor-pointer shadow-sm"
-          >
-            <Receipt className="w-3.5 h-3.5 text-[#E5B55E]" />
-            <span className="hidden sm:inline">{t.nav.trackOrder}</span>
-          </button>
+          {/* Integrated Search Bar with Ctrl+K */}
+          <div ref={searchContainerRef} className="relative hidden xl:block w-40 xl:w-48">
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                placeholder={language === 'km' ? 'ស្វែងរកហ្គេម...' : 'Search games...'}
+                className="w-full bg-white/[0.05] hover:bg-white/[0.08] focus:bg-white/[0.1] border border-white/[0.08] focus:border-violet-500/80 rounded-xl pl-9 pr-12 py-1.5 sm:py-2 text-xs text-white placeholder-neutral-400 focus:outline-none transition-all backdrop-blur-md shadow-inner"
+              />
+              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                {searchQuery ? (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="text-neutral-400 hover:text-white text-xs p-0.5 cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                ) : (
+                  <div className="hidden xl:flex items-center gap-0.5 px-1 py-0.5 rounded bg-white/[0.06] border border-white/[0.1] text-[9px] font-mono text-neutral-400">
+                    <Command className="w-2.5 h-2.5" />
+                    <span>K</span>
+                  </div>
+                )}
+              </div>
+            </div>
 
-          {/* Smooth Sliding Toggle Pill for USD / KHR */}
-          <div className="hidden sm:flex items-center relative bg-black/50 backdrop-blur-md p-0.5 rounded-xl border border-white/[0.08] shadow-inner">
-            <div
-              className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-lg bg-gradient-to-r from-[#E5B55E] to-[#F59E0B] shadow-sm transition-transform duration-300 ease-out ${
-                currency === 'KHR' ? 'translate-x-full' : 'translate-x-0'
-              }`}
-            />
-            <button
-              type="button"
-              onClick={() => setCurrency('USD')}
-              className={`relative z-10 px-2.5 py-1 text-[11px] font-mono font-black transition-colors cursor-pointer ${
-                currency === 'USD' ? 'text-black' : 'text-neutral-400 hover:text-white'
-              }`}
-            >
-              $ USD
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrency('KHR')}
-              className={`relative z-10 px-2.5 py-1 text-[11px] font-mono font-black transition-colors cursor-pointer ${
-                currency === 'KHR' ? 'text-black' : 'text-neutral-400 hover:text-white'
-              }`}
-            >
-              ៛ KHR
-            </button>
+            {/* Search Dropdown Results Popover */}
+            {searchFocused && searchQuery.trim() && (
+              <div className="absolute top-full right-0 mt-2 w-72 sm:w-80 bg-[#090E1B]/95 backdrop-blur-2xl border border-white/[0.14] rounded-2xl shadow-2xl p-2 z-50 overflow-hidden">
+                <div className="px-3 py-1.5 text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-wider border-b border-white/[0.06] flex items-center justify-between">
+                  <span>{language === 'km' ? 'ហ្គេមដែលត្រូវគ្នា' : 'Matched Games'}</span>
+                  <span>{searchResults.length}</span>
+                </div>
+                {searchResults.length === 0 ? (
+                  <p className="p-4 text-xs text-neutral-400 text-center">
+                    {language === 'km' ? 'រកមិនឃើញហ្គេមនេះទេ' : 'No matching games found.'}
+                  </p>
+                ) : (
+                  <div className="max-h-64 overflow-y-auto divide-y divide-white/[0.04]">
+                    {searchResults.map((game) => (
+                      <Link
+                        key={game.id}
+                        href={`/top-up/${game.slug}`}
+                        onClick={() => {
+                          setSearchQuery('');
+                          setSearchFocused(false);
+                        }}
+                        className="p-2.5 flex items-center justify-between hover:bg-white/[0.06] rounded-xl cursor-pointer transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={game.coverImage}
+                            alt={game.name}
+                            className="w-9 h-9 rounded-lg object-cover border border-white/[0.1]"
+                          />
+                          <div>
+                            <p className="text-xs font-bold text-white">{game.name}</p>
+                            <span className="text-[10px] text-cyan-400 font-mono">
+                              {game.currencyName}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                          ⚡ 3s
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Language Switcher (KM / EN) */}
           <button
             type="button"
             onClick={() => setLanguage(language === 'km' ? 'en' : 'km')}
-            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] backdrop-blur-md text-xs font-bold text-neutral-200 transition-all cursor-pointer shadow-sm"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-bold text-neutral-200 transition-all cursor-pointer"
           >
-            <Globe className="w-3.5 h-3.5 text-[#00D4FF]" />
+            <Globe className="w-3.5 h-3.5 text-cyan-400" />
             <span>{language === 'km' ? '🇰🇭 ខ្មែរ' : '🇺🇸 EN'}</span>
           </button>
 
-          {/* 24/7 Live VIP Support with Emerald Pulse Beam */}
-          <a
-            href="https://t.me/seara_support_kh"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-md text-xs font-bold text-white transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] group"
+          {/* SCI-FI CHAMFERED CTA BUTTON (PLAY NOW / TOP UP) */}
+          <Link
+            href="/games"
+            style={{
+              clipPath:
+                'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
+            }}
+            className="relative px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-[#00D4FF] via-[#0284C7] to-[#2563EB] hover:from-[#38BDF8] hover:to-[#1D4ED8] text-black font-black text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(0,212,255,0.55)] hover:shadow-[0_0_35px_rgba(0,212,255,0.85)] transition-all flex items-center gap-1.5 active:scale-95 group shrink-0"
           >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            <Zap className="w-3.5 h-3.5 text-black fill-current animate-pulse shrink-0" />
+            <span className="font-extrabold tracking-wider text-black">
+              {language === 'km' ? 'បញ្ចូលលុយ' : 'TOP UP'}
             </span>
-            <span className="text-[11px] font-mono font-bold text-emerald-400 uppercase tracking-wider">
-              {t.nav.support}
-            </span>
-            <ExternalLink className="w-3 h-3 text-emerald-400/70 group-hover:text-emerald-300" />
-          </a>
+          </Link>
 
           {/* Mobile Menu Toggle */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-white cursor-pointer"
+            className="lg:hidden w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.1] flex items-center justify-center text-white cursor-pointer"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -319,43 +392,93 @@ export default function Navbar() {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden max-w-7xl mx-auto px-4 pb-4">
-          <div className="bg-[#090E1B]/95 backdrop-blur-2xl border border-white/[0.12] rounded-2xl p-4 space-y-4 shadow-2xl">
-            {/* Mobile Search */}
-            <div className="relative">
-              <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="ស្វែងរកហ្គេម..."
-                className="w-full bg-[#10182C] border border-white/[0.1] rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-400 focus:outline-none focus:border-[#E5B55E]"
-              />
-            </div>
+        <div className="lg:hidden border-t border-white/[0.08] bg-[#070B16]/95 backdrop-blur-2xl px-4 py-5 space-y-4 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+          {/* Mobile Search */}
+          <div className="relative">
+            <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={language === 'km' ? 'ស្វែងរកហ្គេម...' : 'Search games...'}
+              className="w-full bg-[#10182C] border border-white/[0.1] rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-400 focus:outline-none focus:border-violet-500"
+            />
+          </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-white/[0.08]">
-              <span className="text-xs font-bold text-neutral-400">Currency</span>
-              <div className="flex items-center bg-black/60 p-0.5 rounded-lg border border-white/[0.1]">
-                <button
-                  type="button"
-                  onClick={() => setCurrency('USD')}
-                  className={`px-3 py-1 rounded text-xs font-mono font-black ${
-                    currency === 'USD' ? 'bg-[#E5B55E] text-black' : 'text-neutral-400'
-                  }`}
-                >
-                  USD
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCurrency('KHR')}
-                  className={`px-3 py-1 rounded text-xs font-mono font-black ${
-                    currency === 'KHR' ? 'bg-[#E5B55E] text-black' : 'text-neutral-400'
-                  }`}
-                >
-                  KHR
-                </button>
-              </div>
-            </div>
+          {/* Mobile Navigation Links */}
+          <div className="flex flex-col space-y-1 pt-1">
+            <Link
+              href="/"
+              onClick={() => {
+                setActiveNav('home');
+                setMobileMenuOpen(false);
+              }}
+              className="px-3 py-2 rounded-xl text-xs font-semibold text-white bg-white/[0.06] flex items-center justify-between"
+            >
+              <span>{language === 'km' ? 'ទំព័រដើម' : 'Home'}</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+            </Link>
+
+            <a
+              href="#game-catalog"
+              onClick={() => {
+                setActiveNav('games');
+                setMobileMenuOpen(false);
+              }}
+              className="px-3 py-2 rounded-xl text-xs font-semibold text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors"
+            >
+              <span>{language === 'km' ? 'កាតាឡុកហ្គេម' : 'Games Catalog'}</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={() => {
+                setActiveNav('express');
+                setMobileMenuOpen(false);
+                openTopUp();
+              }}
+              className="text-left px-3 py-2 rounded-xl text-xs font-semibold text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors flex items-center justify-between"
+            >
+              <span>{language === 'km' ? 'បញ្ចូលលុយរហ័ស' : 'Express Top-Up'}</span>
+              <Zap className="w-3.5 h-3.5 text-violet-400" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setActiveNav('track');
+                setMobileMenuOpen(false);
+                openTrack();
+              }}
+              className="text-left px-3 py-2 rounded-xl text-xs font-semibold text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors flex items-center justify-between"
+            >
+              <span>{t.nav.trackOrder}</span>
+              <Receipt className="w-3.5 h-3.5 text-cyan-400" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setActiveNav('faq');
+                setMobileMenuOpen(false);
+                const el = document.getElementById('game-catalog');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="text-left px-3 py-2 rounded-xl text-xs font-semibold text-amber-300 hover:text-amber-200 hover:bg-white/[0.04] transition-colors flex items-center justify-between"
+            >
+              <span>{language === 'km' ? '❓ របៀបទិញ (How to Buy)' : '❓ How to Buy / FAQ'}</span>
+              <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
+            </button>
+
+            <a
+              href="https://t.me/sokhunmao"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-2 rounded-xl text-xs font-semibold text-emerald-400 hover:bg-emerald-500/10 transition-colors flex items-center justify-between"
+            >
+              <span>{t.nav.support} (Telegram 24/7)</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
           </div>
         </div>
       )}

@@ -3,8 +3,6 @@ import './globals.css';
 import { AppProvider } from '@/context/AppContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import TopUpModal from '@/components/TopUpModal';
-import TrackOrderModal from '@/components/TrackOrderModal';
 
 export const metadata: Metadata = {
   title: 'SEA RA Prestige • Official In-Game Top-Up Gateway',
@@ -23,7 +21,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Oxanium:wght@700;800&family=Kantumruy+Pro:ital,wght@0,300..700;1,300..700&family=Koulen&family=Battambang:wght@400;700;900&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap"
           rel="stylesheet"
         />
       </head>
@@ -33,14 +31,10 @@ export default function RootLayout({
           <Navbar />
 
           {/* Main Application Container */}
-          <main className="flex-1 pt-16 sm:pt-20">{children}</main>
+          <main className="flex-1">{children}</main>
 
           {/* Global Luxury Footer */}
           <Footer />
-
-          {/* Interactive Global Modals */}
-          <TopUpModal />
-          <TrackOrderModal />
         </AppProvider>
       </body>
     </html>

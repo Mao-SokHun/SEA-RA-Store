@@ -138,7 +138,7 @@ export default function TrackOrderModal() {
         <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
           <span className="text-neutral-400">Need order assistance?</span>
           <a
-            href="https://t.me/seara_support_kh"
+            href="https://t.me/sokhunmao"
             target="_blank"
             className="text-[#E5B55E] font-bold hover:underline flex items-center gap-1"
           >

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { GAMES } from '@/data/games';
 import {
@@ -46,8 +47,16 @@ export default function Navbar() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [suggestionIdx, setSuggestionIdx] = useState(0);
   const [scrolled, setScrolled] = useState(false);
-  const [activeNav, setActiveNav] = useState('home');
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  
+  const pathname = usePathname();
+  const activeNav = 
+    pathname.startsWith('/games') ? 'games' :
+    pathname.startsWith('/track-order') ? 'track' :
+    pathname.startsWith('/how-to-buy') ? 'faq' :
+    pathname.startsWith('/support') ? 'support' :
+    pathname.startsWith('/top-up') ? 'express' :
+    pathname === '/' ? 'home' : '';
 
   // Track scroll position to enhance seamless glassmorphism
   useEffect(() => {
@@ -169,7 +178,6 @@ export default function Navbar() {
           {/* Link 1: Home */}
           <Link
             href="/"
-            onClick={() => setActiveNav('home')}
             className={`relative px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeNav === 'home'
                 ? 'text-white'
@@ -185,7 +193,6 @@ export default function Navbar() {
           {/* Link 2: Games Catalog */}
           <Link
             href="/games"
-            onClick={() => setActiveNav('games')}
             className={`relative px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeNav === 'games'
                 ? 'text-white'
@@ -198,10 +205,10 @@ export default function Navbar() {
             )}
           </Link>
 
-          {/* Link 3: Express Top-Up */}
-          <Link
-            href="/top-up/mobile-legends"
-            onClick={() => setActiveNav('express')}
+          {/* Link 3: Express Top-Up Modal Cockpit Trigger */}
+          <button
+            type="button"
+            onClick={() => openTopUp()}
             className={`relative px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all duration-200 cursor-pointer ${
               activeNav === 'express'
                 ? 'text-white'
@@ -215,12 +222,11 @@ export default function Navbar() {
             {activeNav === 'express' && (
               <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-cyan-400 shadow-[0_0_12px_rgba(139,92,246,0.9)]" />
             )}
-          </Link>
+          </button>
 
           {/* Link 4: Track Order */}
           <Link
             href="/track-order"
-            onClick={() => setActiveNav('track')}
             className={`relative px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeNav === 'track'
                 ? 'text-white'
@@ -239,7 +245,6 @@ export default function Navbar() {
           {/* Link 5: How to Buy */}
           <Link
             href="/how-to-buy"
-            onClick={() => setActiveNav('faq')}
             className={`relative px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeNav === 'faq'
                 ? 'text-white'
@@ -260,7 +265,6 @@ export default function Navbar() {
           {/* Link 6: 24/7 VIP Support */}
           <Link
             href="/support"
-            onClick={() => setActiveNav('support')}
             className={`px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all flex items-center gap-1.5 ${
               activeNav === 'support'
                 ? 'text-emerald-400 bg-white/[0.06]'
@@ -409,66 +413,80 @@ export default function Navbar() {
           <div className="flex flex-col space-y-1 pt-1">
             <Link
               href="/"
-              onClick={() => {
-                setActiveNav('home');
-                setMobileMenuOpen(false);
-              }}
-              className="px-3 py-2 rounded-xl text-xs font-semibold text-white bg-white/[0.06] flex items-center justify-between"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between ${
+                activeNav === 'home'
+                  ? 'text-white bg-white/[0.08]'
+                  : 'text-neutral-300 hover:text-white hover:bg-white/[0.04]'
+              }`}
             >
               <span>{language === 'km' ? 'ទំព័រដើម' : 'Home'}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+              {activeNav === 'home' && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />}
             </Link>
 
-            <a
-              href="#game-catalog"
-              onClick={() => {
-                setActiveNav('games');
-                setMobileMenuOpen(false);
-              }}
-              className="px-3 py-2 rounded-xl text-xs font-semibold text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors"
+            <Link
+              href="/games"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between ${
+                activeNav === 'games'
+                  ? 'text-white bg-white/[0.08]'
+                  : 'text-neutral-300 hover:text-white hover:bg-white/[0.04]'
+              }`}
             >
               <span>{language === 'km' ? 'កាតាឡុកហ្គេម' : 'Games Catalog'}</span>
-            </a>
+              {activeNav === 'games' && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />}
+            </Link>
 
             <button
               type="button"
               onClick={() => {
-                setActiveNav('express');
                 setMobileMenuOpen(false);
                 openTopUp();
               }}
-              className="text-left px-3 py-2 rounded-xl text-xs font-semibold text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors flex items-center justify-between"
+              className="text-left px-3 py-2 rounded-xl text-xs font-semibold text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors flex items-center justify-between cursor-pointer"
             >
               <span>{language === 'km' ? 'បញ្ចូលលុយរហ័ស' : 'Express Top-Up'}</span>
-              <Zap className="w-3.5 h-3.5 text-violet-400" />
+              <Zap className="w-3.5 h-3.5 text-cyan-400" />
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setActiveNav('track');
-                setMobileMenuOpen(false);
-                openTrack();
-              }}
-              className="text-left px-3 py-2 rounded-xl text-xs font-semibold text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors flex items-center justify-between"
+            <Link
+              href="/track-order"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`text-left px-3 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center justify-between ${
+                activeNav === 'track'
+                  ? 'text-white bg-white/[0.08]'
+                  : 'text-neutral-300 hover:text-white hover:bg-white/[0.04]'
+              }`}
             >
               <span>{t.nav.trackOrder}</span>
               <Receipt className="w-3.5 h-3.5 text-cyan-400" />
-            </button>
+            </Link>
 
-            <button
-              type="button"
-              onClick={() => {
-                setActiveNav('faq');
-                setMobileMenuOpen(false);
-                const el = document.getElementById('game-catalog');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="text-left px-3 py-2 rounded-xl text-xs font-semibold text-amber-300 hover:text-amber-200 hover:bg-white/[0.04] transition-colors flex items-center justify-between"
+            <Link
+              href="/how-to-buy"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`text-left px-3 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center justify-between ${
+                activeNav === 'faq'
+                  ? 'text-white bg-white/[0.08]'
+                  : 'text-neutral-300 hover:text-white hover:bg-white/[0.04]'
+              }`}
             >
-              <span>{language === 'km' ? '❓ របៀបទិញ (How to Buy)' : '❓ How to Buy / FAQ'}</span>
+              <span>{language === 'km' ? 'របៀបទិញ (How to Buy)' : 'How to Buy / FAQ'}</span>
               <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
-            </button>
+            </Link>
+
+            <Link
+              href="/support"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`text-left px-3 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center justify-between ${
+                activeNav === 'support'
+                  ? 'text-emerald-400 bg-white/[0.08]'
+                  : 'text-neutral-300 hover:text-emerald-400 hover:bg-white/[0.04]'
+              }`}
+            >
+              <span>{t.nav.support}</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            </Link>
 
             <a
               href="https://t.me/sokhunmao"

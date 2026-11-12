@@ -7,16 +7,19 @@ import { useApp } from '@/context/AppContext';
 import { Search, Flame, Zap, ArrowRight, ArrowLeft, Gamepad2 } from 'lucide-react';
 
 export default function GamesCatalogPage() {
-  const { language, openTopUp, formatPrice } = useApp();
+  const { language, openTopUp, formatPrice, t } = useApp();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const categories = [
     { id: 'all', labelKh: 'ទាំងអស់', labelEn: 'All Games' },
     { id: 'moba', labelKh: 'MOBA', labelEn: 'MOBA' },
-    { id: 'metaverse', labelKh: 'Sandbox / Metaverse', labelEn: 'Metaverse' },
     { id: 'battle-royale', labelKh: 'Battle Royale', labelEn: 'Battle Royale' },
     { id: 'rpg', labelKh: 'Action RPG', labelEn: 'RPG' },
+    { id: 'fps', labelKh: 'FPS Shooters', labelEn: 'Shooters' },
+    { id: 'sports', labelKh: 'Sports & Football', labelEn: 'Sports' },
+    { id: 'strategy', labelKh: 'Strategy & Base', labelEn: 'Strategy' },
+    { id: 'giftcards', labelKh: 'Cards & Wallet', labelEn: 'Gift Cards' },
   ];
 
   const filteredGames = GAMES.filter((g) => {
@@ -30,53 +33,46 @@ export default function GamesCatalogPage() {
   });
 
   return (
-    <div className="min-h-screen py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto select-none">
+    <div className="min-h-screen py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto select-none pt-20 sm:pt-24">
       
-      {/* Back button */}
-      <Link
-        href="/"
-        className="inline-flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-white mb-8 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>{language === 'km' ? 'ត្រឡប់ទៅទំព័រដើម' : 'Back to Home'}</span>
-      </Link>
-
       {/* Header */}
-      <div className="space-y-4 mb-10 max-w-2xl">
-
-        <h1 className="text-3xl sm:text-5xl font-black text-white">
+      <div className="space-y-3 mb-10 max-w-2xl">
+        <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
           {language === 'km' ? 'កាតាឡុកហ្គេមផ្លូវការ' : 'Official Game Catalog'}
         </h1>
-        <p className="text-xs sm:text-sm text-neutral-300">
+        <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed">
           {language === 'km'
-            ? 'ជ្រើសរើសហ្គេមដែលអ្នកចូលចិត្តដើម្បីបញ្ចូលពេជ្រ និងកាក់ក្នុងតម្លៃពិសេសបំផុត'
-            : 'Select your game to top-up instantly with 0% fee Bakong KHQR.'}
+            ? 'ជ្រើសរើសហ្គេមដែលអ្នកចូលចិត្តដើម្បីបញ្ចូលពេជ្រ និងកាក់ក្នុងតម្លៃពិសេសបំផុតតាមរយៈ Bakong KHQR ដោយគ្មានថ្លៃសេវា។'
+            : 'Select your game to top-up instantly with 0% fee Bakong KHQR. Verified official APIs only.'}
         </p>
       </div>
 
-      {/* Search & Categories Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-8">
+      {/* Search & Gaming Chamfered Categories Bar */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 mb-8">
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-cyan-400 absolute left-4 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={language === 'km' ? 'ស្វែងរកតាមឈ្មោះហ្គេម...' : 'Search games...'}
-            className="w-full bg-[#090E1E] border border-white/[0.12] focus:border-[#E5B55E] rounded-2xl pl-11 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none transition-all"
+            className="w-full bg-[#090E1E] border border-white/[0.15] focus:border-cyan-400 rounded-xl pl-11 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none transition-all shadow-inner"
           />
         </div>
 
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           {categories.map((c) => (
             <button
               key={c.id}
               type="button"
               onClick={() => setSelectedCategory(c.id)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+              style={{
+                clipPath: 'polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)',
+              }}
+              className={`px-4 py-2 text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                 selectedCategory === c.id
-                  ? 'bg-[#E5B55E] text-black shadow-md'
-                  : 'bg-white/[0.05] hover:bg-white/[0.1] text-neutral-400 hover:text-white border border-white/[0.06]'
+                  ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 text-black shadow-[0_0_20px_rgba(0,212,255,0.6)]'
+                  : 'bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 hover:text-white border border-white/10 hover:border-cyan-400/50'
               }`}
             >
               {language === 'km' ? c.labelKh : c.labelEn}
@@ -85,64 +81,104 @@ export default function GamesCatalogPage() {
         </div>
       </div>
 
-      {/* Game Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredGames.map((game) => (
-          <div
-            key={game.id}
-            onClick={() => openTopUp(game.id)}
-            style={{
-              clipPath:
-                'polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px))',
-            }}
-            className="group relative h-[420px] rounded-3xl overflow-hidden bg-[#0A101E] border border-white/[0.12] transition-all duration-300 flex flex-col justify-end cursor-pointer hover:-translate-y-1.5 shadow-xl hover:shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
-          >
-            <img
-              src={game.coverImage}
-              alt={game.name}
-              className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#060913] via-[#060913]/70 via-45% to-black/30 pointer-events-none" />
+      {/* Game Cards Grid: Identical 5-Card Chamfered Grid Matching Home */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-5">
+        {filteredGames.map((game) => {
+          const lowestPrice = Math.min(...game.packages.map((p) => p.priceUSD));
 
-            {/* Chamfered Brackets */}
-            <div className="absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 border-[#E5B55E]/70 pointer-events-none" />
-            <div className="absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 border-[#E5B55E]/70 pointer-events-none" />
+          return (
+            <Link
+              key={game.id}
+              href={`/top-up/${game.slug}`}
+              style={{
+                clipPath:
+                  'polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px))',
+              }}
+              className="group relative h-[420px] sm:h-[450px] overflow-hidden bg-[#0A101E] border border-white/[0.12] hover:border-[#E5B55E]/80 transition-all duration-500 flex flex-col justify-end cursor-pointer hover:-translate-y-1.5 shadow-[0_8px_25px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-10px_rgba(229,181,94,0.4)]"
+            >
+              {/* Poster Image */}
+              <img
+                src={game.coverImage}
+                alt={game.name}
+                className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
+              />
 
-            <div className="relative z-10 p-4 space-y-2.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#E5B55E]">
-                  {game.publisher}
-                </span>
-                <span className="text-[10px] text-neutral-400 font-mono">
-                  {game.packages.length} Packs
-                </span>
+              {/* Dark Vignette Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#060913] via-[#060913]/70 via-45% to-black/30 pointer-events-none" />
+
+              {/* Color Bloom from Bottom */}
+              <div className="absolute -bottom-8 inset-x-0 h-44 opacity-0 group-hover:opacity-40 blur-2xl transition-opacity duration-500 pointer-events-none bg-[#E5B55E]" />
+
+              {/* Subtle Tech Grid */}
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-15 transition-opacity duration-500 pointer-events-none"
+                style={{
+                  backgroundImage:
+                    'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)',
+                  backgroundSize: '24px 24px',
+                }}
+              />
+
+              {/* Holographic Shimmer Foil Sweep */}
+              <div className="absolute -inset-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none overflow-hidden">
+                <div className="w-[200%] h-full bg-gradient-to-r from-transparent via-white/[0.18] to-transparent transform -rotate-45 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
               </div>
 
-              <div>
-                <h3 className="text-base font-black text-white group-hover:text-[#E5B55E] transition-colors leading-tight">
-                  {game.name}
-                </h3>
-                <span className="text-xs text-neutral-400 flex items-center gap-1 mt-0.5">
-                  <span>💎</span>
-                  <span>{game.currencyName}</span>
-                </span>
-              </div>
+              {/* Decorative Sci-Fi Corner Brackets */}
+              <div className="absolute top-2.5 right-2.5 w-4 h-4 border-t-2 border-r-2 border-[#E5B55E]/70 pointer-events-none" />
+              <div className="absolute bottom-2.5 left-2.5 w-4 h-4 border-b-2 border-l-2 border-[#E5B55E]/70 pointer-events-none" />
 
-              <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between">
-                <div>
-                  <span className="text-[9px] text-neutral-400 block font-mono">START FROM</span>
-                  <span className="text-sm font-black text-white font-mono">
-                    {formatPrice(game.packages[0]?.priceUSD || 0.95)}
+              {/* Bottom Card Content */}
+              <div className="relative z-10 p-3.5 sm:p-4 space-y-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-[#E5B55E] truncate">
+                    {game.publisher}
+                  </span>
+                  <span className="text-[9px] font-mono text-neutral-400 font-bold shrink-0">
+                    {game.packages.length} Packs
                   </span>
                 </div>
-                <div className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#E5B55E] to-amber-500 text-black font-black text-xs uppercase tracking-wider group-hover:brightness-110 flex items-center gap-1">
-                  <span>{language === 'km' ? 'បញ្ចូលលុយ' : 'Top Up'}</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+
+                <div>
+                  <h3 className="text-base sm:text-lg font-black text-white group-hover:text-[#E5B55E] transition-colors leading-tight line-clamp-1 drop-shadow-md">
+                    {game.name}
+                  </h3>
+                  <div className="flex items-center gap-1.5 mt-1 text-xs">
+                    <span className="text-sm">{game.currencyIcon}</span>
+                    <span className="font-bold text-[11px] truncate tracking-wide text-[#E5B55E]">
+                      {game.currencyName}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Price & Gold Chamfered TOP UP CTA */}
+                <div className="pt-2.5 border-t border-white/[0.12] flex items-center justify-between gap-2">
+                  <div className="flex flex-col">
+                    <span className="text-[9px] text-neutral-400 font-mono tracking-widest uppercase font-bold">
+                      {t.catalog.startingFrom}
+                    </span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-base sm:text-lg font-black font-mono tracking-tight text-white drop-shadow">
+                        ${lowestPrice.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      clipPath:
+                        'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
+                    }}
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-[#E5B55E] via-[#F3C978] to-[#D4A043] text-black font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(229,181,94,0.4)] group-hover:shadow-[0_0_22px_rgba(229,181,94,0.7)] group-hover:scale-105 active:scale-95 transition-all flex items-center gap-1 shrink-0"
+                  >
+                    <span>{t.catalog.instantBtn}</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        ))}
+            </Link>
+          );
+        })}
       </div>
 
     </div>

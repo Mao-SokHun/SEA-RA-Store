@@ -151,7 +151,7 @@ export default function HeroExpress() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col items-center justify-center pt-28 sm:pt-36 pb-14">
         {/* Huge Sci-Fi Centered Headline with Authentic Gaming Font Matching Reference Image */}
         <div className="space-y-4 mb-6">
-          <h1 className="font-gaming italic tracking-[0.14em] sm:tracking-[0.18em] text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase text-white drop-shadow-[0_12px_45px_rgba(0,0,0,0.95)] leading-tight select-none">
+          <h1 className="tracking-tight text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase text-white drop-shadow-[0_12px_45px_rgba(0,0,0,0.95)] leading-tight select-none">
             THE NEXT <br />
             <span className="text-white drop-shadow-[0_0_35px_rgba(255,255,255,0.45)]">
               GENERATION

@@ -109,6 +109,9 @@ export default function GameCatalog() {
     { id: 'battle-royale', label: t.catalog.battleRoyale },
     { id: 'rpg', label: t.catalog.rpg },
     { id: 'shooter', label: t.catalog.shooter },
+    { id: 'sports', label: language === 'km' ? 'កីឡា & បាល់ទាត់' : 'Sports' },
+    { id: 'strategy', label: language === 'km' ? 'យុទ្ធសាស្ត្រ' : 'Strategy' },
+    { id: 'giftcards', label: language === 'km' ? 'កាត & កាបូបលុយ' : 'Gift Cards' },
   ];
 
   const filteredGames = GAMES.filter((game) => {
@@ -141,8 +144,8 @@ export default function GameCatalog() {
             </p>
           </div>
 
-          {/* Luxury Category Filter Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {/* Sci-Fi Chamfered Gaming Category Filter Buttons */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
             {categories.map((cat) => {
               const isSelected = selectedCategory === cat.id;
               return (
@@ -150,10 +153,13 @@ export default function GameCatalog() {
                   key={cat.id}
                   type="button"
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
+                  style={{
+                    clipPath: 'polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)',
+                  }}
+                  className={`px-4 sm:px-5 py-2 sm:py-2.5 text-xs font-gaming font-black uppercase italic tracking-wider transition-all cursor-pointer shrink-0 ${
                     isSelected
-                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md scale-[1.02]'
-                      : 'bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-neutral-300 hover:text-white'
+                      ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 text-black shadow-[0_0_20px_rgba(0,212,255,0.7)] scale-[1.03]'
+                      : 'bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-cyan-400/50 text-neutral-300 hover:text-white'
                   }`}
                 >
                   {cat.label}

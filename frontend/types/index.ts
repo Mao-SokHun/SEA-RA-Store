@@ -5,8 +5,8 @@ export interface AccountField {
   id: string;
   label: string;
   labelKh: string;
-  placeholder: string;
-  placeholderKh: string;
+  placeholder?: string;
+  placeholderKh?: string;
   type: 'text' | 'number' | 'select';
   options?: { label: string; value: string }[];
   helperText?: string;
@@ -32,7 +32,7 @@ export interface GameItem {
   name: string;
   nameKh?: string;
   publisher: string;
-  category: 'moba' | 'battle-royale' | 'rpg' | 'shooter';
+  category: 'moba' | 'battle-royale' | 'rpg' | 'shooter' | 'sports' | 'strategy' | 'giftcards' | 'fps';
   categoryLabel: string;
   categoryLabelKh: string;
   coverImage: string;

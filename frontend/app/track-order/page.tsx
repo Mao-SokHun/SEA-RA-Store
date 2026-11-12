@@ -41,23 +41,10 @@ export default function TrackOrderPage() {
   };
 
   return (
-    <div className="min-h-screen py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto select-none">
+    <div className="min-h-screen py-10 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto select-none pt-20 sm:pt-24">
       
-      {/* Back button */}
-      <Link
-        href="/"
-        className="inline-flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-white mb-8 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>{language === 'km' ? 'ត្រឡប់ទៅទំព័រដើម' : 'Back to Home'}</span>
-      </Link>
-
-      <div className="space-y-4 mb-8">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold">
-          <Receipt className="w-4 h-4" />
-          <span>ORDER TRACKING & RECEIPT LOOKUP</span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white">
+      <div className="space-y-3 mb-8">
+        <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
           {language === 'km' ? 'ពិនិត្យស្ថានភាពការបញ្ជាទិញ' : 'Track Your Order'}
         </h1>
         <p className="text-xs sm:text-sm text-neutral-400">

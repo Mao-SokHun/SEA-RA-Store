@@ -29,10 +29,17 @@ import {
   Clock,
   Sparkles,
   Receipt,
+  Share2,
+  Send,
+  X,
 } from 'lucide-react';
 
 export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
   const { language, t, formatPrice, toKHR, saveOrder, completeOrder } = useApp();
+
+  // Share Modal State
+  const [showShareModal, setShowShareModal] = useState<boolean>(false);
+  const [copiedShareLink, setCopiedShareLink] = useState<boolean>(false);
 
   // Initial state is null: No package auto-selected! Customer chooses their package.
   const [selectedPkg, setSelectedPkg] = useState<PackageItem | null>(null);
@@ -282,30 +289,165 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
           
           {/* Game Banner Header */}
           <div className="relative rounded-3xl overflow-hidden bg-[#0A101E] border border-white/[0.1] p-5 sm:p-7 shadow-2xl">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 relative z-10">
-              <img
-                src={game.coverImage}
-                alt={game.name}
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-cyan-400/80 shadow-[0_0_20px_rgba(0,212,255,0.3)] shrink-0"
-              />
-              <div className="text-center sm:text-left space-y-1 flex-1">
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                  <span className="px-2.5 py-0.5 rounded-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black text-[10px] uppercase tracking-wider">
-                    OFFICIAL PARTNER
-                  </span>
-                  <span className="text-xs text-amber-400 font-bold">
-                    ★ {game.rating.toFixed(1)} / 5.0
-                  </span>
+            <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5 relative z-10">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                <img
+                  src={game.coverImage}
+                  alt={game.name}
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-cyan-400/80 shadow-[0_0_20px_rgba(0,212,255,0.3)] shrink-0"
+                />
+                <div className="text-center sm:text-left space-y-1">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                    <span className="px-2.5 py-0.5 rounded-md bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black text-[10px] uppercase tracking-wider">
+                      OFFICIAL PARTNER
+                    </span>
+                    <span className="text-xs text-amber-400 font-bold">
+                      ★ {game.rating.toFixed(1)} / 5.0
+                    </span>
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl font-black text-white">
+                    {game.name}
+                  </h1>
+                  <p className="text-xs sm:text-sm text-neutral-400">
+                    {game.publisher} • {game.currencyName} Instant Top-Up
+                  </p>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-black text-white">
-                  {game.name}
-                </h1>
-                <p className="text-xs sm:text-sm text-neutral-400">
-                  {game.publisher} • {game.currencyName} Instant Top-Up
-                </p>
               </div>
+
+              {/* Share Game Button */}
+              <button
+                type="button"
+                onClick={() => setShowShareModal(true)}
+                style={{
+                  clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
+                }}
+                className="px-4 py-2.5 bg-white/[0.06] hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/50 text-neutral-200 hover:text-cyan-300 text-xs font-mono font-bold flex items-center gap-2 transition-all cursor-pointer shadow-md shrink-0 self-center sm:self-start"
+              >
+                <Share2 className="w-3.5 h-3.5 text-cyan-400" />
+                <span>{language === 'km' ? 'ចែករំលែក (Share)' : 'Share Game'}</span>
+              </button>
             </div>
           </div>
+
+          {/* Sleek Share Modal with OpenGraph Preview */}
+          {showShareModal && (
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+              <div
+                style={{
+                  clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))',
+                  filter: 'drop-shadow(0 0 30px rgba(0, 212, 255, 0.4))',
+                }}
+                className="p-[1.5px] bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600 w-full max-w-lg relative"
+              >
+                <div
+                  style={{
+                    clipPath: 'polygon(0 0, calc(100% - 19px) 0, 100% 19px, 100% 100%, 19px 100%, 0 calc(100% - 19px))',
+                  }}
+                  className="p-6 bg-[#080E1C] space-y-5"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between pb-3 border-b border-white/[0.1]">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center text-cyan-400">
+                        <Share2 className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-black text-white uppercase tracking-wider">
+                          {language === 'km' ? 'ចែករំលែកតំណភ្ជាប់ហ្គេម' : 'Share Game Link'}
+                        </h3>
+                        <p className="text-[11px] text-neutral-400 font-mono">
+                          SEA RA PRESTIGE • OpenGraph Social Preview
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowShareModal(false)}
+                      className="w-8 h-8 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-neutral-400 hover:text-white flex items-center justify-center cursor-pointer transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Live OpenGraph Social Card Preview */}
+                  <div className="rounded-xl overflow-hidden border border-white/[0.12] bg-[#0E172B] shadow-inner space-y-2 p-3">
+                    <span className="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-wider block">
+                      {language === 'km' ? 'ផ្ទាំងរូបភាពពេល Share ចូល Telegram / Facebook / TikTok' : 'Live Social Card Preview'}
+                    </span>
+                    <div className="relative rounded-lg overflow-hidden border border-white/10 aspect-[1200/630] max-h-40 bg-black flex items-center justify-center">
+                      <img
+                        src={game.coverImage}
+                        alt={game.name}
+                        className="w-full h-full object-cover opacity-80"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-3">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <img src="/logo.png" alt="Logo" className="w-4 h-4 object-contain rounded" />
+                          <span className="text-[10px] font-black text-[#FFE082] tracking-wider uppercase">SEA RA PRESTIGE</span>
+                        </div>
+                        <span className="text-xs font-black text-white truncate">
+                          បញ្ចូល {game.name} - ០% សេវា Bakong KHQR
+                        </span>
+                        <span className="text-[10px] text-cyan-300 font-mono">
+                          ស្វ័យប្រវត្តិកំពូលល្បឿន 24/7 • ទទួលពេជ្រភ្លាមៗ
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1-Click Copy Link Box */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-mono text-neutral-300">
+                      {language === 'km' ? 'តំណភ្ជាប់ផ្ទាល់ (Direct Link):' : 'Direct Link:'}
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        readOnly
+                        value={typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://frontend-silk-one-22.vercel.app/top-up/${game.slug}`}
+                        className="flex-1 bg-[#10182C] border border-white/[0.15] rounded-xl px-3.5 py-2.5 text-xs text-neutral-300 font-mono focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const url = typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://frontend-silk-one-22.vercel.app/top-up/${game.slug}`;
+                          navigator.clipboard.writeText(url);
+                          setCopiedShareLink(true);
+                          setTimeout(() => setCopiedShareLink(false), 2000);
+                        }}
+                        className="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-all shrink-0"
+                      >
+                        {copiedShareLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        <span>{copiedShareLink ? (language === 'km' ? 'បានចម្លង!' : 'Copied!') : (language === 'km' ? 'ចម្លង Link' : 'Copy')}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Direct Social Channels */}
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <a
+                      href={`https://t.me/share/url?url=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://frontend-silk-one-22.vercel.app/top-up/${game.slug}`)}&text=${encodeURIComponent(`🎮 បញ្ចូល ${game.name} - SEA RA PRESTIGE | ០% សេវា Bakong KHQR!`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-xl bg-[#229ED9]/15 hover:bg-[#229ED9]/25 border border-[#229ED9]/40 text-[#38bdf8] text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+                    >
+                      <Send className="w-4 h-4" />
+                      <span>Share Telegram</span>
+                    </a>
+                    <a
+                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://frontend-silk-one-22.vercel.app/top-up/${game.slug}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-xl bg-[#1877F2]/15 hover:bg-[#1877F2]/25 border border-[#1877F2]/40 text-[#60a5fa] text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      <span>Share Facebook</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* STEP 1: ACCOUNT INPUT */}
           <div className="bg-[#0A101E] rounded-3xl border border-white/[0.08] p-5 sm:p-6 shadow-xl space-y-4">

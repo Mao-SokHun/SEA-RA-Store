@@ -57,35 +57,34 @@ export async function POST(req: Request) {
       .join('\n');
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://frontend-silk-one-22.vercel.app';
+    const targetIds = chatId.split(',').map((s) => s.trim()).filter(Boolean);
 
-    const telegramRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: htmlText,
-        parse_mode: 'HTML',
-        disable_web_page_preview: true,
-        reply_markup: {
-          inline_keyboard: [
-            [
-              {
-                text: '🔍 View Customer Receipt',
-                url: `${appUrl}/track-order?order=${orderNumber}`,
-              },
+    const promises = targetIds.map(async (cid) => {
+      const telegramRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: cid,
+          text: htmlText,
+          parse_mode: 'HTML',
+          disable_web_page_preview: true,
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: '🔍 View Customer Receipt',
+                  url: `${appUrl}/track-order?order=${orderNumber}`,
+                },
+              ],
             ],
-          ],
-        },
-      }),
+          },
+        }),
+      });
+      return telegramRes.ok;
     });
 
-    if (!telegramRes.ok) {
-      const errText = await telegramRes.text();
-      console.error('❌ [Next.js Telegram Notify] Telegram API error:', errText);
-      return NextResponse.json({ success: false, error: errText }, { status: 502 });
-    }
-
-    return NextResponse.json({ success: true, delivered: true });
+    const results = await Promise.all(promises);
+    return NextResponse.json({ success: true, delivered: results.some(Boolean) });
   } catch (error: any) {
     console.error('❌ [Next.js Telegram Notify] Internal error:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

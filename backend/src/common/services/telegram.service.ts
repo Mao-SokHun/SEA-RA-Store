@@ -47,30 +47,39 @@ export class TelegramService {
 
     try {
       const url = `https://api.telegram.org/bot${this.botToken}/sendMessage`;
-      const payload: any = {
-        chat_id: this.chatId,
-        text: htmlText,
-        parse_mode: 'HTML',
-        disable_web_page_preview: true,
-      };
+      const targetIds = this.chatId
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
 
-      if (replyMarkup) {
-        payload.reply_markup = replyMarkup;
-      }
+      const promises = targetIds.map(async (cid) => {
+        const payload: any = {
+          chat_id: cid,
+          text: htmlText,
+          parse_mode: 'HTML',
+          disable_web_page_preview: true,
+        };
 
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        if (replyMarkup) {
+          payload.reply_markup = replyMarkup;
+        }
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          const errJson = await res.json();
+          console.error(`❌ [TelegramService] Failed to send to ${cid}:`, errJson);
+          return false;
+        }
+        return true;
       });
 
-      if (!res.ok) {
-        const errJson = await res.json();
-        console.error('❌ [TelegramService] Failed to send Telegram alert:', errJson);
-        return false;
-      }
-
-      return true;
+      const results = await Promise.all(promises);
+      return results.some(Boolean);
     } catch (err) {
       console.error('❌ [TelegramService] Network error sending Telegram message:', err);
       return false;

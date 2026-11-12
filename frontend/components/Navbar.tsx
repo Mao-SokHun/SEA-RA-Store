@@ -139,25 +139,13 @@ export default function Navbar() {
         {/* 1. LEFT: BRAND LOGO & VERIFICATION CREST                          */}
         {/* ================================================================= */}
         <Link href="/" className="flex items-center gap-2.5 sm:gap-3 shrink-0 group">
-          {/* Cyber Shield with Violet & Gold Halo */}
-          <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-violet-500 via-[#E5B55E] to-[#1E293B] p-[1px] shadow-[0_0_20px_rgba(139,92,246,0.3)] group-hover:shadow-[0_0_28px_rgba(139,92,246,0.55)] transition-all">
-            <div className="w-full h-full bg-[#090E1B] rounded-[11px] flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-tr from-violet-500/20 via-transparent to-[#E5B55E]/15 pointer-events-none" />
-              <svg className="w-5 h-5 text-[#E5B55E]" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 2L3 7V13C3 18.5 6.8 21.8 12 23C17.2 21.8 21 18.5 21 13V7L12 2Z"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M12 7L16 11L12 15L8 11L12 7Z"
-                  fill="#E5B55E"
-                  fillOpacity="0.85"
-                />
-              </svg>
-            </div>
+          {/* Official SEA RA PRESTIGE Crest Logo */}
+          <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-xl shadow-[0_0_20px_rgba(0,212,255,0.4)] group-hover:shadow-[0_0_28px_rgba(229,181,94,0.65)] transition-all">
+            <img
+              src="/logo.png"
+              alt="SEA RA PRESTIGE Official Logo"
+              className="w-full h-full object-contain rounded-xl drop-shadow-[0_0_10px_rgba(0,212,255,0.6)] group-hover:scale-105 transition-transform"
+            />
           </div>
 
           <div className="flex flex-col">

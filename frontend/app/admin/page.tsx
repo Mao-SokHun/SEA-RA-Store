@@ -377,13 +377,12 @@ export default function AdminDashboardPage() {
           >
             {/* Header */}
             <div className="text-center space-y-2">
-              <div
-                style={{
-                  clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
-                }}
-                className="w-14 h-14 bg-[#E5B55E]/15 border border-[#E5B55E]/40 mx-auto flex items-center justify-center text-[#E5B55E] shadow-lg mb-3"
-              >
-                <Lock className="w-7 h-7" />
+              <div className="w-20 h-20 mx-auto mb-3 shadow-[0_0_25px_rgba(0,212,255,0.4)]">
+                <img
+                  src="/logo.png"
+                  alt="SEA RA PRESTIGE Official Crest"
+                  className="w-full h-full object-contain rounded-2xl drop-shadow-[0_0_12px_rgba(229,181,94,0.6)]"
+                />
               </div>
               <h1 className="text-xl sm:text-2xl font-black text-white tracking-wider uppercase font-sans">
                 SEA RA COMMAND CENTER
@@ -450,21 +449,30 @@ export default function AdminDashboardPage() {
       
       {/* Top Cockpit Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-white/[0.1]">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_12px_#10b981]" />
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide uppercase font-sans">
-              SEA RA PRESTIGE • COMMAND DECK
-            </h1>
-            <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E5B55E]/15 border border-[#E5B55E]/40 text-[#E5B55E]">
-              ADMIN v2.9
-            </span>
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl shadow-[0_0_20px_rgba(0,212,255,0.4)] shrink-0">
+            <img
+              src="/logo.png"
+              alt="SEA RA PRESTIGE Official Crest"
+              className="w-full h-full object-contain rounded-2xl"
+            />
           </div>
-          <p className="text-xs text-neutral-400 mt-1 font-mono">
-            {language === 'km'
-              ? 'ផ្ទាំងគ្រប់គ្រងរបាយការណ៍ចំណូល ការបញ្ជាទិញ សមតុល្យ Smile.One និង Telegram Bot'
-              : 'Real-time telemetry, revenue reports, Smile.One balance, and Telegram Dispatcher.'}
-          </p>
+          <div>
+            <div className="flex items-center gap-3">
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_12px_#10b981]" />
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide uppercase font-sans">
+                SEA RA PRESTIGE • COMMAND DECK
+              </h1>
+              <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E5B55E]/15 border border-[#E5B55E]/40 text-[#E5B55E]">
+                ADMIN v2.9
+              </span>
+            </div>
+            <p className="text-xs text-neutral-400 mt-1 font-mono">
+              {language === 'km'
+                ? 'ផ្ទាំងគ្រប់គ្រងរបាយការណ៍ចំណូល ការបញ្ជាទិញ សមតុល្យ Smile.One និង Telegram Bot'
+                : 'Real-time telemetry, revenue reports, Smile.One balance, and Telegram Dispatcher.'}
+            </p>
+          </div>
         </div>
 
         {/* Action Header Tools */}

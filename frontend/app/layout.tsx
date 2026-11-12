@@ -32,21 +32,25 @@ export const metadata: Metadata = {
     siteName: 'SEA RA PRESTIGE',
     images: [
       {
-        url: '/banners/mlbb.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'SEA RA PRESTIGE Gaming Reload Platform',
+        url: '/logo.png',
+        width: 1024,
+        height: 1024,
+        alt: 'SEA RA PRESTIGE Official Gaming Reload Logo',
       },
     ],
     locale: 'km_KH',
     type: 'website',
+  },
+  icons: {
+    icon: '/icon.png',
+    apple: '/icon.png',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'SEA RA PRESTIGE - បញ្ចូលលុយហ្គេម ០% សេវា តាមរយៈ Bakong KHQR',
     description:
       'បញ្ចូលពេជ្រ និងកាក់ហ្គេមស្វ័យប្រវត្តិតាម Bakong KHQR ០% សេវា មិនបាច់ Password ពេជ្រចូលគណនីក្នុងរយៈពេល < 3 វិនាទី!',
-    images: ['/banners/mlbb.jpg'],
+    images: ['/logo.png'],
   },
 };
 

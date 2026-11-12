@@ -51,10 +51,12 @@ export default function Footer() {
           {/* Card 1: Brand Authority (5 Cols) */}
           <div className="md:col-span-5 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E5B55E] via-[#C49740] to-[#1E293B] p-[1px] shadow-[0_0_20px_rgba(229,181,94,0.3)]">
-                <div className="w-full h-full bg-[#090E1B] rounded-[11px] flex items-center justify-center">
-                  <span className="font-black text-xs text-[#E5B55E]">SR</span>
-                </div>
+              <div className="w-12 h-12 rounded-xl shadow-[0_0_20px_rgba(0,212,255,0.4)] shrink-0">
+                <img
+                  src="/logo.png"
+                  alt="SEA RA PRESTIGE Official Crest"
+                  className="w-full h-full object-contain rounded-xl"
+                />
               </div>
               <div>
                 <span className="font-black text-lg text-white tracking-wider block">

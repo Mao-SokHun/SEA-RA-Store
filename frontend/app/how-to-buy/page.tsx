@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 
 export default function HowToBuyPage() {
-  const { language, openTopUp } = useApp();
+  const { language } = useApp();
 
   const steps = [
     {
@@ -277,17 +277,16 @@ export default function HowToBuyPage() {
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-black" />
           </Link>
           
-          <button
-            type="button"
-            onClick={() => openTopUp()}
+          <Link
+            href="/express"
             style={{
               clipPath: 'polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)',
             }}
-            className="px-7 py-3 bg-[#0A1020]/90 hover:bg-[#121B33] border border-cyan-400/40 hover:border-cyan-400 text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-lg"
+            className="px-7 py-3 bg-[#0A1020]/90 hover:bg-[#121B33] border border-cyan-400/40 hover:border-cyan-400 text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-lg active:scale-95"
           >
             <Zap className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
             <span>{language === 'km' ? 'បើកផ្ទាំងបញ្ចូលរហ័ស' : 'Express Top-Up'}</span>
-          </button>
+          </Link>
         </div>
 
       </div>

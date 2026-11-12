@@ -177,9 +177,7 @@ export default function HeroExpress() {
             }}
             className="px-8 sm:px-11 py-3.5 sm:py-4 bg-gradient-to-r from-[#00D4FF] via-[#0284C7] to-[#2563EB] hover:from-[#38BDF8] hover:to-[#1D4ED8] text-black font-black text-xs sm:text-sm uppercase tracking-widest shadow-[0_0_35px_rgba(0,212,255,0.7)] hover:shadow-[0_0_55px_rgba(0,212,255,0.95)] transition-all flex items-center justify-center gap-2.5 transform hover:scale-105 active:scale-95 cursor-pointer"
           >
-            <span className="w-5 h-5 rounded-full bg-black/25 flex items-center justify-center text-[10px] text-black font-black">
-              ▶
-            </span>
+            <Zap className="w-4 h-4 fill-black text-black" />
             <span className="tracking-widest">
               {language === 'km' ? 'បញ្ចូលលុយឥឡូវនេះ' : 'TOP UP NOW'}
             </span>

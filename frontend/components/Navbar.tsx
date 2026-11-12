@@ -52,6 +52,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const activeNav = 
     pathname.startsWith('/games') ? 'games' :
+    pathname.startsWith('/express') ? 'express' :
     pathname.startsWith('/track-order') ? 'track' :
     pathname.startsWith('/how-to-buy') ? 'faq' :
     pathname.startsWith('/support') ? 'support' :
@@ -205,11 +206,10 @@ export default function Navbar() {
             )}
           </Link>
 
-          {/* Link 3: Express Top-Up Modal Cockpit Trigger */}
-          <button
-            type="button"
-            onClick={() => openTopUp()}
-            className={`relative px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all duration-200 cursor-pointer ${
+          {/* Link 3: Dedicated Full-Screen Express Top-Up Page */}
+          <Link
+            href="/express"
+            className={`relative px-3.5 py-2 rounded-xl text-[13px] font-semibold whitespace-nowrap shrink-0 transition-all duration-200 ${
               activeNav === 'express'
                 ? 'text-white'
                 : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
@@ -222,7 +222,7 @@ export default function Navbar() {
             {activeNav === 'express' && (
               <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-gradient-to-r from-violet-500 via-indigo-400 to-cyan-400 shadow-[0_0_12px_rgba(139,92,246,0.9)]" />
             )}
-          </button>
+          </Link>
 
           {/* Link 4: Track Order */}
           <Link
@@ -437,17 +437,18 @@ export default function Navbar() {
               {activeNav === 'games' && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />}
             </Link>
 
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                openTopUp();
-              }}
-              className="text-left px-3 py-2 rounded-xl text-xs font-semibold text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors flex items-center justify-between cursor-pointer"
+            <Link
+              href="/express"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`text-left px-3 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center justify-between ${
+                activeNav === 'express'
+                  ? 'text-white bg-white/[0.08]'
+                  : 'text-neutral-300 hover:text-white hover:bg-white/[0.04]'
+              }`}
             >
               <span>{language === 'km' ? 'បញ្ចូលលុយរហ័ស' : 'Express Top-Up'}</span>
               <Zap className="w-3.5 h-3.5 text-cyan-400" />
-            </button>
+            </Link>
 
             <Link
               href="/track-order"

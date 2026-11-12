@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
+import KHQRCard from '@/components/KHQRCard';
 import { GameItem, PackageItem, TopUpOrder } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { PAYMENT_CHANNELS } from '@/data/games';
@@ -549,87 +550,36 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
                 </div>
 
                 {/* AUTHENTIC OFFICIAL NBC BAKONG KHQR STANDEE TICKET */}
-                {/* 1:1 Match with User's Reference: media_1794439634127_01a8d4a7.png and media_1794439642915_fcf867e6.png */}
-                <div className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-neutral-200/80 text-neutral-900 select-none max-w-[300px] mx-auto">
-                  
-                  {/* Top Red KHQR Header with diagonal corner notch */}
-                  <div className="relative bg-[#CE181E] px-4 py-2.5 flex items-center justify-center">
-                    <span className="text-white font-black text-xl tracking-[0.22em] font-sans">
-                      KHQR
-                    </span>
-                    {/* Bottom-right diagonal notch cut */}
-                    <div className="absolute bottom-0 right-0 w-0 h-0 border-b-[10px] border-b-white border-l-[10px] border-l-transparent" />
-                  </div>
-
-                  {/* Merchant Branding & Price Section */}
-                  <div className="px-5 pt-3.5 pb-2 text-left">
-                    <div className="flex items-center justify-between gap-1">
-                      <p className="text-xs font-black text-neutral-900 tracking-wider font-sans uppercase">
-                        SEA RA PRESTIGE
+                {selectedPkg ? (
+                  <KHQRCard
+                    amount={billCurrency === 'USD' ? +discountedUSD : discountedKHR}
+                    currency={billCurrency}
+                    merchantName="SEA RA PRESTIGE"
+                    storeLabel="OFFICIAL STORE"
+                    qrString={qrString}
+                    orderNumber={orderNumber}
+                  />
+                ) : (
+                  <div className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-neutral-200/80 text-neutral-900 select-none max-w-[320px] mx-auto py-10 px-5 flex flex-col items-center justify-center text-center space-y-3">
+                    <div className="w-16 h-16 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center p-3">
+                      <img
+                        src="/bakong-logo.svg"
+                        alt="Bakong"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black text-neutral-900 uppercase tracking-wide">
+                        {language === 'km' ? 'សូមជ្រើសរើសកញ្ចប់' : 'Select a Package'}
                       </p>
-                      <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">
-                        OFFICIAL STORE
-                      </span>
-                    </div>
-                    <div className="mt-0.5 flex items-baseline gap-1.5">
-                      <span className="text-2xl sm:text-3xl font-black text-neutral-900 font-sans tracking-tight">
-                        {selectedPkg
-                          ? billCurrency === 'USD'
-                            ? `${discountedUSD}`
-                            : `${discountedKHR.toLocaleString()}`
-                          : '--'}
-                      </span>
-                      <span className="text-xs font-bold text-neutral-600 uppercase font-sans">
-                        {billCurrency === 'USD' ? 'USD' : 'KHR'}
-                      </span>
+                      <p className="text-xs text-neutral-500 mt-1 max-w-[220px] leading-relaxed">
+                        {language === 'km'
+                          ? 'ជ្រើសរើសកញ្ចប់នៅជំហានទី ២ ដើម្បីបង្កើតកូដ Bakong KHQR ស្វ័យប្រវត្តិ'
+                          : 'Choose a package on the left to generate your live Bakong KHQR ticket.'}
+                      </p>
                     </div>
                   </div>
-
-                  {/* Perforated ticket separator dashed line */}
-                  <div className="border-b border-dashed border-neutral-300 w-full" />
-
-                  {/* QR Code Container with Official Circular Red Bakong Center Emblem */}
-                  <div className="p-5 bg-white flex flex-col items-center justify-center">
-                    {selectedPkg ? (
-                      <div className="p-2 bg-white rounded-2xl shadow-inner border border-slate-100 flex items-center justify-center">
-                        <QRCodeSVG
-                          value={qrString}
-                          size={200}
-                          level="H"
-                          includeMargin={false}
-                          imageSettings={{
-                            src: "/bakong-logo.svg",
-                            x: undefined,
-                            y: undefined,
-                            height: 38,
-                            width: 38,
-                            excavate: true,
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <div className="py-8 px-4 flex flex-col items-center justify-center text-center space-y-3 min-h-[220px]">
-                        <div className="w-14 h-14 rounded-2xl bg-neutral-100 border border-neutral-200 flex items-center justify-center p-2.5">
-                          <img
-                            src="/bakong-logo.svg"
-                            alt="Bakong"
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                        <div>
-                          <p className="text-xs font-black text-neutral-800 uppercase tracking-wide">
-                            {language === 'km' ? 'សូមជ្រើសរើសកញ្ចប់' : 'Select a Package'}
-                          </p>
-                          <p className="text-[11px] text-neutral-500 mt-1 max-w-[200px] leading-relaxed">
-                            {language === 'km'
-                              ? 'ជ្រើសរើសកញ្ចប់ពេជ្រនៅជំហានទី ២ ដើម្បីបង្កើតកូដ Bakong KHQR ភ្លាមៗ'
-                              : 'Choose a diamond package on the left to generate your live KHQR ticket.'}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                )}
 
                 {/* Promo Code Input Inside Sidebar */}
                 <div className="pt-2">

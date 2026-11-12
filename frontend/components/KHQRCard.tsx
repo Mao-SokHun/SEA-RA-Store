@@ -82,16 +82,8 @@ export default function KHQRCard({
               />
             </div>
             <div>
-              <div className="flex items-center gap-1.5 leading-none">
-                <span className="font-black text-xs tracking-wider text-white uppercase font-sans">
-                  {merchantName}
-                </span>
-                <span className="text-[9px] font-mono font-bold text-[#FFE082] px-1.5 py-0.5 rounded bg-[#E5B55E]/15 border border-[#E5B55E]/40">
-                  KHQR
-                </span>
-              </div>
-              <span className="text-[10px] font-mono text-cyan-400 font-bold block mt-0.5">
-                0% សេវា • SECURE GATEWAY
+              <span className="font-black text-sm tracking-wider text-white uppercase font-sans">
+                {merchantName}
               </span>
             </div>
           </div>

@@ -19,6 +19,8 @@ import {
   Home,
   MessageCircle,
   HelpCircle,
+  Megaphone,
+  AlertTriangle,
 } from 'lucide-react';
 
 const SEARCH_SUGGESTIONS = [
@@ -48,6 +50,31 @@ export default function Navbar() {
   const [suggestionIdx, setSuggestionIdx] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Real-Time Site Announcement broadcasted from Admin Deck
+  const [announcement, setAnnouncement] = useState<{
+    isActive: boolean;
+    type: 'info' | 'warning' | 'danger' | 'success';
+    messageKh: string;
+    messageEn: string;
+  } | null>(null);
+  const [dismissedNotice, setDismissedNotice] = useState(false);
+
+  useEffect(() => {
+    const loadNotice = () => {
+      const saved = localStorage.getItem('seara_site_announcement');
+      if (saved) {
+        try {
+          setAnnouncement(JSON.parse(saved));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    loadNotice();
+    window.addEventListener('storage', loadNotice);
+    return () => window.removeEventListener('storage', loadNotice);
+  }, []);
   
   const pathname = usePathname();
   const activeNav = 
@@ -128,6 +155,39 @@ export default function Navbar() {
       {/* Cyberpunk Neon Rim Light: Only appears smoothly on scroll */}
       {scrolled && (
         <div className="absolute bottom-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-violet-500/50 via-cyan-400/50 to-transparent pointer-events-none transition-opacity duration-300" />
+      )}
+
+      {/* Real-time Admin Site Announcement Banner */}
+      {announcement && announcement.isActive && !dismissedNotice && (
+        <div
+          className={`w-full py-2 px-4 text-xs font-mono font-bold flex items-center justify-between gap-3 border-b transition-all ${
+            announcement.type === 'danger'
+              ? 'bg-red-500/25 text-red-200 border-red-500/40 shadow-[0_0_15px_rgba(239,68,68,0.2)]'
+              : announcement.type === 'warning'
+              ? 'bg-amber-500/25 text-amber-200 border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
+              : announcement.type === 'success'
+              ? 'bg-emerald-500/25 text-emerald-200 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
+              : 'bg-cyan-500/25 text-cyan-200 border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.2)]'
+          }`}
+        >
+          <div className="max-w-7xl mx-auto flex items-center gap-2 text-center sm:text-left flex-1 justify-center sm:justify-start">
+            {announcement.type === 'danger' || announcement.type === 'warning' ? (
+              <AlertTriangle className="w-4 h-4 shrink-0 animate-pulse text-amber-400" />
+            ) : (
+              <Megaphone className="w-4 h-4 shrink-0 text-cyan-400 animate-bounce" />
+            )}
+            <span className="tracking-wide">
+              {language === 'km' ? announcement.messageKh : announcement.messageEn}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setDismissedNotice(true)}
+            className="text-neutral-400 hover:text-white p-1 rounded-md hover:bg-white/10 cursor-pointer transition-colors"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
       )}
 
       {/* ================================================================= */}

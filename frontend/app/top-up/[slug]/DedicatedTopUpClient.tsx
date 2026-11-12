@@ -779,23 +779,36 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
                     orderNumber={orderNumber}
                   />
                 ) : (
-                  <div className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-neutral-200/80 text-neutral-900 select-none max-w-[320px] mx-auto py-10 px-5 flex flex-col items-center justify-center text-center space-y-3">
-                    <div className="w-16 h-16 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center p-3">
-                      <img
-                        src="/bakong-logo.svg"
-                        alt="Bakong"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-sm font-black text-neutral-900 uppercase tracking-wide">
-                        {language === 'km' ? 'សូមជ្រើសរើសកញ្ចប់' : 'Select a Package'}
-                      </p>
-                      <p className="text-xs text-neutral-500 mt-1 max-w-[220px] leading-relaxed">
-                        {language === 'km'
-                          ? 'ជ្រើសរើសកញ្ចប់នៅជំហានទី ២ ដើម្បីបង្កើតកូដ Bakong KHQR ស្វ័យប្រវត្តិ'
-                          : 'Choose a package on the left to generate your live Bakong KHQR ticket.'}
-                      </p>
+                  <div
+                    style={{
+                      clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))',
+                      filter: 'drop-shadow(0 0 20px rgba(0, 212, 255, 0.25))',
+                    }}
+                    className="p-[1.5px] bg-gradient-to-br from-cyan-500/40 via-white/10 to-violet-500/40 max-w-[350px] mx-auto select-none"
+                  >
+                    <div
+                      style={{
+                        clipPath: 'polygon(0 0, calc(100% - 19px) 0, 100% 19px, 100% 100%, 19px 100%, 0 calc(100% - 19px))',
+                      }}
+                      className="bg-[#070D1B] py-12 px-6 flex flex-col items-center justify-center text-center space-y-4"
+                    >
+                      <div className="relative w-20 h-20 rounded-2xl bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center p-3 shadow-[0_0_20px_rgba(0,212,255,0.3)]">
+                        <img
+                          src="/logo.png"
+                          alt="SEA RA Crest"
+                          className="w-full h-full object-contain animate-pulse"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-sm font-black text-white uppercase tracking-wider">
+                          {language === 'km' ? 'សូមជ្រើសរើសកញ្ចប់' : 'Select a Package'}
+                        </p>
+                        <p className="text-xs text-neutral-400 mt-1 max-w-[220px] leading-relaxed font-mono">
+                          {language === 'km'
+                            ? 'ជ្រើសរើសកញ្ចប់នៅជំហានទី ២ ដើម្បីបង្កើតកូដ KHQR Esports ស្វ័យប្រវត្តិ'
+                            : 'Choose a package on the left to generate your live KHQR payment code.'}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}

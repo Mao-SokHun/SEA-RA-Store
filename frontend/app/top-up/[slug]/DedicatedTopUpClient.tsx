@@ -404,13 +404,13 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
                       <input
                         type="text"
                         readOnly
-                        value={typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://frontend-silk-one-22.vercel.app/top-up/${game.slug}`}
+                        value={typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://sea-ra-prestige.vercel.app/top-up/${game.slug}`}
                         className="flex-1 bg-[#10182C] border border-white/[0.15] rounded-xl px-3.5 py-2.5 text-xs text-neutral-300 font-mono focus:outline-none"
                       />
                       <button
                         type="button"
                         onClick={() => {
-                          const url = typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://frontend-silk-one-22.vercel.app/top-up/${game.slug}`;
+                          const url = typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://sea-ra-prestige.vercel.app/top-up/${game.slug}`;
                           navigator.clipboard.writeText(url);
                           setCopiedShareLink(true);
                           setTimeout(() => setCopiedShareLink(false), 2000);
@@ -426,7 +426,7 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
                   {/* Direct Social Channels */}
                   <div className="grid grid-cols-2 gap-3 pt-2">
                     <a
-                      href={`https://t.me/share/url?url=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://frontend-silk-one-22.vercel.app/top-up/${game.slug}`)}&text=${encodeURIComponent(`🎮 បញ្ចូល ${game.name} - SEA RA PRESTIGE | ០% សេវា Bakong KHQR!`)}`}
+                      href={`https://t.me/share/url?url=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://sea-ra-prestige.vercel.app/top-up/${game.slug}`)}&text=${encodeURIComponent(`🎮 បញ្ចូល ${game.name} - SEA RA PRESTIGE | ០% សេវា Bakong KHQR!`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-3 rounded-xl bg-[#229ED9]/15 hover:bg-[#229ED9]/25 border border-[#229ED9]/40 text-[#38bdf8] text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
@@ -435,7 +435,7 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
                       <span>Share Telegram</span>
                     </a>
                     <a
-                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://frontend-silk-one-22.vercel.app/top-up/${game.slug}`)}`}
+                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://sea-ra-prestige.vercel.app/top-up/${game.slug}`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-3 rounded-xl bg-[#1877F2]/15 hover:bg-[#1877F2]/25 border border-[#1877F2]/40 text-[#60a5fa] text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"

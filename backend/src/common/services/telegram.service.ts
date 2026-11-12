@@ -25,7 +25,7 @@ export class TelegramService {
   constructor() {
     this.botToken = config.telegramBotToken || process.env.TELEGRAM_BOT_TOKEN || '';
     this.chatId = config.telegramChatId || process.env.TELEGRAM_CHAT_ID || '';
-    this.frontendUrl = config.frontendUrl || 'https://frontend-silk-one-22.vercel.app';
+    this.frontendUrl = config.frontendUrl || 'https://sea-ra-prestige.vercel.app';
   }
 
   /**

@@ -5,7 +5,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://frontend-silk-one-22.vercel.app'),
+  metadataBase: new URL('https://sea-ra-prestige.vercel.app'),
   title: {
     default: 'SEA RA PRESTIGE - បញ្ចូលលុយហ្គេម ០% សេវា តាមរយៈ Bakong KHQR',
     template: '%s • SEA RA PRESTIGE',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     title: 'SEA RA PRESTIGE - បញ្ចូលលុយហ្គេម ០% សេវា តាមរយៈ Bakong KHQR',
     description:
       'បញ្ចូលពេជ្រ និងកាក់ហ្គេមស្វ័យប្រវត្តិតាម Bakong KHQR ០% សេវា មិនបាច់ Password ពេជ្រចូលគណនីក្នុងរយៈពេល < 3 វិនាទី!',
-    url: 'https://frontend-silk-one-22.vercel.app',
+    url: 'https://sea-ra-prestige.vercel.app',
     siteName: 'SEA RA PRESTIGE',
     images: [
       {

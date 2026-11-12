@@ -17,8 +17,8 @@ export async function POST(req: Request) {
       deliveryProof,
     } = body;
 
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
+    const botToken = process.env.TELEGRAM_BOT_TOKEN || '9078489897:AAFuu6jO-80gT-ztJyUrOOHy7k3l_DyP_pw';
+    const chatId = process.env.TELEGRAM_CHAT_ID || '-1004391101380,8168197067';
 
     // If bot token or chat ID not set, log and return graceful response
     if (!botToken || !chatId) {
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       .filter(Boolean)
       .join('\n');
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://frontend-silk-one-22.vercel.app';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://sea-ra-prestige.vercel.app';
     const targetIds = chatId.split(',').map((s) => s.trim()).filter(Boolean);
 
     const promises = targetIds.map(async (cid) => {

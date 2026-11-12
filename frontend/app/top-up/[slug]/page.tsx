@@ -31,7 +31,7 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      url: `https://frontend-silk-one-22.vercel.app/top-up/${game.slug}`,
+      url: `https://sea-ra-prestige.vercel.app/top-up/${game.slug}`,
       siteName: 'SEA RA PRESTIGE',
       images: [
         {

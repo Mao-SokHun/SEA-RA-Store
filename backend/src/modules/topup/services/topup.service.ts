@@ -5,6 +5,8 @@ import { BadRequestError, NotFoundError, UnauthorizedError } from '../../../comm
 import { generateBakongKHQRString, generateQRCodeImage, calculateKHQRMD5 } from '../../../common/utils/khqr';
 import { Prisma } from '@prisma/client';
 import { getTopUpProvider } from '../providers';
+import { telegramService } from '../../../common/services/telegram.service';
+import { bakongService } from '../../payments/services/bakong.service';
 
 export interface GameInputConfig {
   key: string;
@@ -502,6 +504,23 @@ export class TopUpService {
         return { order, newBalance };
       });
 
+      // Dispatch Telegram Instant Notification for Wallet Top-Up
+      void telegramService
+        .notifyOrderCompleted({
+          orderNumber: result.order.orderNumber,
+          gameTitle: game.title,
+          packageName: pkg.name,
+          totalUSD: price,
+          playerId: data.playerId,
+          zoneId: data.zoneId,
+          serverRegion: data.serverRegion,
+          playerNickname: result.order.playerNickname,
+          paymentMethod: 'wallet',
+          deliveryStatus: 'completed',
+          deliveryProof: result.order.deliveryProof,
+        })
+        .catch((err) => console.error('[Telegram Notify Error]:', err));
+
       return {
         orderNumber: result.order.orderNumber,
         status: 'completed',
@@ -564,6 +583,23 @@ export class TopUpService {
     });
 
     const qrImage = await generateQRCodeImage(qrString);
+
+    // Dispatch Telegram Alert: New Pending Order Created
+    void telegramService
+      .notifyNewOrder({
+        orderNumber: order.orderNumber,
+        gameTitle: game.title,
+        packageName: pkg.name,
+        totalUSD: price,
+        playerId: data.playerId,
+        zoneId: data.zoneId,
+        serverRegion: data.serverRegion,
+        playerNickname: order.playerNickname,
+        paymentMethod: 'bakong_khqr',
+        deliveryStatus: 'pending',
+        contactPhone: data.contactPhone,
+      })
+      .catch((err) => console.error('[Telegram Notify Error]:', err));
 
     return {
       orderNumber: order.orderNumber,
@@ -639,6 +675,81 @@ export class TopUpService {
   }
 
   /**
+   * Real-time automated Bakong MD5 polling for seamless checkout verification.
+   * When the customer completes payment in ABA/Wing/Bakong app, this detects it instantly
+   * and triggers auto-fulfillment without the user needing to click any button!
+   */
+  async checkBakongPayment(orderNumber: string) {
+    const order = await prisma.topUpOrder.findUnique({
+      where: { orderNumber },
+      include: {
+        game: true,
+        package: true,
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundError(`Top-Up Order ${orderNumber} not found`);
+    }
+
+    // If already paid and delivered, return completed immediately
+    if (order.paymentStatus === 'paid' && order.deliveryStatus === 'completed') {
+      return {
+        paid: true,
+        status: 'completed',
+        orderNumber: order.orderNumber,
+        deliveryProof: order.deliveryProof,
+        message: 'Order already fulfilled and delivered',
+      };
+    }
+
+    // Get the MD5 hash of the KHQR code
+    let md5 = order.transactionReference;
+    if (!md5 || md5.startsWith('TXN-')) {
+      const qrString = generateBakongKHQRString({
+        orderNumber: order.orderNumber,
+        amount: Number(order.totalAmount),
+        currency: 'USD',
+        merchantName: config.khqr.merchantName,
+        merchantAccount: config.khqr.bakongId,
+        merchantCity: config.khqr.merchantCity,
+      });
+      md5 = calculateKHQRMD5(qrString);
+      await prisma.topUpOrder.update({
+        where: { id: order.id },
+        data: { transactionReference: md5 },
+      });
+    }
+
+    // Check transaction status on official Bakong Open API
+    const bakongResult = await bakongService.checkTransactionByMD5(md5);
+
+    if (bakongResult.isPaid && bakongResult.data) {
+      // Payment confirmed by NBC Bakong! Instantly fulfill the order via top-up provider
+      const fulfillResult = await this.fulfillTopUp(orderNumber, bakongResult.data.hash);
+
+      return {
+        paid: true,
+        status: fulfillResult.deliveryStatus,
+        orderNumber: order.orderNumber,
+        deliveryProof: fulfillResult.deliveryProof,
+        txnHash: bakongResult.data.hash,
+        fromAccount: bakongResult.data.fromAccountId,
+        amount: bakongResult.data.amount,
+        currency: bakongResult.data.currency,
+        message: 'Payment confirmed by Bakong. Diamonds delivered to player account!',
+      };
+    }
+
+    return {
+      paid: false,
+      status: 'pending',
+      orderNumber: order.orderNumber,
+      message: bakongResult.message || 'Awaiting customer payment scan',
+    };
+  }
+
+  /**
    * Fulfill Top-Up order by executing real or mock provider reload
    */
   async fulfillTopUp(orderNumber: string, externalTxnId?: string) {
@@ -692,6 +803,45 @@ export class TopUpService {
         package: true,
       },
     });
+
+    // Dispatch Telegram Alert: Order Fulfilled or Failed
+    if (result.success) {
+      void telegramService
+        .notifyOrderCompleted({
+          orderNumber: updated.orderNumber,
+          gameTitle: updated.game.title,
+          packageName: updated.package.name,
+          totalUSD: Number(updated.totalAmount),
+          playerId: updated.playerId,
+          zoneId: updated.zoneId,
+          serverRegion: updated.serverRegion,
+          playerNickname: updated.playerNickname,
+          paymentMethod: updated.paymentMethod,
+          deliveryStatus: 'completed',
+          deliveryProof: updated.deliveryProof,
+          contactPhone: updated.contactPhone,
+        })
+        .catch((err) => console.error('[Telegram Notify Error]:', err));
+    } else {
+      void telegramService
+        .notifyOrderFailed(
+          {
+            orderNumber: updated.orderNumber,
+            gameTitle: updated.game.title,
+            packageName: updated.package.name,
+            totalUSD: Number(updated.totalAmount),
+            playerId: updated.playerId,
+            zoneId: updated.zoneId,
+            serverRegion: updated.serverRegion,
+            playerNickname: updated.playerNickname,
+            paymentMethod: updated.paymentMethod,
+            deliveryStatus: 'failed',
+            errorMessage: result.message,
+          },
+          result.message
+        )
+        .catch((err) => console.error('[Telegram Notify Error]:', err));
+    }
 
     return {
       success: result.success,

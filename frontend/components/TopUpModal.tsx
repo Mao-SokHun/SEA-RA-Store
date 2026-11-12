@@ -4,7 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { PAYMENT_CHANNELS } from '@/data/games';
 import { PackageItem, TopUpOrder } from '@/types';
-import { verifyPlayerApi, createTopUpOrderApi, simulatePaymentApi } from '@/lib/api';
+import {
+  verifyPlayerApi,
+  createTopUpOrderApi,
+  simulatePaymentApi,
+  dispatchTelegramNotificationApi,
+} from '@/lib/api';
 import {
   X,
   Zap,
@@ -137,6 +142,22 @@ export default function TopUpModal() {
 
     try {
       await simulatePaymentApi(activeOrderNumber);
+
+      // Dispatch Telegram Alert to Admin
+      void dispatchTelegramNotificationApi({
+        orderNumber: activeOrderNumber,
+        gameTitle: selectedGame.name,
+        packageName: currentPkg.name,
+        totalUSD: priceUSD,
+        totalKHR: priceKHR,
+        playerId: idVal,
+        zoneId: accountValues['zoneId'],
+        playerNickname: verifiedNick || idVal,
+        paymentMethod: 'Bakong KHQR',
+        status: 'completed',
+        deliveryProof: `TXN-${activeOrderNumber}-CONFIRMED`,
+      });
+
       saveOrder(order);
       completeOrder(activeOrderNumber);
       setOrderCompleted(true);

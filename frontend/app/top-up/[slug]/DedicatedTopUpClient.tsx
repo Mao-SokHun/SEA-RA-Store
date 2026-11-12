@@ -7,7 +7,13 @@ import KHQRCard from '@/components/KHQRCard';
 import { GameItem, PackageItem, TopUpOrder } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { PAYMENT_CHANNELS } from '@/data/games';
-import { verifyPlayerApi, createTopUpOrderApi, simulatePaymentApi } from '@/lib/api';
+import {
+  verifyPlayerApi,
+  createTopUpOrderApi,
+  simulatePaymentApi,
+  checkBakongPaymentApi,
+  dispatchTelegramNotificationApi,
+} from '@/lib/api';
 import {
   ArrowLeft,
   ShieldCheck,
@@ -130,6 +136,62 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
     setTimeout(() => setCopiedId(false), 2000);
   };
 
+  // Automated Real-Time Bakong MD5 Payment Polling (Zero-Click Auto Confirm)
+  useEffect(() => {
+    if (!selectedPkg || isPaymentSuccess || isSimulating) return;
+
+    let isSubscribed = true;
+    const interval = setInterval(async () => {
+      try {
+        const check = await checkBakongPaymentApi(orderNumber);
+        if (check.paid && isSubscribed) {
+          clearInterval(interval);
+          const primary = game.accountFields[0];
+          const idVal = accountValues[primary.id] || 'PLAYER';
+          const orderPayload: TopUpOrder = {
+            orderNumber,
+            game,
+            package: selectedPkg,
+            accountDetails: accountValues,
+            playerNickname: verifiedNick || idVal,
+            paymentMethod: selectedPayment,
+            totalUSD: discountedUSD,
+            totalKHR: discountedKHR,
+            status: 'completed',
+            completedAt: new Date().toISOString(),
+            deliveryProof: check.data?.hash || `TXN-${orderNumber}-BAKONG-VERIFIED`,
+            qrCodeUrl: '/bakong-logo.svg',
+            createdAt: new Date().toISOString(),
+          };
+
+          // Dispatch Telegram Alert to Admin
+          void dispatchTelegramNotificationApi({
+            orderNumber,
+            gameTitle: game.name,
+            packageName: selectedPkg.name,
+            totalUSD: discountedUSD,
+            totalKHR: discountedKHR,
+            playerId: idVal,
+            zoneId: accountValues['zoneId'],
+            playerNickname: verifiedNick || idVal,
+            paymentMethod: 'Bakong KHQR (Auto-Verified)',
+            status: 'completed',
+            deliveryProof: check.data?.hash || `TXN-${orderNumber}-BAKONG-VERIFIED`,
+          });
+
+          saveOrder(orderPayload);
+          completeOrder(orderNumber);
+          setIsPaymentSuccess(true);
+        }
+      } catch {}
+    }, 2500);
+
+    return () => {
+      isSubscribed = false;
+      clearInterval(interval);
+    };
+  }, [orderNumber, selectedPkg, isPaymentSuccess, isSimulating, game, accountValues, verifiedNick, selectedPayment, discountedUSD, discountedKHR, saveOrder, completeOrder]);
+
   const handleSimulatePayment = async () => {
     if (!selectedPkg) {
       alert(language === 'km' ? 'សូមជ្រើសរើសកញ្ចប់ពេជ្រជាមុនសិន!' : 'Please select a top-up package first!');
@@ -164,6 +226,21 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
     try {
       await simulatePaymentApi(orderNumber);
     } catch {}
+
+    // Dispatch Telegram Instant Notification to Admin
+    void dispatchTelegramNotificationApi({
+      orderNumber,
+      gameTitle: game.name,
+      packageName: selectedPkg.name,
+      totalUSD: discountedUSD,
+      totalKHR: discountedKHR,
+      playerId: idVal,
+      zoneId: accountValues['zoneId'],
+      playerNickname: verifiedNick || idVal,
+      paymentMethod: selectedPayment,
+      status: 'completed',
+      deliveryProof: `TXN-${orderNumber}-CONFIRMED`,
+    });
 
     saveOrder(order);
     completeOrder(orderNumber);

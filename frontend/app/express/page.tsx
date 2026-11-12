@@ -5,7 +5,13 @@ import Link from 'next/link';
 import { GAMES, PAYMENT_CHANNELS } from '@/data/games';
 import { GameItem, PackageItem, TopUpOrder } from '@/types';
 import { useApp } from '@/context/AppContext';
-import { verifyPlayerApi, createTopUpOrderApi, simulatePaymentApi } from '@/lib/api';
+import {
+  verifyPlayerApi,
+  createTopUpOrderApi,
+  simulatePaymentApi,
+  checkBakongPaymentApi,
+  dispatchTelegramNotificationApi,
+} from '@/lib/api';
 import KHQRCard from '@/components/KHQRCard';
 import ChamferHighlights from '@/components/ChamferHighlights';
 import {
@@ -157,6 +163,61 @@ export default function ExpressTopUpPage() {
     setTimeout(() => setCopiedId(false), 2000);
   };
 
+  // Automated Real-Time Bakong MD5 Payment Polling (Zero-Click Auto Confirm)
+  useEffect(() => {
+    if (!selectedPkg || isPaymentSuccess || isSimulating) return;
+
+    let isSubscribed = true;
+    const interval = setInterval(async () => {
+      try {
+        const check = await checkBakongPaymentApi(orderNumber);
+        if (check.paid && isSubscribed) {
+          clearInterval(interval);
+          const primaryVal = accountValues[activeGame.accountFields[0]?.id] || 'PLAYER';
+          const orderPayload: TopUpOrder = {
+            orderNumber,
+            game: activeGame,
+            package: selectedPkg,
+            accountDetails: accountValues,
+            playerNickname: verifiedNick || primaryVal,
+            paymentMethod: selectedPayment,
+            totalUSD: finalPriceUSD,
+            totalKHR: finalPriceKHR,
+            status: 'completed',
+            completedAt: new Date().toISOString(),
+            deliveryProof: check.data?.hash || `TXN-${orderNumber}-BAKONG-VERIFIED`,
+            qrCodeUrl: '/bakong-logo.svg',
+            createdAt: new Date().toISOString(),
+          };
+
+          // Dispatch Telegram Alert to Admin
+          void dispatchTelegramNotificationApi({
+            orderNumber,
+            gameTitle: activeGame.name,
+            packageName: selectedPkg.name,
+            totalUSD: finalPriceUSD,
+            totalKHR: finalPriceKHR,
+            playerId: primaryVal,
+            zoneId: accountValues['zoneId'],
+            playerNickname: verifiedNick || primaryVal,
+            paymentMethod: 'Bakong KHQR (Auto-Verified)',
+            status: 'completed',
+            deliveryProof: check.data?.hash || `TXN-${orderNumber}-BAKONG-VERIFIED`,
+          });
+
+          saveOrder(orderPayload);
+          completeOrder(orderNumber);
+          setIsPaymentSuccess(true);
+        }
+      } catch {}
+    }, 2500);
+
+    return () => {
+      isSubscribed = false;
+      clearInterval(interval);
+    };
+  }, [orderNumber, selectedPkg, isPaymentSuccess, isSimulating, activeGame, accountValues, verifiedNick, selectedPayment, finalPriceUSD, finalPriceKHR, saveOrder, completeOrder]);
+
   // Execute Payment Simulation / Confirmation
   const handleConfirmPayment = async () => {
     if (!selectedPkg) {
@@ -193,6 +254,21 @@ export default function ExpressTopUpPage() {
       try {
         await simulatePaymentApi(orderNumber);
       } catch {}
+
+      // Dispatch Telegram Instant Notification to Store Admin
+      void dispatchTelegramNotificationApi({
+        orderNumber,
+        gameTitle: activeGame.name,
+        packageName: selectedPkg.name,
+        totalUSD: finalPriceUSD,
+        totalKHR: finalPriceKHR,
+        playerId: primaryVal,
+        zoneId: accountValues['zoneId'],
+        playerNickname: verifiedNick || primaryVal,
+        paymentMethod: selectedPayment,
+        status: 'completed',
+        deliveryProof: `TXN-${orderNumber}-API-DIRECT`,
+      });
 
       saveOrder(orderPayload);
       completeOrder(orderNumber);

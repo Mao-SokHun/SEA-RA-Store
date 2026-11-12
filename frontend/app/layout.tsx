@@ -5,9 +5,49 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: 'SEA RA Prestige • Official In-Game Top-Up Gateway',
+  metadataBase: new URL('https://frontend-silk-one-22.vercel.app'),
+  title: {
+    default: 'SEA RA PRESTIGE - បញ្ចូលលុយហ្គេម ០% សេវា តាមរយៈ Bakong KHQR',
+    template: '%s • SEA RA PRESTIGE',
+  },
   description:
-    'Cambodia’s premier authorized game reload portal. Instant 3-second delivery for Mobile Legends, Roblox, Free Fire, PUBG Mobile, Genshin Impact with Bakong KHQR 0% fee.',
+    'បញ្ចូលពេជ្រ Mobile Legends, Roblox Robux, Free Fire, PUBG Mobile, Genshin Impact និង 15+ ហ្គេមល្បីៗភ្លាមៗក្នុងរយៈពេល < 3 វិនាទី តាមរយៈ Bakong KHQR ០% ថ្លៃសេវា។ មិនបាច់ប្រើ Password!',
+  keywords: [
+    'SEA RA PRESTIGE',
+    'បញ្ចូលលុយហ្គេម',
+    'Bakong KHQR',
+    'Mobile Legends Diamonds Cambodia',
+    'Robux Cambodia',
+    'Free Fire Diamonds',
+    'PUBG UC Cambodia',
+    'Smile One Cambodia',
+    'Top Up Game Cambodia',
+  ],
+  authors: [{ name: 'SEA RA PRESTIGE' }],
+  openGraph: {
+    title: 'SEA RA PRESTIGE - បញ្ចូលលុយហ្គេម ០% សេវា តាមរយៈ Bakong KHQR',
+    description:
+      'បញ្ចូលពេជ្រ និងកាក់ហ្គេមស្វ័យប្រវត្តិតាម Bakong KHQR ០% សេវា មិនបាច់ Password ពេជ្រចូលគណនីក្នុងរយៈពេល < 3 វិនាទី!',
+    url: 'https://frontend-silk-one-22.vercel.app',
+    siteName: 'SEA RA PRESTIGE',
+    images: [
+      {
+        url: '/banners/mlbb.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'SEA RA PRESTIGE Gaming Reload Platform',
+      },
+    ],
+    locale: 'km_KH',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SEA RA PRESTIGE - បញ្ចូលលុយហ្គេម ០% សេវា តាមរយៈ Bakong KHQR',
+    description:
+      'បញ្ចូលពេជ្រ និងកាក់ហ្គេមស្វ័យប្រវត្តិតាម Bakong KHQR ០% សេវា មិនបាច់ Password ពេជ្រចូលគណនីក្នុងរយៈពេល < 3 វិនាទី!',
+    images: ['/banners/mlbb.jpg'],
+  },
 };
 
 export default function RootLayout({

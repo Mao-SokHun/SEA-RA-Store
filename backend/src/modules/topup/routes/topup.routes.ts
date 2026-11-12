@@ -73,6 +73,18 @@ router.get(
 );
 
 /**
+ * @route   GET /api/v1/topup/orders/:orderNumber/check-payment
+ * @desc    Auto-poll and check if customer has scanned and paid Bakong KHQR
+ * @access  Public
+ */
+router.get(
+  '/orders/:orderNumber/check-payment',
+  topUpOrderParamValidator,
+  validate,
+  topUpController.checkBakongPayment
+);
+
+/**
  * @route   POST /api/v1/topup/orders/:orderNumber/simulate-payment
  * @desc    Simulate Bakong KHQR payment scan and trigger instant in-game credit
  * @access  Public (Dev / Sandbox)
@@ -83,6 +95,13 @@ router.post(
   validate,
   topUpController.simulatePayment
 );
+
+/**
+ * @route   POST /api/v1/topup/test-telegram
+ * @desc    Test Telegram Bot Notification configuration
+ * @access  Public / Developer
+ */
+router.post('/test-telegram', topUpController.testTelegram);
 
 /**
  * @route   GET /api/v1/topup/my-orders

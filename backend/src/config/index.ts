@@ -40,6 +40,7 @@ interface Config {
 
   // Telegram
   telegramBotToken: string;
+  telegramChatId: string;
 
   // Payment
   khqr: {
@@ -135,6 +136,7 @@ const config: Config = {
   },
 
   telegramBotToken: getEnvVar('TELEGRAM_BOT_TOKEN', ''),
+  telegramChatId: getEnvVar('TELEGRAM_CHAT_ID', ''),
 
   khqr: {
     provider: getEnvVar('KHQR_PROVIDER', 'mock'),

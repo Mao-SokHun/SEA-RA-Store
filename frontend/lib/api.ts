@@ -289,3 +289,70 @@ export async function simulatePaymentApi(
     deliveryProof: `Ref #${orderNumber}: Credited via SmileOne Reload API`,
   };
 }
+
+/**
+ * Auto-poll Bakong Open API by Order Number or MD5 hash
+ */
+export async function checkBakongPaymentApi(
+  orderNumber: string,
+  md5?: string
+): Promise<{ paid: boolean; status?: string; message?: string; data?: any }> {
+  try {
+    // 1. Try Backend API endpoint
+    const backendRes = await fetch(
+      `${API_BASE_URL}/topup/orders/${orderNumber}/check-payment`,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    if (backendRes.ok) {
+      const json = await backendRes.json();
+      if (json.data?.paid || json.data?.status === 'completed') {
+        return { paid: true, status: 'completed', data: json.data };
+      }
+    }
+  } catch {}
+
+  // 2. Fallback to Next.js API route if MD5 hash provided
+  if (md5) {
+    try {
+      const nextRes = await fetch('/api/bakong-poll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ md5, orderNumber }),
+      });
+      if (nextRes.ok) {
+        const json = await nextRes.json();
+        if (json.isPaid) {
+          return { paid: true, status: 'completed', data: json.data };
+        }
+      }
+    } catch {}
+  }
+
+  return { paid: false, status: 'pending' };
+}
+
+export async function dispatchTelegramNotificationApi(orderData: {
+  orderNumber: string;
+  gameTitle: string;
+  packageName: string;
+  totalUSD: number;
+  totalKHR?: number;
+  playerId: string;
+  zoneId?: string;
+  playerNickname?: string;
+  paymentMethod?: string;
+  status?: string;
+  deliveryProof?: string;
+}): Promise<boolean> {
+  try {
+    const res = await fetch('/api/telegram-notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+

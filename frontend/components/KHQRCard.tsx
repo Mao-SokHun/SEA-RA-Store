@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import { generateOfficialKHQRString } from '@/lib/khqr';
 
 interface KHQRCardProps {
   amount: number;
@@ -22,19 +23,31 @@ export default function KHQRCard({
   orderNumber = 'SEARA-ORDER',
   className = '',
 }: KHQRCardProps) {
-  // If no qrString passed, generate standard EMVCo/Bakong string
+  // Generate 100% compliant official NBC EMVCo KHQR payload (000201010212...)
+  // Recognized by all Cambodian mobile banking apps (ABA Mobile, Wing, ACLEDA, Bakong)
   const actualQrString =
     qrString ||
-    `https://bakong.nbc.gov.kh/pay?merchant=${encodeURIComponent(
-      merchantName.replace(/\s+/g, '')
-    )}&amount=${amount.toFixed(currency === 'USD' ? 2 : 0)}&cur=${currency}&order=${orderNumber}`;
+    generateOfficialKHQRString({
+      merchantName,
+      merchantCity: 'Phnom Penh',
+      bakongAccount: 'sokhun_mao@abaa',
+      amount,
+      currency,
+      orderNumber,
+      storeLabel,
+    });
 
   return (
     <div
       className={`bg-white rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.6)] border border-neutral-100/10 text-black max-w-[340px] sm:max-w-[360px] mx-auto select-none ${className}`}
     >
-      {/* 1. Official Red Curved KHQR Banner */}
-      <div className="bg-[#D11A2A] text-white py-3.5 px-6 text-center relative overflow-hidden">
+      {/* 1. Official Red Curved KHQR Banner with Authentic Bottom-Right 45° Notch */}
+      <div
+        style={{
+          clipPath: 'polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%)',
+        }}
+        className="bg-[#D11A2A] text-white py-3.5 px-6 text-center relative overflow-hidden"
+      >
         <h3 className="font-black text-lg sm:text-xl tracking-[0.28em] text-white text-center font-sans uppercase">
           K H Q R
         </h3>
@@ -70,7 +83,7 @@ export default function KHQRCard({
           <QRCodeSVG
             value={actualQrString}
             size={220}
-            level="H"
+            level="M"
             includeMargin={false}
             className="w-full h-auto max-w-[220px]"
           />

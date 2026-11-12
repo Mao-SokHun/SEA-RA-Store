@@ -143,12 +143,12 @@ export default function TrackOrderPage() {
                     {ord.status === 'completed' ? (
                       <>
                         <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>COMPLETED (INJECTED)</span>
+                        <span>{language === 'km' ? 'ជោគជ័យ (បានបញ្ចូល)' : 'COMPLETED (INJECTED)'}</span>
                       </>
                     ) : (
                       <>
                         <Clock className="w-3.5 h-3.5 animate-spin" />
-                        <span>PENDING PAYMENT</span>
+                        <span>{language === 'km' ? 'រង់ចាំការបង់ប្រាក់' : 'PENDING PAYMENT'}</span>
                       </>
                     )}
                   </span>
@@ -158,23 +158,31 @@ export default function TrackOrderPage() {
               {/* Order Info Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                 <div>
-                  <span className="text-[10px] text-neutral-400 font-mono block">COMBATANT ID:</span>
+                  <span className="text-[10px] text-neutral-400 font-mono block">
+                    {language === 'km' ? 'ឈ្មោះតួអង្គ / ID:' : 'PLAYER ID / NICK:'}
+                  </span>
                   <span className="text-white font-bold font-mono truncate block">
                     {ord.playerNickname}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-neutral-400 font-mono block">AMOUNT:</span>
+                  <span className="text-[10px] text-neutral-400 font-mono block">
+                    {language === 'km' ? 'តម្លៃ:' : 'AMOUNT:'}
+                  </span>
                   <span className="text-[#E5B55E] font-black font-mono block">
                     ${ord.totalUSD.toFixed(2)} ({ord.totalKHR.toLocaleString()} ៛)
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-neutral-400 font-mono block">GATEWAY:</span>
+                  <span className="text-[10px] text-neutral-400 font-mono block">
+                    {language === 'km' ? 'វិធីទូទាត់:' : 'GATEWAY:'}
+                  </span>
                   <span className="text-neutral-300 font-mono block">Bakong KHQR</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-neutral-400 font-mono block">DATE:</span>
+                  <span className="text-[10px] text-neutral-400 font-mono block">
+                    {language === 'km' ? 'កាលបរិច្ឆេទ:' : 'DATE:'}
+                  </span>
                   <span className="text-neutral-400 font-mono block">
                     {new Date(ord.createdAt).toLocaleDateString()}
                   </span>
@@ -192,7 +200,7 @@ export default function TrackOrderPage() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-xs text-[#38bdf8] hover:underline"
                 >
-                  <span>Telegram Support</span>
+                  <span>{language === 'km' ? 'សេវាជំនួយ Telegram' : 'Telegram VIP Support'}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>

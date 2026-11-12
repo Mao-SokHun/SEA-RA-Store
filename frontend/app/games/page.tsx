@@ -139,7 +139,7 @@ export default function GamesCatalogPage() {
                     {game.publisher}
                   </span>
                   <span className="text-[9px] font-mono text-neutral-400 font-bold shrink-0">
-                    {game.packages.length} Packs
+                    {game.packages.length} {language === 'km' ? 'កញ្ចប់' : 'Packs'}
                   </span>
                 </div>
 

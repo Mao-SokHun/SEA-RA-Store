@@ -86,16 +86,16 @@ export default function SupportPage() {
               </div>
               <span className="font-mono text-[10px] text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded border border-emerald-500/30 font-bold flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                ONLINE 24/7 • LATENCY &lt; 15MS
+                {language === 'km' ? 'អនឡាញ ២៤/៧ • ឆ្លើយតបរហ័ស' : 'ONLINE 24/7 • LATENCY < 15MS'}
               </span>
             </div>
 
             <div>
               <h3 className="text-base font-extrabold text-white group-hover:text-cyan-300 transition-colors">
-                Telegram VIP Support
+                {language === 'km' ? 'សេវាជំនួយ VIP Telegram' : 'Telegram VIP Support'}
               </h3>
               <p className="font-mono text-[11px] text-cyan-400 font-bold mt-0.5">
-                Official Handle: @sokhunmao
+                {language === 'km' ? 'គណនីផ្លូវការ: @sokhunmao' : 'Official Handle: @sokhunmao'}
               </p>
             </div>
 
@@ -115,7 +115,7 @@ export default function SupportPage() {
             }}
             className="w-full py-3.5 bg-gradient-to-r from-[#229ED9] to-[#0088cc] hover:from-[#35abeb] hover:to-[#0099e6] text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(34,158,217,0.5)] active:scale-95 cursor-pointer"
           >
-            <span>Connect Telegram (@sokhunmao)</span>
+            <span>{language === 'km' ? 'ទាក់ទងតាម TELEGRAM (@SOKHUNMAO)' : 'CONNECT TELEGRAM (@SOKHUNMAO)'}</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
@@ -137,16 +137,16 @@ export default function SupportPage() {
               </div>
               <span className="font-mono text-[10px] text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded border border-cyan-500/30 font-bold flex items-center gap-1.5">
                 <Radio className="w-3 h-3 text-cyan-400 animate-pulse" />
-                Verified Community Feed
+                {language === 'km' ? 'សហគមន៍ផ្លូវការ SEA RA' : 'Verified Community Feed'}
               </span>
             </div>
 
             <div>
               <h3 className="text-base font-extrabold text-white group-hover:text-cyan-300 transition-colors">
-                Official Facebook Page
+                {language === 'km' ? 'ទំព័រ Facebook ផ្លូវការ' : 'Official Facebook Page'}
               </h3>
               <p className="font-mono text-[11px] text-blue-400 font-bold mt-0.5">
-                SEA RA PRESTIGE Community
+                {language === 'km' ? 'សហគមន៍ SEA RA PRESTIGE' : 'SEA RA PRESTIGE Community'}
               </p>
             </div>
 
@@ -166,7 +166,7 @@ export default function SupportPage() {
             }}
             className="w-full py-3.5 bg-gradient-to-r from-[#1877F2] to-[#0d5ac1] hover:from-[#2d84f8] hover:to-[#1166d8] text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(24,119,242,0.5)] active:scale-95 cursor-pointer"
           >
-            <span>Access Facebook Dispatch</span>
+            <span>{language === 'km' ? 'ចូលទៅកាន់ FACEBOOK PAGE' : 'ACCESS FACEBOOK DISPATCH'}</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
@@ -183,7 +183,7 @@ export default function SupportPage() {
             </h2>
           </div>
           <span className="font-mono text-[10px] text-cyan-400 font-bold">
-            4 Entries
+            {language === 'km' ? '៤ សំណួរចម្លើយ' : '4 Entries'}
           </span>
         </div>
 

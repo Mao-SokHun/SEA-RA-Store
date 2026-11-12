@@ -373,10 +373,16 @@ export default function HowToBuyPage() {
                     {/* Bottom Status & Telemetry Tag */}
                     <div className="mt-5 pt-3 border-t border-white/[0.08] flex items-center justify-between text-[10px] font-mono">
                       <span className="text-cyan-400 font-bold">
-                        {idx === 0 ? 'START' : isLast ? 'DONE < 3S' : `STAGE 0${idx + 1}`}
+                        {idx === 0
+                          ? (language === 'km' ? 'ចាប់ផ្តើម' : 'START')
+                          : isLast
+                          ? (language === 'km' ? 'រួចរាល់ < 3វិ' : 'DONE < 3S')
+                          : (language === 'km' ? `ដំណាក់កាល ០${idx + 1}` : `STAGE 0${idx + 1}`)}
                       </span>
                       <span className="text-neutral-500 font-bold group-hover:text-white transition-colors">
-                        {isLast ? '⚡ Instant' : 'Proceed ➔'}
+                        {isLast
+                          ? (language === 'km' ? '⚡ ភ្លាមៗ' : '⚡ Instant')
+                          : (language === 'km' ? 'បន្តបន្ទាប់ ➔' : 'Proceed ➔')}
                       </span>
                     </div>
 
@@ -404,7 +410,7 @@ export default function HowToBuyPage() {
             </h2>
           </div>
           <span className="text-[11px] font-mono text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded border border-emerald-500/30">
-            ✓ Public ID Only • No Password Required
+            {language === 'km' ? '✓ ត្រឹមតែលេខសម្គាល់សាធារណៈ • មិនត្រូវការ Password' : '✓ Public ID Only • No Password Required'}
           </span>
         </div>
 
@@ -444,7 +450,7 @@ export default function HowToBuyPage() {
 
               {/* Sample Format Callout */}
               <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between text-[11px] font-mono">
-                <span className="text-neutral-500">FORMAT SAMPLE:</span>
+                <span className="text-neutral-500">{language === 'km' ? 'គំរូទម្រង់ ID:' : 'FORMAT SAMPLE:'}</span>
                 <span className="text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                   {item.sample}
                 </span>

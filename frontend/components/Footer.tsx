@@ -196,15 +196,15 @@ export default function Footer() {
 
           <div className="flex items-center gap-3 sm:gap-4 text-[11px]">
             <Link href="/privacy" className="hover:text-[#E5B55E] transition-colors">
-              Privacy Policy
+              {language === 'km' ? 'គោលការណ៍ឯកជនភាព' : 'Privacy Policy'}
             </Link>
             <span>•</span>
             <Link href="/terms" className="hover:text-[#E5B55E] transition-colors">
-              Terms of Service
+              {language === 'km' ? 'លក្ខខណ្ឌប្រើប្រាស់' : 'Terms of Service'}
             </Link>
             <span>•</span>
             <Link href="/refund" className="hover:text-[#E5B55E] transition-colors">
-              Refund Policy
+              {language === 'km' ? 'គោលការណ៍បង្វិលប្រាក់' : 'Refund Policy'}
             </Link>
             <span>•</span>
             
@@ -214,7 +214,7 @@ export default function Footer() {
               onClick={scrollToTop}
               className="px-3 py-1.5 rounded-lg bg-[#0F1626] hover:bg-[#E5B55E] hover:text-black border border-white/10 hover:border-[#E5B55E] text-neutral-300 font-bold transition-all cursor-pointer flex items-center gap-1 shadow-sm group"
             >
-              <span>ASCEND</span>
+              <span>{language === 'km' ? 'ឡើងលើ' : 'ASCEND'}</span>
               <ArrowUp className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
             </button>
           </div>

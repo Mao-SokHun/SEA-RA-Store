@@ -602,29 +602,34 @@ export default function ExpressTopUpPage() {
                   <button
                     type="button"
                     onClick={() => setBillCurrency('USD')}
-                    className={`px-2 py-0.5 rounded cursor-pointer ${billCurrency === 'USD' ? 'bg-[#E5B55E] text-black font-bold' : 'text-neutral-400'}`}
+                    className={`px-2 py-0.5 rounded cursor-pointer transition-all ${billCurrency === 'USD' ? 'bg-[#E5B55E] text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'}`}
                   >
                     USD ($)
                   </button>
                   <button
                     type="button"
                     onClick={() => setBillCurrency('KHR')}
-                    className={`px-2 py-0.5 rounded cursor-pointer ${billCurrency === 'KHR' ? 'bg-[#E5B55E] text-black font-bold' : 'text-neutral-400'}`}
+                    className={`px-2 py-0.5 rounded cursor-pointer transition-all ${billCurrency === 'KHR' ? 'bg-[#E5B55E] text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'}`}
                   >
                     KHR (៛)
                   </button>
                 </div>
               </div>
 
-              <div className="text-2xl font-black font-mono text-white text-right">
-                {billCurrency === 'USD' ? `$${finalPriceUSD.toFixed(2)}` : `៛${finalPriceKHR.toLocaleString()}`}
+              <div className="flex items-center justify-between p-3 rounded-xl bg-[#0D1527] border border-[#E5B55E]/30">
+                <span className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider">
+                  {language === 'km' ? 'ចំនួនទឹកប្រាក់សរុប' : 'Payable Amount'}
+                </span>
+                <span className="text-2xl font-black font-mono text-[#FFE082] tracking-tight">
+                  {billCurrency === 'USD' ? `$${finalPriceUSD.toFixed(2)}` : `៛${finalPriceKHR.toLocaleString()}`}
+                </span>
               </div>
             </div>
 
             {/* =========================================================== */}
             {/* OFFICIAL BAKONG KHQR TEMPLATE PRESENTATION                  */}
             {/* =========================================================== */}
-            <div className="space-y-2">
+            <div className="space-y-2 pt-1">
               <div className="flex items-center justify-between text-[11px] font-mono font-bold text-amber-400/90 px-1">
                 <span>{language === 'km' ? 'ស្កេនទូទាត់ប្រាក់ 0% សេវា' : 'Scan to Pay (0% Surcharge)'}</span>
                 <div className="flex items-center gap-1">

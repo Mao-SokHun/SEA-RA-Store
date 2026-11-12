@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { GAMES } from '@/data/games';
 import { useApp } from '@/context/AppContext';
+import ChamferHighlights from '@/components/ChamferHighlights';
 import { Search, Flame, Zap, ArrowRight, ArrowLeft, Gamepad2 } from 'lucide-react';
 
 export default function GamesCatalogPage() {
@@ -96,6 +97,9 @@ export default function GamesCatalogPage() {
               }}
               className="group relative h-[420px] sm:h-[450px] overflow-hidden bg-[#0A101E] border border-white/[0.12] hover:border-[#E5B55E]/80 transition-all duration-500 flex flex-col justify-end cursor-pointer hover:-translate-y-1.5 shadow-[0_8px_25px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-10px_rgba(229,181,94,0.4)]"
             >
+              {/* Glowing Precision Laser Highlights on 45° Chamfered Corners */}
+              <ChamferHighlights size={24} color={game.id === 'mlbb' ? 'cyan' : game.id === 'roblox' ? 'red' : 'gold'} className="opacity-75 group-hover:opacity-100 transition-opacity" />
+
               {/* Poster Image */}
               <img
                 src={game.coverImage}

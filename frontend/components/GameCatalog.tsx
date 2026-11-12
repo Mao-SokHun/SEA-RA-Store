@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 import { GAMES } from '@/data/games';
 import { GameItem } from '@/types';
+import ChamferHighlights from './ChamferHighlights';
 import {
   Flame,
   Zap,
@@ -205,6 +206,9 @@ export default function GameCatalog() {
                   }
                   className={`group relative h-[420px] sm:h-[450px] overflow-hidden bg-[#0A101E] border border-white/[0.12] ${theme.borderAccent} transition-all duration-500 flex flex-col justify-end cursor-pointer hover:-translate-y-1.5 shadow-[0_8px_25px_rgba(0,0,0,0.5)] hover:shadow-[0_20px_40px_-10px_var(--card-glow)]`}
                 >
+                  {/* Glowing Precision Laser Highlights on 45° Chamfered Corners */}
+                  <ChamferHighlights size={24} color={game.id === 'mlbb' ? 'cyan' : game.id === 'roblox' ? 'red' : 'gold'} className="opacity-75 group-hover:opacity-100 transition-opacity" />
+
                   {/* ========================================================= */}
                   {/* 1. FULL-BLEED POSTER BACKGROUND WITH 3D DEPTH ZOOM       */}
                   {/* ========================================================= */}

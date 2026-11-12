@@ -216,6 +216,37 @@ export class SmileOneProvider implements TopUpProvider {
       return { balance: 0, currency: 'USD', provider: 'smileone' };
     }
   }
+
+  /**
+   * Fetch active product catalog and pricing directly from SmileOne
+   */
+  async getProductList(gameTitle: string): Promise<any[]> {
+    const product = SMILEONE_PRODUCT_MAP[gameTitle] || gameTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const time = Math.floor(Date.now() / 1000).toString();
+    const payload: Record<string, any> = {
+      uid: this.merchantId,
+      email: this.apiKey,
+      product,
+      time,
+    };
+    payload.sign = this.generateSignature(payload);
+
+    try {
+      const response = await fetch(`${this.baseUrl}/smilecoin/api/productlist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = (await response.json()) as { status: number; data?: any[] };
+      if (data.status === 200 && Array.isArray(data.data)) {
+        return data.data;
+      }
+      return [];
+    } catch (err) {
+      console.error('SmileOne getProductList error:', err);
+      return [];
+    }
+  }
 }
 
 export const smileOneProvider = new SmileOneProvider();

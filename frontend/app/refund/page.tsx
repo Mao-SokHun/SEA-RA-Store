@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
+import ChamferHighlights from '@/components/ChamferHighlights';
 import {
   Sparkles,
   ShieldCheck,
@@ -96,8 +97,9 @@ export default function RefundPolicyPage() {
         style={{
           clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))',
         }}
-        className="p-6 sm:p-7 bg-gradient-to-r from-emerald-950/60 via-[#071318] to-cyan-950/60 border-2 border-emerald-400/50 shadow-[0_0_30px_rgba(16,185,129,0.25)] mb-10 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left"
+        className="p-6 sm:p-7 bg-gradient-to-r from-emerald-950/60 via-[#071318] to-cyan-950/60 border-2 border-emerald-400/50 shadow-[0_0_30px_rgba(16,185,129,0.25)] mb-10 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left relative"
       >
+        <ChamferHighlights size={20} color="emerald" />
         <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
           <ShieldCheck className="w-8 h-8 text-emerald-400" />
         </div>
@@ -123,8 +125,9 @@ export default function RefundPolicyPage() {
           style={{
             clipPath: 'polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))',
           }}
-          className="p-6 bg-[#080E1C] border border-emerald-500/40 shadow-xl space-y-4"
+          className="p-6 bg-[#080E1C] border border-emerald-500/40 shadow-xl space-y-4 relative"
         >
+          <ChamferHighlights size={16} color="emerald" />
           <div className="flex items-center gap-2 pb-3 border-b border-emerald-500/20">
             <CheckCircle2 className="w-5 h-5 text-emerald-400" />
             <h3 className="text-sm font-black text-emerald-400 uppercase tracking-wider">
@@ -168,8 +171,9 @@ export default function RefundPolicyPage() {
           style={{
             clipPath: 'polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))',
           }}
-          className="p-6 bg-[#080E1C] border border-amber-500/40 shadow-xl space-y-4"
+          className="p-6 bg-[#080E1C] border border-amber-500/40 shadow-xl space-y-4 relative"
         >
+          <ChamferHighlights size={16} color="gold" />
           <div className="flex items-center gap-2 pb-3 border-b border-amber-500/20">
             <XCircle className="w-5 h-5 text-amber-400" />
             <h3 className="text-sm font-black text-amber-400 uppercase tracking-wider">

@@ -45,4 +45,5 @@ export interface TopUpProvider {
   verifyPlayer(params: VerifyPlayerParams): Promise<VerifyPlayerResult>;
   fulfillOrder(params: FulfillOrderParams): Promise<FulfillOrderResult>;
   checkBalance?(): Promise<ProviderBalanceResult>;
+  getProductList?(gameTitle: string): Promise<any[]>;
 }

@@ -7,6 +7,7 @@ import { GameItem, PackageItem, TopUpOrder } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { verifyPlayerApi, createTopUpOrderApi, simulatePaymentApi } from '@/lib/api';
 import KHQRCard from '@/components/KHQRCard';
+import ChamferHighlights from '@/components/ChamferHighlights';
 import {
   Zap,
   ShieldCheck,
@@ -298,13 +299,8 @@ export default function ExpressTopUpPage() {
             }}
             className="p-[1.5px] bg-gradient-to-br from-cyan-400 via-sky-300 to-blue-500 relative transition-all duration-300 shadow-2xl"
           >
-            {/* Glowing Corner Highlight Accents on the 45-degree Chamfers */}
-            <div className="absolute top-0 right-0 w-8 h-8 pointer-events-none z-20">
-              <div className="w-full h-full border-t-2 border-r-2 border-cyan-200 shadow-[0_0_12px_#38BDF8]" />
-            </div>
-            <div className="absolute bottom-0 left-0 w-8 h-8 pointer-events-none z-20">
-              <div className="w-full h-full border-b-2 border-l-2 border-cyan-200 shadow-[0_0_12px_#38BDF8]" />
-            </div>
+            {/* Glowing Corner Laser Highlights on 45° Chamfers */}
+            <ChamferHighlights size={20} color="cyan" />
 
             <div
               style={{
@@ -421,13 +417,8 @@ export default function ExpressTopUpPage() {
             }}
             className="p-[1.5px] bg-gradient-to-br from-cyan-400 via-sky-300 to-blue-500 relative transition-all duration-300 shadow-2xl"
           >
-            {/* Glowing Corner Highlight Accents on the 45-degree Chamfers */}
-            <div className="absolute top-0 right-0 w-8 h-8 pointer-events-none z-20">
-              <div className="w-full h-full border-t-2 border-r-2 border-cyan-200 shadow-[0_0_12px_#38BDF8]" />
-            </div>
-            <div className="absolute bottom-0 left-0 w-8 h-8 pointer-events-none z-20">
-              <div className="w-full h-full border-b-2 border-l-2 border-cyan-200 shadow-[0_0_12px_#38BDF8]" />
-            </div>
+            {/* Glowing Corner Laser Highlights on 45° Chamfers */}
+            <ChamferHighlights size={20} color="cyan" />
 
             <div
               style={{
@@ -513,13 +504,8 @@ export default function ExpressTopUpPage() {
             }}
             className="p-[1.5px] bg-gradient-to-br from-[#FFE082] via-[#E5B55E] to-[#B8860B] relative transition-all duration-300 shadow-2xl"
           >
-            {/* Glowing Corner Highlight Accents on the 45-degree Chamfers */}
-            <div className="absolute top-0 right-0 w-9 h-9 pointer-events-none z-20">
-              <div className="w-full h-full border-t-2 border-r-2 border-amber-200 shadow-[0_0_12px_#E5B55E]" />
-            </div>
-            <div className="absolute bottom-0 left-0 w-9 h-9 pointer-events-none z-20">
-              <div className="w-full h-full border-b-2 border-l-2 border-amber-200 shadow-[0_0_12px_#E5B55E]" />
-            </div>
+            {/* Glowing Corner Laser Highlights on 45° Chamfers */}
+            <ChamferHighlights size={24} color="gold" />
 
             <div
               style={{

@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
+import ChamferHighlights from '@/components/ChamferHighlights';
 import {
   ShieldCheck,
   Lock,
@@ -98,8 +99,9 @@ export default function PrivacyPolicyPage() {
           style={{
             clipPath: 'polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))',
           }}
-          className="p-6 bg-[#080E1C] border border-emerald-500/30 hover:border-emerald-400 transition-all duration-300 shadow-xl group space-y-3"
+          className="p-6 bg-[#080E1C] border border-emerald-500/30 hover:border-emerald-400 transition-all duration-300 shadow-xl group space-y-3 relative"
         >
+          <ChamferHighlights size={16} color="emerald" />
           <div className="flex items-center justify-between">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
               <Lock className="w-5 h-5" />
@@ -123,8 +125,9 @@ export default function PrivacyPolicyPage() {
           style={{
             clipPath: 'polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))',
           }}
-          className="p-6 bg-[#080E1C] border border-cyan-500/30 hover:border-cyan-400 transition-all duration-300 shadow-xl group space-y-3"
+          className="p-6 bg-[#080E1C] border border-cyan-500/30 hover:border-cyan-400 transition-all duration-300 shadow-xl group space-y-3 relative"
         >
+          <ChamferHighlights size={16} color="cyan" />
           <div className="flex items-center justify-between">
             <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
               <Eye className="w-5 h-5" />
@@ -148,8 +151,9 @@ export default function PrivacyPolicyPage() {
           style={{
             clipPath: 'polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))',
           }}
-          className="p-6 bg-[#080E1C] border border-red-500/30 hover:border-red-400 transition-all duration-300 shadow-xl group space-y-3"
+          className="p-6 bg-[#080E1C] border border-red-500/30 hover:border-red-400 transition-all duration-300 shadow-xl group space-y-3 relative"
         >
+          <ChamferHighlights size={16} color="red" />
           <div className="flex items-center justify-between">
             <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400">
               <Server className="w-5 h-5" />
@@ -173,8 +177,9 @@ export default function PrivacyPolicyPage() {
           style={{
             clipPath: 'polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))',
           }}
-          className="p-6 bg-[#080E1C] border border-[#E5B55E]/30 hover:border-[#E5B55E] transition-all duration-300 shadow-xl group space-y-3"
+          className="p-6 bg-[#080E1C] border border-[#E5B55E]/30 hover:border-[#E5B55E] transition-all duration-300 shadow-xl group space-y-3 relative"
         >
+          <ChamferHighlights size={16} color="gold" />
           <div className="flex items-center justify-between">
             <div className="w-10 h-10 rounded-xl bg-[#E5B55E]/10 border border-[#E5B55E]/30 flex items-center justify-center text-[#E5B55E]">
               <Zap className="w-5 h-5" />

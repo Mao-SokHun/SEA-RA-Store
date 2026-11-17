@@ -60,7 +60,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="km">
+    <html lang="km" className="overflow-x-hidden max-w-full">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -69,13 +69,13 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen text-white antialiased flex flex-col justify-between selection:bg-[#E5B55E] selection:text-black leading-relaxed">
+      <body className="min-h-screen text-white antialiased flex flex-col justify-between selection:bg-[#E5B55E] selection:text-black leading-relaxed overflow-x-hidden w-full max-w-full">
         <AppProvider>
           {/* Global Sticky Luxury Navbar */}
           <Navbar />
 
           {/* Main Application Container */}
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 w-full max-w-full overflow-x-hidden">{children}</main>
 
           {/* Global Luxury Footer */}
           <Footer />

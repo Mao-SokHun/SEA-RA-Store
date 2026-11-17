@@ -157,17 +157,17 @@ export default function GameShowcase() {
             </p>
 
             {/* Primary Action Buttons (Sci-Fi Chamfered) */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2">
               <Link
                 href={`/top-up/${activeGame.slug}`}
                 style={{
                   clipPath:
                     'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))',
                 }}
-                className="px-7 sm:px-9 py-3.5 bg-gradient-to-r from-[#00D4FF] via-[#0284C7] to-[#2563EB] hover:from-[#38BDF8] hover:to-[#1D4ED8] text-black font-black text-xs sm:text-sm uppercase tracking-widest shadow-[0_0_25px_rgba(0,212,255,0.6)] hover:shadow-[0_0_40px_rgba(0,212,255,0.85)] transition-all flex items-center gap-2 transform hover:scale-105 active:scale-95 cursor-pointer"
+                className="w-full sm:w-auto px-7 sm:px-9 py-3 sm:py-3.5 bg-gradient-to-r from-[#00D4FF] via-[#0284C7] to-[#2563EB] hover:from-[#38BDF8] hover:to-[#1D4ED8] text-black font-black text-xs sm:text-sm uppercase tracking-widest shadow-[0_0_25px_rgba(0,212,255,0.6)] hover:shadow-[0_0_40px_rgba(0,212,255,0.85)] transition-all flex items-center justify-center gap-2 transform hover:scale-105 active:scale-95 cursor-pointer text-center"
               >
                 <span>{language === 'km' ? 'បញ្ចូលលុយឥឡូវនេះ' : 'TOP UP NOW'}</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 shrink-0" />
               </Link>
 
               <a
@@ -176,7 +176,7 @@ export default function GameShowcase() {
                   clipPath:
                     'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))',
                 }}
-                className="px-6 sm:px-8 py-3.5 bg-black/40 hover:bg-black/70 backdrop-blur-md border border-cyan-400/50 hover:border-cyan-300 text-white font-bold text-xs sm:text-sm uppercase tracking-wider transition-all flex items-center gap-2 transform hover:scale-105 active:scale-95 cursor-pointer"
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 bg-black/40 hover:bg-black/70 backdrop-blur-md border border-cyan-400/50 hover:border-cyan-300 text-white font-bold text-xs sm:text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 transform hover:scale-105 active:scale-95 cursor-pointer text-center"
               >
                 <span>{language === 'km' ? 'មើលកញ្ចប់ទាំងអស់' : 'VIEW PACKAGES'}</span>
               </a>
@@ -238,8 +238,8 @@ export default function GameShowcase() {
           {/* 2. RIGHT COLUMN: 3-SLOT CASCADING GAMING HUD CARDS            */}
           {/* Whichever game is selected, it ALWAYS displays in FRONT!     */}
           {/* ============================================================= */}
-          <div className="lg:col-span-6 xl:col-span-7 flex items-center justify-center lg:justify-start">
-            <div className="flex items-center gap-3 sm:gap-5 select-none">
+          <div className="lg:col-span-6 xl:col-span-7 flex items-center justify-center lg:justify-start w-full overflow-hidden">
+            <div className="flex items-center justify-center gap-3 sm:gap-5 select-none w-full">
               {[
                 { game: activeGame, pos: 0, targetIdx: activeIdx },
                 { game: GAMES[(activeIdx + 1) % GAMES.length], pos: 1, targetIdx: (activeIdx + 1) % GAMES.length },
@@ -258,10 +258,10 @@ export default function GameShowcase() {
                     }}
                     className={`relative transition-all duration-500 shrink-0 ${
                       isLeading
-                        ? 'w-72 sm:w-84 h-[470px] sm:h-[510px] z-30 cursor-default'
+                        ? 'w-full max-w-[310px] sm:w-84 h-[440px] sm:h-[510px] z-30 cursor-default mx-auto sm:mx-0'
                         : isSecondary
-                        ? 'w-56 sm:w-64 h-[410px] sm:h-[450px] z-20 opacity-75 hover:opacity-100 hover:scale-[1.03] cursor-pointer'
-                        : 'w-48 sm:w-56 h-[360px] sm:h-[400px] z-10 opacity-50 hover:opacity-90 hover:scale-[1.03] cursor-pointer hidden sm:block'
+                        ? 'w-56 sm:w-64 h-[410px] sm:h-[450px] z-20 opacity-75 hover:opacity-100 hover:scale-[1.03] cursor-pointer hidden md:block'
+                        : 'w-48 sm:w-56 h-[360px] sm:h-[400px] z-10 opacity-50 hover:opacity-90 hover:scale-[1.03] cursor-pointer hidden xl:block'
                     }`}
                   >
                     {/* True Gaming Chamfered Outer Border Shell */}

@@ -146,7 +146,7 @@ export default function GameCatalog() {
           </div>
 
           {/* Sci-Fi Chamfered Gaming Category Filter Buttons */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none w-full max-w-full">
             {categories.map((cat) => {
               const isSelected = selectedCategory === cat.id;
               return (
@@ -180,7 +180,7 @@ export default function GameCatalog() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-2.5 sm:gap-4 lg:gap-5">
             {filteredGames.map((game) => {
               const lowestPrice = Math.min(...game.packages.map((p) => p.priceUSD));
               const theme =

@@ -151,7 +151,7 @@ export default function HeroExpress() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col items-center justify-center pt-28 sm:pt-36 pb-14">
         {/* Huge Sci-Fi Centered Headline with Authentic Gaming Font Matching Reference Image */}
         <div className="space-y-4 mb-6">
-          <h1 className="tracking-tight text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase text-white drop-shadow-[0_12px_45px_rgba(0,0,0,0.95)] leading-tight select-none">
+          <h1 className="tracking-tight text-3xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase text-white drop-shadow-[0_12px_45px_rgba(0,0,0,0.95)] leading-tight select-none">
             THE NEXT <br />
             <span className="text-white drop-shadow-[0_0_35px_rgba(255,255,255,0.45)]">
               GENERATION
@@ -160,14 +160,14 @@ export default function HeroExpress() {
         </div>
 
         {/* Centered Description Subtitle */}
-        <p className="text-xs sm:text-sm md:text-base font-bold text-neutral-200 max-w-2xl mx-auto mb-9 uppercase tracking-wider leading-relaxed drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)]">
+        <p className="text-xs sm:text-sm md:text-base font-bold text-neutral-200 max-w-2xl mx-auto mb-8 sm:mb-9 uppercase tracking-wider leading-relaxed drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] px-2 sm:px-0">
           {language === 'km'
             ? 'បញ្ចូលពេជ្រ និងកាក់ហ្គេមផ្ទាល់តាមរយៈប្រព័ន្ធ NBC BAKONG KHQR មិនគិតថ្លៃសេវា 0% សុវត្ថិភាព 100% មិនបាច់ប្រើលេខសម្ងាត់'
             : 'YOU CAN RELOAD DIAMONDS, ROBUX, UC & CRYSTALS DIRECTLY WITH 0% FEE BAKONG KHQR. NO PASSWORD REQUIRED.'}
         </p>
 
         {/* Two Sci-Fi Chamfered Action Buttons Centered Side-by-Side (Matches Reference Image) */}
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-12">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-6 mb-10 sm:mb-12 w-full sm:w-auto px-2 sm:px-0">
           {/* Button 1: TOP UP NOW */}
           <Link
             href={`/top-up/${activeBanner.slug || 'mobile-legends'}`}
@@ -175,9 +175,9 @@ export default function HeroExpress() {
               clipPath:
                 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))',
             }}
-            className="px-8 sm:px-11 py-3.5 sm:py-4 bg-gradient-to-r from-[#00D4FF] via-[#0284C7] to-[#2563EB] hover:from-[#38BDF8] hover:to-[#1D4ED8] text-black font-black text-xs sm:text-sm uppercase tracking-widest shadow-[0_0_35px_rgba(0,212,255,0.7)] hover:shadow-[0_0_55px_rgba(0,212,255,0.95)] transition-all flex items-center justify-center gap-2.5 transform hover:scale-105 active:scale-95 cursor-pointer"
+            className="w-full sm:w-auto px-7 sm:px-11 py-3 sm:py-4 bg-gradient-to-r from-[#00D4FF] via-[#0284C7] to-[#2563EB] hover:from-[#38BDF8] hover:to-[#1D4ED8] text-black font-black text-xs sm:text-sm uppercase tracking-widest shadow-[0_0_35px_rgba(0,212,255,0.7)] hover:shadow-[0_0_55px_rgba(0,212,255,0.95)] transition-all flex items-center justify-center gap-2.5 transform hover:scale-105 active:scale-95 cursor-pointer text-center"
           >
-            <Zap className="w-4 h-4 fill-black text-black" />
+            <Zap className="w-4 h-4 fill-black text-black shrink-0" />
             <span className="tracking-widest">
               {language === 'km' ? 'បញ្ចូលលុយឥឡូវនេះ' : 'TOP UP NOW'}
             </span>
@@ -190,7 +190,7 @@ export default function HeroExpress() {
               clipPath:
                 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))',
             }}
-            className="px-8 sm:px-11 py-3.5 sm:py-4 bg-black/40 hover:bg-black/70 backdrop-blur-md border border-cyan-400/50 hover:border-cyan-300 text-white font-bold text-xs sm:text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2 transform hover:scale-105 active:scale-95 cursor-pointer shadow-[0_0_20px_rgba(0,0,0,0.5)]"
+            className="w-full sm:w-auto px-7 sm:px-11 py-3 sm:py-4 bg-black/40 hover:bg-black/70 backdrop-blur-md border border-cyan-400/50 hover:border-cyan-300 text-white font-bold text-xs sm:text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2 transform hover:scale-105 active:scale-95 cursor-pointer shadow-[0_0_20px_rgba(0,0,0,0.5)] text-center"
           >
             <span>{language === 'km' ? 'មើលកាតាឡុក' : 'EXPLORE MORE'}</span>
           </a>

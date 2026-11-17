@@ -405,7 +405,7 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
                         type="text"
                         readOnly
                         value={typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://sea-ra-prestige.vercel.app/top-up/${game.slug}`}
-                        className="flex-1 bg-[#10182C] border border-white/[0.15] rounded-xl px-3.5 py-2.5 text-xs text-neutral-300 font-mono focus:outline-none"
+                        className="flex-1 min-w-0 bg-[#10182C] border border-white/[0.15] rounded-xl px-3.5 py-2.5 text-xs text-neutral-300 font-mono focus:outline-none"
                       />
                       <button
                         type="button"
@@ -424,7 +424,7 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
                   </div>
 
                   {/* Direct Social Channels */}
-                  <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                     <a
                       href={`https://t.me/share/url?url=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/top-up/${game.slug}` : `https://sea-ra-prestige.vercel.app/top-up/${game.slug}`)}&text=${encodeURIComponent(`🎮 បញ្ចូល ${game.name} - SEA RA PRESTIGE | ០% សេវា Bakong KHQR!`)}`}
                       target="_blank"
@@ -665,7 +665,7 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
         {/* RIGHT COLUMN: OFFICIAL LIVE BAKONG KHQR BILL STANDEE           */}
         {/* Matches User Request: "បើដាក់ QR មកអោយហើយល្អ"                   */}
         {/* =============================================================== */}
-        <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-28 space-y-4">
+        <div id="khqr-checkout-section" className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-28 space-y-4 scroll-mt-24">
           
           <div className="bg-[#090E1E] rounded-3xl border border-white/[0.12] p-5 sm:p-6 shadow-2xl relative overflow-hidden">
             
@@ -897,6 +897,41 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
         </div>
 
       </div>
+
+      {/* Mobile Floating Sticky Action Bar (Fast 1-Tap Checkout on Phones) */}
+      {selectedPkg && !isPaymentSuccess && (
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 p-3 bg-[#070D1B]/95 backdrop-blur-xl border-t border-cyan-400/30 shadow-[0_-10px_25px_rgba(0,0,0,0.8)] flex items-center justify-between gap-3 animate-in slide-in-from-bottom-2 duration-200">
+          <div className="min-w-0 flex-1">
+            <span className="text-[10px] font-mono text-neutral-400 block truncate">
+              {selectedPkg.name}
+            </span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-base font-black font-mono text-[#FFE082]">
+                {billCurrency === 'USD' ? `$${discountedUSD.toFixed(2)}` : `${discountedKHR.toLocaleString()} ៛`}
+              </span>
+              <span className="text-[9px] font-mono text-cyan-400 font-bold">
+                0% FEE
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const qrEl = document.getElementById('khqr-checkout-section');
+              if (qrEl) {
+                qrEl.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            style={{
+              clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
+            }}
+            className="px-5 py-2.5 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 text-black font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(0,212,255,0.6)] flex items-center gap-1.5 shrink-0 active:scale-95 cursor-pointer"
+          >
+            <Zap className="w-3.5 h-3.5 fill-black shrink-0" />
+            <span>{language === 'km' ? 'ស្កេនបង់ប្រាក់' : 'Scan to Pay'}</span>
+          </button>
+        </div>
+      )}
 
     </div>
   );

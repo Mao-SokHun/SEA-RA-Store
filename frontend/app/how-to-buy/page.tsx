@@ -265,16 +265,16 @@ export default function HowToBuyPage() {
         </p>
 
         {/* Dual Chamfered Action Buttons */}
-        <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
+        <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto px-2 sm:px-0">
           <Link
             href="/games"
             style={{
               clipPath: 'polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)',
             }}
-            className="px-7 py-3 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-black font-extrabold text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(0,212,255,0.6)] active:scale-95 transition-all flex items-center gap-2 group cursor-pointer"
+            className="w-full sm:w-auto px-7 py-3 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-black font-extrabold text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(0,212,255,0.6)] active:scale-95 transition-all flex items-center justify-center gap-2 group cursor-pointer text-center"
           >
             <span>{language === 'km' ? 'ចាប់ផ្តើមបញ្ចូលឥឡូវនេះ' : 'Start Top-Up Now'}</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-black" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-black shrink-0" />
           </Link>
           
           <Link
@@ -282,9 +282,9 @@ export default function HowToBuyPage() {
             style={{
               clipPath: 'polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)',
             }}
-            className="px-7 py-3 bg-[#0A1020]/90 hover:bg-[#121B33] border border-cyan-400/40 hover:border-cyan-400 text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-lg active:scale-95"
+            className="w-full sm:w-auto px-7 py-3 bg-[#0A1020]/90 hover:bg-[#121B33] border border-cyan-400/40 hover:border-cyan-400 text-white font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-95 text-center"
           >
-            <Zap className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+            <Zap className="w-3.5 h-3.5 text-cyan-400 animate-pulse shrink-0" />
             <span>{language === 'km' ? 'បើកផ្ទាំងបញ្ចូលរហ័ស' : 'Express Top-Up'}</span>
           </Link>
         </div>

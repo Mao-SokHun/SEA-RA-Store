@@ -281,7 +281,7 @@ export default function ExpressTopUpPage() {
   };
 
   return (
-    <div className="min-h-screen py-6 sm:py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto select-none pt-20 sm:pt-24">
+    <div className="min-h-screen py-6 sm:py-10 px-4 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto select-none pt-20 sm:pt-24 overflow-x-hidden">
       
       {/* ================================================================= */}
       {/* 1. STEP 1: QUICK GAME SELECTOR (ALL 15 GAMES)                     */}
@@ -571,7 +571,7 @@ export default function ExpressTopUpPage() {
         {/* =============================================================== */}
         {/* RIGHT COLUMN: STEP 4 (SUMMARY, BAKONG KHQR TERMINAL & PAY)      */}
         {/* =============================================================== */}
-        <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-20 space-y-4">
+        <div id="express-checkout-card" className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-20 space-y-4 scroll-mt-24">
           
           <div
             style={{
@@ -769,6 +769,41 @@ export default function ExpressTopUpPage() {
         </div>
 
       </div>
+
+      {/* Mobile Floating Sticky Action Bar on Express Page */}
+      {selectedPkg && !isPaymentSuccess && (
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 p-3 bg-[#070D1B]/95 backdrop-blur-xl border-t border-[#E5B55E]/30 shadow-[0_-10px_25px_rgba(0,0,0,0.8)] flex items-center justify-between gap-3 animate-in slide-in-from-bottom-2 duration-200">
+          <div className="min-w-0 flex-1">
+            <span className="text-[10px] font-mono text-neutral-400 block truncate">
+              {activeGame.name} • {selectedPkg.name}
+            </span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-base font-black font-mono text-[#FFE082]">
+                {billCurrency === 'USD' ? `$${finalPriceUSD.toFixed(2)}` : `${finalPriceKHR.toLocaleString()} ៛`}
+              </span>
+              <span className="text-[9px] font-mono text-emerald-400 font-bold">
+                0% FEE
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById('express-checkout-card');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            style={{
+              clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
+            }}
+            className="px-5 py-2.5 bg-gradient-to-r from-[#E5B55E] via-[#F3C978] to-[#D4A043] text-black font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(229,181,94,0.5)] flex items-center gap-1.5 shrink-0 active:scale-95 cursor-pointer"
+          >
+            <Zap className="w-3.5 h-3.5 fill-black shrink-0" />
+            <span>{language === 'km' ? 'ស្កេនបង់ប្រាក់' : 'Scan to Pay'}</span>
+          </button>
+        </div>
+      )}
 
     </div>
   );

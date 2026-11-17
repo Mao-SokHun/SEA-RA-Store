@@ -416,14 +416,14 @@ export default function Navbar() {
             <span>{language === 'km' ? '🇰🇭 ខ្មែរ' : '🇺🇸 EN'}</span>
           </button>
 
-          {/* SCI-FI CHAMFERED CTA BUTTON (PLAY NOW / TOP UP) */}
+          {/* SCI-FI CHAMFERED CTA BUTTON (PLAY NOW / TOP UP) - Visible on tablet/desktop */}
           <Link
             href="/games"
             style={{
               clipPath:
                 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
             }}
-            className="relative px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-[#00D4FF] via-[#0284C7] to-[#2563EB] hover:from-[#38BDF8] hover:to-[#1D4ED8] text-black font-black text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(0,212,255,0.55)] hover:shadow-[0_0_35px_rgba(0,212,255,0.85)] transition-all flex items-center gap-1.5 active:scale-95 group shrink-0"
+            className="hidden sm:flex relative px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-[#00D4FF] via-[#0284C7] to-[#2563EB] hover:from-[#38BDF8] hover:to-[#1D4ED8] text-black font-black text-xs uppercase tracking-wider shadow-[0_0_25px_rgba(0,212,255,0.55)] hover:shadow-[0_0_35px_rgba(0,212,255,0.85)] transition-all items-center gap-1.5 active:scale-95 group shrink-0"
           >
             <Zap className="w-3.5 h-3.5 text-black fill-current animate-pulse shrink-0" />
             <span className="font-extrabold tracking-wider text-black">
@@ -445,6 +445,20 @@ export default function Navbar() {
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-white/[0.08] bg-[#070B16]/95 backdrop-blur-2xl px-4 py-5 space-y-4 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+          {/* Mobile Direct Top Up CTA */}
+          <Link
+            href="/games"
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              clipPath:
+                'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
+            }}
+            className="w-full py-2.5 bg-gradient-to-r from-[#00D4FF] via-[#0284C7] to-[#2563EB] text-black font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(0,212,255,0.5)] flex items-center justify-center gap-2 active:scale-95"
+          >
+            <Zap className="w-4 h-4 fill-black text-black" />
+            <span>{language === 'km' ? '⚡ បញ្ចូលលុយឥឡូវនេះ (TOP UP)' : '⚡ TOP UP NOW'}</span>
+          </Link>
+
           {/* Mobile Search */}
           <div className="relative">
             <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2" />

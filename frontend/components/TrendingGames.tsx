@@ -62,7 +62,7 @@ export default function TrendingGames() {
         </div>
 
         {/* 5-Card Vertical Poster Row (Authentic Gaming Chamfer HUD Shape) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
           {trendingList.map((game, idx) => {
             const lowestPrice = Math.min(...game.packages.map((p) => p.priceUSD));
 
@@ -155,7 +155,7 @@ export default function TrendingGames() {
 
         {/* Stepped Angular Cyber Neon Bottom Line */}
         <div className="mt-12 flex items-center justify-end">
-          <div className="w-64 sm:w-96 h-[3px] bg-gradient-to-l from-pink-500 via-rose-400 to-transparent shadow-[0_0_12px_#ec4899]" />
+          <div className="w-full max-w-[280px] sm:max-w-sm h-[3px] bg-gradient-to-l from-pink-500 via-rose-400 to-transparent shadow-[0_0_12px_#ec4899]" />
         </div>
 
       </div>

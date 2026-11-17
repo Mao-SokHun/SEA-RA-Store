@@ -180,7 +180,7 @@ function TrackOrderContent() {
         </h1>
         <p className="text-xs sm:text-sm text-neutral-400">
           {language === 'km'
-            ? 'ស្វែងរកតាមរយៈលេខវិក្កយបត្រ (Order ID) ឬលេខសម្គាល់គណនី (Player ID) របស់អ្នក'
+            ? 'ស្វែងរកតាមរយៈលេខបញ្ជាទិញ (Order ID) ឬលេខសម្គាល់គណនី (Player ID) របស់អ្នក'
             : 'Look up real-time delivery status using your Order ID or Player ID.'}
         </p>
       </div>
@@ -360,7 +360,7 @@ function TrackOrderContent() {
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-neutral-300 hover:text-white font-mono text-[11px] cursor-pointer transition-colors"
                 >
                   <Printer className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>{language === 'km' ? 'បោះពុម្ពវិក្កយបត្រ (Print Receipt)' : 'Print Official Receipt'}</span>
+                  <span>{language === 'km' ? 'បោះពុម្ពប្រតិបត្តិការ (Print Summary)' : 'Print Transaction Summary'}</span>
                 </button>
 
                 <a

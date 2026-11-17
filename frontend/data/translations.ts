@@ -203,7 +203,7 @@ export const TRANSLATIONS = {
       step3: 'ជំហានទី ៣៖ ជ្រើសរើសវិធីសាស្ត្រទូទាត់ប្រាក់',
       step3Sub: 'ស្កេនទូទាត់តាម Bakong KHQR គ្រប់ធនាគារ ឬជ្រើសរើសធនាគារផ្ទាល់',
       step4: 'ជំហានទី ៤៖ ព័ត៌មានទំនាក់ទំនង (ស្រេចចិត្ត)',
-      contactPlaceholder: 'លេខទូរស័ព្ទ ឬ Telegram @username (សម្រាប់ទទួលវិក្កយបត្រ)',
+      contactPlaceholder: 'លេខទូរស័ព្ទ ឬ Telegram @username (សម្រាប់ទទួលដំណឹង)',
       promoPlaceholder: 'កូដបញ្ចុះតម្លៃ (បើមាន)',
       applyBtn: 'ប្រើប្រាស់',
       summary: 'សង្ខេបការកុម្ម៉ង់',
@@ -225,7 +225,7 @@ export const TRANSLATIONS = {
     },
     trackOrder: {
       modalTitle: 'តាមដានការកុម្ម៉ង់ (TRACK ORDER)',
-      subtitle: 'ពិនិត្យមើលស្ថានភាពនៃការបញ្ចូលលុយ និងវិក្កយបត្ររបស់អ្នក',
+      subtitle: 'ពិនិត្យមើលស្ថានភាពនៃការបញ្ចូលលុយរបស់អ្នក',
       inputPlaceholder: 'បញ្ចូលលេខ Order (ឧ. GV-123456) ឬលេខទូរស័ព្ទ',
       searchBtn: 'ស្វែងរកឥឡូវនេះ',
       recentOrders: 'ការកុម្ម៉ង់ថ្មីៗរបស់អ្នក',

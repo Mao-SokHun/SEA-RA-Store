@@ -705,7 +705,7 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
                     href="/track-order"
                     className="block w-full py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs uppercase tracking-wider transition-all shadow-md text-center"
                   >
-                    {language === 'km' ? 'មើលវិក្កយបត្រ (Track Order)' : 'View Receipt / Track Order'}
+                    {language === 'km' ? 'តាមដានការបញ្ជាទិញ (Track Order)' : 'Track Order / Status'}
                   </Link>
                   <button
                     type="button"

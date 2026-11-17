@@ -625,7 +625,7 @@ export const GAMES: GameItem[] = [
     guideTitle: 'How Steam Codes are delivered',
     guideTitleKh: 'របៀបទទួលកូដ Steam Wallet',
     guideDescription: 'Your digital Steam PIN code is displayed immediately upon payment and sent to your order receipt.',
-    guideDescriptionKh: 'កូដឌីជីថល Steam Wallet នឹងបង្ហាញភ្លាមៗបន្ទាប់ពីទូទាត់ប្រាក់ និងមានក្នុងវិក្កយបត្រ។',
+    guideDescriptionKh: 'កូដឌីជីថល Steam Wallet នឹងបង្ហាញភ្លាមៗបន្ទាប់ពីទូទាត់ប្រាក់ និងមានក្នុងទំព័រតាមដាន Order។',
     accountFields: [
       {
         id: 'contactPhone',

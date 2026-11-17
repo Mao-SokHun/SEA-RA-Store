@@ -150,7 +150,7 @@ export default function RefundPolicyPage() {
               <span>
                 <strong>{language === 'km' ? 'កាត់ប្រាក់ស្ទួន (Double Charge)៖' : 'Accidental Duplicate Charge:'}</strong>{' '}
                 {language === 'km'
-                  ? 'អតិថិជនបានស្កេនបង់ប្រាក់ស្ទួន ២ ដងលើវិក្កយបត្រ Order ID តែមួយ។'
+                  ? 'អតិថិជនបានស្កេនបង់ប្រាក់ស្ទួន ២ ដងលើ Order ID តែមួយ។'
                   : 'Customer was accidentally charged twice for a single order transaction.'}
               </span>
             </li>
@@ -225,7 +225,7 @@ export default function RefundPolicyPage() {
             </span>
             <h4 className="text-sm font-black text-white">{language === 'km' ? 'ចម្លងលេខ Order ID' : 'Copy Order ID'}</h4>
             <p className="text-xs text-neutral-400">
-              {language === 'km' ? 'ចម្លងលេខវិក្កយបត្របញ្ជាទិញ (ឧ. TU-MLBB-92812)' : 'Copy your unique transaction reference'}
+              {language === 'km' ? 'ចម្លងលេខសម្គាល់បញ្ជាទិញ (ឧ. TU-MLBB-92812)' : 'Copy your unique transaction reference'}
             </p>
           </div>
 
@@ -238,9 +238,9 @@ export default function RefundPolicyPage() {
             <span className="text-xs font-mono font-bold text-[#E5B55E] bg-amber-950/60 px-2 py-0.5 rounded border border-[#E5B55E]/30">
               STAGE 02
             </span>
-            <h4 className="text-sm font-black text-white">{language === 'km' ? 'ថត Screenshot វិក្កយបត្រ' : 'Bank Slip Slip'}</h4>
+            <h4 className="text-sm font-black text-white">{language === 'km' ? 'ថត Screenshot បង្កាន់ដៃផ្ទេរប្រាក់' : 'Bank Slip Screenshot'}</h4>
             <p className="text-xs text-neutral-400">
-              {language === 'km' ? 'Screenshot វិក្កយបត្រកាត់ប្រាក់ពី ABA, Wing ឬ Bakong' : 'Capture screenshot of your debit transaction'}
+              {language === 'km' ? 'Screenshot បង្កាន់ដៃកាត់ប្រាក់ពី ABA, Wing ឬ Bakong' : 'Capture screenshot of your debit transaction'}
             </p>
           </div>
 

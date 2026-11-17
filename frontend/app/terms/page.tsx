@@ -192,7 +192,7 @@ export default function TermsOfServicePage() {
           </h3>
           <p className="text-xs text-neutral-300 leading-relaxed">
             {language === 'km'
-              ? 'ប្រសិនបើមានបញ្ហាបច្ចេកទេស ឬពេជ្រមិនទាន់ចូល ក្រុមការងារ Support របស់យើងរង់ចាំជួយដោះស្រាយ ២៤/៧។ អតិថិជនគ្រាន់តែរក្សាទុកលេខវិក្កយបត្រ Order ID ជាការស្រេច។'
+              ? 'ប្រសិនបើមានបញ្ហាបច្ចេកទេស ឬពេជ្រមិនទាន់ចូល ក្រុមការងារ Support របស់យើងរង់ចាំជួយដោះស្រាយ ២៤/៧។ អតិថិជនគ្រាន់តែរក្សាទុកលេខសម្គាល់ Order ID ជាការស្រេច។'
               : 'In case of rare API latency or maintenance interruption, our dedicated VIP success team is available 24/7 to guarantee delivery or initiate immediate full refund.'}
           </p>
         </div>

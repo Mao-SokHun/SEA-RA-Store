@@ -1394,7 +1394,7 @@ export default function AdminDashboardPage() {
               </h3>
               <p className="text-xs text-neutral-400 mt-1">
                 {language === 'km'
-                  ? 'វាយបញ្ចូល MD5 Hash ឬ Transaction Reference ពីវិក្កយបត្រ ABA/Bakong ដើម្បីផ្ទៀងផ្ទាត់លុយចូលគណនី SEA RA PRESTIGE'
+                  ? 'វាយបញ្ចូល MD5 Hash ឬ Transaction Reference ពីបង្កាន់ដៃផ្ទេរប្រាក់ ABA/Bakong ដើម្បីផ្ទៀងផ្ទាត់លុយចូលគណនី SEA RA PRESTIGE'
                   : 'Enter transaction MD5 hash to query the NBC Bakong gateway directly and verify settlement.'}
               </p>
             </div>

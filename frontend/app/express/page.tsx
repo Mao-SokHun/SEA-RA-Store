@@ -597,7 +597,7 @@ export default function ExpressTopUpPage() {
               <div className="flex items-center gap-1.5">
                 <Receipt className="w-3.5 h-3.5 text-[#E5B55E]" />
                 <h3 className="text-xs font-black text-white uppercase tracking-wider">
-                  {language === 'km' ? 'វិក្កយបត្រទូទាត់រហ័ស' : 'Express Checkout'}
+                  {language === 'km' ? 'ផ្ទាំងទូទាត់រហ័ស' : 'Express Checkout'}
                 </h3>
               </div>
 
@@ -750,7 +750,7 @@ export default function ExpressTopUpPage() {
                     href={`/track-order?order=${orderNumber}`}
                     className="px-3 py-1 bg-emerald-500 text-black font-bold text-xs rounded hover:bg-emerald-400"
                   >
-                    {language === 'km' ? 'ពិនិត្យវិក្កយបត្រ' : 'View Receipt'}
+                    {language === 'km' ? 'តាមដានការបញ្ជាទិញ' : 'Track Order'}
                   </Link>
                   <button
                     type="button"

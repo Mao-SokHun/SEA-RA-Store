@@ -141,7 +141,7 @@ export default function PrivacyPolicyPage() {
           </h3>
           <p className="text-xs text-neutral-300 leading-relaxed">
             {language === 'km'
-              ? 'យើងប្រមូលតែទិន្នន័យចាំបាច់ដើម្បីបញ្ជូនពេជ្រប៉ុណ្ណោះ៖ Player/User ID, Zone ID, ឈ្មោះហៅក្រៅ Nickname សម្រាប់ផ្ទៀងផ្ទាត់ និងលេខសម្គាល់វិក្កយបត្របញ្ជាទិញ។'
+              ? 'យើងប្រមូលតែទិន្នន័យចាំបាច់ដើម្បីបញ្ជូនពេជ្រប៉ុណ្ណោះ៖ Player/User ID, Zone ID, ឈ្មោះហៅក្រៅ Nickname សម្រាប់ផ្ទៀងផ្ទាត់ និងលេខសម្គាល់បញ្ជាទិញ (Order ID)។'
               : 'We strictly gather essential delivery identifiers: public Player/User ID, Zone ID or Server Region, in-game Nickname for verification, and transaction timestamps.'}
           </p>
         </div>

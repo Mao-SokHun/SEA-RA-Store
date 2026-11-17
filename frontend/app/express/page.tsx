@@ -32,6 +32,7 @@ import {
   Flame,
   Gamepad2,
   Tag,
+  X,
 } from 'lucide-react';
 
 function generateExpressOrderNumber(gameId: string): string {
@@ -71,6 +72,7 @@ export default function ExpressTopUpPage() {
   const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
+  const [mobileQRModalOpen, setMobileQRModalOpen] = useState(false);
 
   const handleSelectGame = (gameId: string) => {
     setSelectedGameId(gameId);
@@ -573,9 +575,9 @@ export default function ExpressTopUpPage() {
 
         {/* =============================================================== */}
         {/* RIGHT COLUMN: STEP 4 (SUMMARY, BAKONG KHQR TERMINAL & PAY)      */}
+        {/* Desktop: Sticky Sidebar. Mobile: Hidden from flow, pops up via Modal */}
         {/* =============================================================== */}
-        <div id="express-checkout-card" className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-20 space-y-4 scroll-mt-24">
-          
+        <div id="express-checkout-card" className="hidden lg:block lg:col-span-5 xl:col-span-4 lg:sticky lg:top-20 space-y-4 scroll-mt-24">
           <div
             style={{
               clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))',
@@ -592,186 +594,326 @@ export default function ExpressTopUpPage() {
               }}
               className="p-3.5 sm:p-4 bg-[#080E1C] relative space-y-2.5"
             >
-            {/* Header */}
-            <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
-              <div className="flex items-center gap-1.5">
-                <Receipt className="w-3.5 h-3.5 text-[#E5B55E]" />
-                <h3 className="text-xs font-black text-white uppercase tracking-wider">
-                  {language === 'km' ? 'ផ្ទាំងទូទាត់រហ័ស' : 'Express Checkout'}
-                </h3>
+              {/* Header */}
+              <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+                <div className="flex items-center gap-1.5">
+                  <Receipt className="w-3.5 h-3.5 text-[#E5B55E]" />
+                  <h3 className="text-xs font-black text-white uppercase tracking-wider">
+                    {language === 'km' ? 'ផ្ទាំងទូទាត់រហ័ស' : 'Express Checkout'}
+                  </h3>
+                </div>
+
+                {/* Order ID with Copy */}
+                <button
+                  type="button"
+                  onClick={handleCopyOrderId}
+                  className="text-[9px] font-mono text-neutral-400 hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
+                >
+                  <span>#{orderNumber}</span>
+                  {copiedId ? <Check className="w-2.5 h-2.5 text-emerald-400" /> : <Copy className="w-2.5 h-2.5" />}
+                </button>
               </div>
 
-              {/* Order ID with Copy */}
-              <button
-                type="button"
-                onClick={handleCopyOrderId}
-                className="text-[9px] font-mono text-neutral-400 hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
-              >
-                <span>#{orderNumber}</span>
-                {copiedId ? <Check className="w-2.5 h-2.5 text-emerald-400" /> : <Copy className="w-2.5 h-2.5" />}
-              </button>
-            </div>
-
-            {/* Compact Order Details */}
-            <div className="p-2 rounded-lg bg-[#0D1527] border border-white/[0.08] text-[11px] space-y-1">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 truncate">
-                  <span className="text-neutral-400 text-[10px]">{language === 'km' ? 'ហ្គេម' : 'Game'}:</span>
-                  <span className="font-bold text-white truncate">{activeGame.name}</span>
+              {/* Compact Order Details */}
+              <div className="p-2 rounded-lg bg-[#0D1527] border border-white/[0.08] text-[11px] space-y-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="text-neutral-400 text-[10px]">{language === 'km' ? 'ហ្គេម' : 'Game'}:</span>
+                    <span className="font-bold text-white truncate">{activeGame.name}</span>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <span className="text-neutral-400 text-[10px]">{language === 'km' ? 'កញ្ចប់' : 'Pkg'}:</span>
+                    <span className="font-bold text-[#E5B55E]">
+                      {selectedPkg ? selectedPkg.name : (language === 'km' ? 'មិនទាន់ជ្រើស' : 'None')}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 shrink-0">
-                  <span className="text-neutral-400 text-[10px]">{language === 'km' ? 'កញ្ចប់' : 'Pkg'}:</span>
-                  <span className="font-bold text-[#E5B55E]">
-                    {selectedPkg ? selectedPkg.name : (language === 'km' ? 'មិនទាន់ជ្រើស' : 'None')}
-                  </span>
+
+                <div className="flex items-center justify-between pt-1 border-t border-white/[0.05] text-[10px]">
+                  <div className="text-neutral-400 font-mono truncate">
+                    ID: <span className="text-white font-bold">{accountValues[activeGame.accountFields[0]?.id] || '—'}{accountValues['zoneId'] ? ` (${accountValues['zoneId']})` : ''}</span>
+                  </div>
+                  {verifiedNick ? (
+                    <span className="font-bold text-emerald-400 font-mono truncate max-w-[140px]">
+                      ✓ {verifiedNick}
+                    </span>
+                  ) : (
+                    <span className="text-neutral-500 text-[10px]">{language === 'km' ? 'មិនទាន់បញ្ជាក់ ID' : 'Unverified'}</span>
+                  )}
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-1 border-t border-white/[0.05] text-[10px]">
-                <div className="text-neutral-400 font-mono truncate">
-                  ID: <span className="text-white font-bold">{accountValues[activeGame.accountFields[0]?.id] || '—'}{accountValues['zoneId'] ? ` (${accountValues['zoneId']})` : ''}</span>
+              {/* Promo Code & Currency Selector */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5">
+                  {/* Promo Code Input */}
+                  <div className="flex-1 flex bg-[#10182C] border border-white/[0.12] rounded-md overflow-hidden focus-within:border-[#E5B55E]/60">
+                    <input
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                      placeholder={language === 'km' ? 'កូដ VIP Promo...' : 'Promo Code...'}
+                      className="w-full bg-transparent px-2.5 py-1 text-[10px] text-white font-mono uppercase focus:outline-none placeholder:text-neutral-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={applyPromo}
+                      className="px-2.5 py-1 bg-[#E5B55E] text-black font-black text-[9px] uppercase hover:brightness-110 cursor-pointer shrink-0 transition-all"
+                    >
+                      {language === 'km' ? 'បញ្ចូល' : 'Apply'}
+                    </button>
+                  </div>
+
+                  {/* Currency Switcher */}
+                  <div className="flex items-center bg-[#10182C] p-0.5 rounded-md border border-white/10 text-[9px] font-mono shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setBillCurrency('USD')}
+                      className={`px-2 py-0.5 rounded cursor-pointer transition-all ${billCurrency === 'USD' ? 'bg-[#E5B55E] text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'}`}
+                    >
+                      USD ($)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBillCurrency('KHR')}
+                      className={`px-2 py-0.5 rounded cursor-pointer transition-all ${billCurrency === 'KHR' ? 'bg-[#E5B55E] text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'}`}
+                    >
+                      KHR (៛)
+                    </button>
+                  </div>
                 </div>
-                {verifiedNick ? (
-                  <span className="font-bold text-emerald-400 font-mono truncate max-w-[140px]">
-                    ✓ {verifiedNick}
+
+                {promoMsg && (
+                  <span className={`text-[9px] font-mono block px-0.5 ${discountPercent > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {promoMsg}
                   </span>
-                ) : (
-                  <span className="text-neutral-500 text-[10px]">{language === 'km' ? 'មិនទាន់បញ្ជាក់ ID' : 'Unverified'}</span>
                 )}
               </div>
-            </div>
 
-            {/* Promo Code & Currency Selector */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5">
-                {/* Promo Code Input */}
-                <div className="flex-1 flex bg-[#10182C] border border-white/[0.12] rounded-md overflow-hidden focus-within:border-[#E5B55E]/60">
-                  <input
-                    type="text"
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                    placeholder={language === 'km' ? 'កូដ VIP Promo...' : 'Promo Code...'}
-                    className="w-full bg-transparent px-2.5 py-1 text-[10px] text-white font-mono uppercase focus:outline-none placeholder:text-neutral-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={applyPromo}
-                    className="px-2.5 py-1 bg-[#E5B55E] text-black font-black text-[9px] uppercase hover:brightness-110 cursor-pointer shrink-0 transition-all"
-                  >
-                    {language === 'km' ? 'បញ្ចូល' : 'Apply'}
-                  </button>
-                </div>
-
-                {/* Currency Switcher */}
-                <div className="flex items-center bg-[#10182C] p-0.5 rounded-md border border-white/10 text-[9px] font-mono shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setBillCurrency('USD')}
-                    className={`px-2 py-0.5 rounded cursor-pointer transition-all ${billCurrency === 'USD' ? 'bg-[#E5B55E] text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'}`}
-                  >
-                    USD ($)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBillCurrency('KHR')}
-                    className={`px-2 py-0.5 rounded cursor-pointer transition-all ${billCurrency === 'KHR' ? 'bg-[#E5B55E] text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'}`}
-                  >
-                    KHR (៛)
-                  </button>
-                </div>
-              </div>
-
-              {promoMsg && (
-                <span className={`text-[9px] font-mono block px-0.5 ${discountPercent > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {promoMsg}
+              {/* QR Timer & Fee Status */}
+              <div className="flex items-center justify-between text-[10px] font-mono text-amber-400/90 px-0.5 pt-0.5">
+                <span className="flex items-center gap-1 font-bold">
+                  <Zap className="w-3 h-3 text-[#FFE082]" />
+                  <span>{language === 'km' ? 'ស្កេនទូទាត់ 0% សេវា' : 'Scan to Pay (0% Surcharge)'}</span>
                 </span>
-              )}
-            </div>
-
-            {/* QR Timer & Fee Status */}
-            <div className="flex items-center justify-between text-[10px] font-mono text-amber-400/90 px-0.5 pt-0.5">
-              <span className="flex items-center gap-1 font-bold">
-                <Zap className="w-3 h-3 text-[#FFE082]" />
-                <span>{language === 'km' ? 'ស្កេនទូទាត់ 0% សេវា' : 'Scan to Pay (0% Surcharge)'}</span>
-              </span>
-              <div className="flex items-center gap-1 text-neutral-300">
-                <Clock className="w-3 h-3 text-cyan-400" />
-                <span className="font-bold text-cyan-400">{formatTimer(timeLeft)}</span>
-              </div>
-            </div>
-
-            {/* Official KHQR Card */}
-            <KHQRCard
-              amount={billCurrency === 'USD' ? finalPriceUSD : finalPriceKHR}
-              currency={billCurrency}
-              merchantName="SEA RA PRESTIGE"
-              storeLabel="OFFICIAL STORE"
-              orderNumber={orderNumber}
-              size={145}
-            />
-
-            {/* Instant Verification CTA Button */}
-            <button
-              type="button"
-              onClick={handleConfirmPayment}
-              disabled={isSimulating || !selectedPkg}
-              style={{
-                clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
-              }}
-              className="w-full py-2.5 bg-gradient-to-r from-[#E5B55E] via-[#F3C978] to-[#D4A043] text-black font-black text-xs uppercase tracking-wider hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-[0_0_15px_rgba(229,181,94,0.4)] active:scale-[0.99]"
-            >
-              {isSimulating ? (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  <span>{language === 'km' ? 'កំពុងផ្ទៀងផ្ទាត់...' : 'Verifying Transaction...'}</span>
-                </>
-              ) : (
-                <>
-                  <Zap className="w-3.5 h-3.5 fill-black" />
-                  <span>{language === 'km' ? 'ខ្ញុំបានស្កេនបង់រួចរាល់' : 'I Have Paid / Complete Reload'}</span>
-                </>
-              )}
-            </button>
-
-            {/* Success Notification Modal */}
-            {isPaymentSuccess && (
-              <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/50 text-emerald-300 space-y-2 text-center">
-                <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-                <h4 className="text-sm font-black text-white">
-                  {language === 'km' ? 'ការបញ្ចូលលុយបានជោគជ័យ ១០០%!' : 'Reload Dispatched Successfully!'}
-                </h4>
-                <p className="text-xs text-neutral-300">
-                  {language === 'km'
-                    ? `ពេជ្រ/កាក់ចំនួន ${selectedPkg?.name} ត្រូវបានបញ្ជូនចូលគណនី ${verifiedNick || 'ហ្គេម'} រួចរាល់។`
-                    : `Payload ${selectedPkg?.name} delivered directly to player account.`}
-                </p>
-                <div className="pt-2 flex justify-center gap-2">
-                  <Link
-                    href={`/track-order?order=${orderNumber}`}
-                    className="px-3 py-1 bg-emerald-500 text-black font-bold text-xs rounded hover:bg-emerald-400"
-                  >
-                    {language === 'km' ? 'តាមដានការបញ្ជាទិញ' : 'Track Order'}
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsPaymentSuccess(false);
-                      setSelectedPkg(null);
-                    }}
-                    className="px-3 py-1 bg-white/10 text-white font-bold text-xs rounded hover:bg-white/20"
-                  >
-                    {language === 'km' ? 'បញ្ចូលបន្ត' : 'Top-Up Another'}
-                  </button>
+                <div className="flex items-center gap-1 text-neutral-300">
+                  <Clock className="w-3 h-3 text-cyan-400" />
+                  <span className="font-bold text-cyan-400">{formatTimer(timeLeft)}</span>
                 </div>
               </div>
-            )}
+
+              {/* Official KHQR Card */}
+              <KHQRCard
+                amount={billCurrency === 'USD' ? finalPriceUSD : finalPriceKHR}
+                currency={billCurrency}
+                merchantName="SEA RA PRESTIGE"
+                storeLabel="OFFICIAL STORE"
+                orderNumber={orderNumber}
+                size={145}
+              />
+
+              {/* Instant Verification CTA Button */}
+              <button
+                type="button"
+                onClick={handleConfirmPayment}
+                disabled={isSimulating || !selectedPkg}
+                style={{
+                  clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
+                }}
+                className="w-full py-2.5 bg-gradient-to-r from-[#E5B55E] via-[#F3C978] to-[#D4A043] text-black font-black text-xs uppercase tracking-wider hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-[0_0_15px_rgba(229,181,94,0.4)] active:scale-[0.99]"
+              >
+                {isSimulating ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>{language === 'km' ? 'កំពុងផ្ទៀងផ្ទាត់...' : 'Verifying Transaction...'}</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-3.5 h-3.5 fill-black" />
+                    <span>{language === 'km' ? 'ខ្ញុំបានស្កេនបង់រួចរាល់' : 'I Have Paid / Complete Reload'}</span>
+                  </>
+                )}
+              </button>
+
+              {/* Success Notification (No Extra Buttons, Clean Instant Confirmation) */}
+              {isPaymentSuccess && (
+                <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/50 text-emerald-300 space-y-2 text-center animate-in zoom-in-95 duration-200">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                  <h4 className="text-sm font-black text-white">
+                    {language === 'km' ? 'ការបញ្ចូលលុយបានជោគជ័យ ១០០%!' : 'Reload Dispatched Successfully!'}
+                  </h4>
+                  <p className="text-xs text-neutral-300">
+                    {language === 'km'
+                      ? `ពេជ្រ/កាក់ចំនួន ${selectedPkg?.name} ត្រូវបានបញ្ជូនចូលគណនី ${verifiedNick || 'ហ្គេម'} រួចរាល់។`
+                      : `Payload ${selectedPkg?.name} delivered directly to player account.`}
+                  </p>
+                </div>
+              )}
 
             </div>
           </div>
-
         </div>
 
       </div>
+
+      {/* Mobile KHQR Checkout Modal (Pops up when clicking 'ស្កេនបង់ប្រាក់') */}
+      {mobileQRModalOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md max-h-[92vh] overflow-y-auto bg-[#080E1C] rounded-t-3xl sm:rounded-3xl border border-white/[0.15] p-3.5 shadow-2xl animate-in slide-in-from-bottom duration-300">
+            {/* Header Close Bar */}
+            <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10">
+              <span className="text-xs font-black text-[#E5B55E] uppercase tracking-wider font-mono">
+                {language === 'km' ? '⚡ ផ្ទាំងទូទាត់រហ័ស (KHQR)' : '⚡ Express Checkout (KHQR)'}
+              </span>
+              <button
+                type="button"
+                onClick={() => setMobileQRModalOpen(false)}
+                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white cursor-pointer transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* In-Modal Checkout Card */}
+            <div className="space-y-2.5">
+              {/* Compact Order Details */}
+              <div className="p-2 rounded-lg bg-[#0D1527] border border-white/[0.08] text-[11px] space-y-1">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="text-neutral-400 text-[10px]">{language === 'km' ? 'ហ្គេម' : 'Game'}:</span>
+                    <span className="font-bold text-white truncate">{activeGame.name}</span>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <span className="text-neutral-400 text-[10px]">{language === 'km' ? 'កញ្ចប់' : 'Pkg'}:</span>
+                    <span className="font-bold text-[#E5B55E]">
+                      {selectedPkg ? selectedPkg.name : (language === 'km' ? 'មិនទាន់ជ្រើស' : 'None')}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1 border-t border-white/[0.05] text-[10px]">
+                  <div className="text-neutral-400 font-mono truncate">
+                    ID: <span className="text-white font-bold">{accountValues[activeGame.accountFields[0]?.id] || '—'}{accountValues['zoneId'] ? ` (${accountValues['zoneId']})` : ''}</span>
+                  </div>
+                  {verifiedNick ? (
+                    <span className="font-bold text-emerald-400 font-mono truncate max-w-[140px]">
+                      ✓ {verifiedNick}
+                    </span>
+                  ) : (
+                    <span className="text-neutral-500 text-[10px]">{language === 'km' ? 'មិនទាន់បញ្ជាក់ ID' : 'Unverified'}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Promo Code & Currency Selector */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5">
+                  <div className="flex-1 flex bg-[#10182C] border border-white/[0.12] rounded-md overflow-hidden focus-within:border-[#E5B55E]/60">
+                    <input
+                      type="text"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                      placeholder={language === 'km' ? 'កូដ VIP Promo...' : 'Promo Code...'}
+                      className="w-full bg-transparent px-2.5 py-1 text-[10px] text-white font-mono uppercase focus:outline-none placeholder:text-neutral-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={applyPromo}
+                      className="px-2.5 py-1 bg-[#E5B55E] text-black font-black text-[9px] uppercase hover:brightness-110 cursor-pointer shrink-0 transition-all"
+                    >
+                      {language === 'km' ? 'បញ្ចូល' : 'Apply'}
+                    </button>
+                  </div>
+
+                  <div className="flex items-center bg-[#10182C] p-0.5 rounded-md border border-white/10 text-[9px] font-mono shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setBillCurrency('USD')}
+                      className={`px-2 py-0.5 rounded cursor-pointer transition-all ${billCurrency === 'USD' ? 'bg-[#E5B55E] text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'}`}
+                    >
+                      USD ($)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBillCurrency('KHR')}
+                      className={`px-2 py-0.5 rounded cursor-pointer transition-all ${billCurrency === 'KHR' ? 'bg-[#E5B55E] text-black font-bold shadow-sm' : 'text-neutral-400 hover:text-white'}`}
+                    >
+                      KHR (៛)
+                    </button>
+                  </div>
+                </div>
+
+                {promoMsg && (
+                  <span className={`text-[9px] font-mono block px-0.5 ${discountPercent > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {promoMsg}
+                  </span>
+                )}
+              </div>
+
+              {/* QR Timer & Fee Status */}
+              <div className="flex items-center justify-between text-[10px] font-mono text-amber-400/90 px-0.5 pt-0.5">
+                <span className="flex items-center gap-1 font-bold">
+                  <Zap className="w-3 h-3 text-[#FFE082]" />
+                  <span>{language === 'km' ? 'ស្កេនទូទាត់ 0% សេវា' : 'Scan to Pay (0% Surcharge)'}</span>
+                </span>
+                <div className="flex items-center gap-1 text-neutral-300">
+                  <Clock className="w-3 h-3 text-cyan-400" />
+                  <span className="font-bold text-cyan-400">{formatTimer(timeLeft)}</span>
+                </div>
+              </div>
+
+              {/* Official KHQR Card */}
+              <KHQRCard
+                amount={billCurrency === 'USD' ? finalPriceUSD : finalPriceKHR}
+                currency={billCurrency}
+                merchantName="SEA RA PRESTIGE"
+                storeLabel="OFFICIAL STORE"
+                orderNumber={orderNumber}
+                size={145}
+              />
+
+              {/* Instant Verification CTA Button */}
+              <button
+                type="button"
+                onClick={handleConfirmPayment}
+                disabled={isSimulating || !selectedPkg}
+                style={{
+                  clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
+                }}
+                className="w-full py-2.5 bg-gradient-to-r from-[#E5B55E] via-[#F3C978] to-[#D4A043] text-black font-black text-xs uppercase tracking-wider hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-[0_0_15px_rgba(229,181,94,0.4)] active:scale-[0.99]"
+              >
+                {isSimulating ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>{language === 'km' ? 'កំពុងផ្ទៀងផ្ទាត់...' : 'Verifying Transaction...'}</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-3.5 h-3.5 fill-black" />
+                    <span>{language === 'km' ? 'ខ្ញុំបានស្កេនបង់រួចរាល់' : 'I Have Paid / Complete Reload'}</span>
+                  </>
+                )}
+              </button>
+
+              {/* Success Notification Modal (No Extra Buttons, Clean Instant Confirmation) */}
+              {isPaymentSuccess && (
+                <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/50 text-emerald-300 space-y-2 text-center animate-in zoom-in-95 duration-200">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                  <h4 className="text-sm font-black text-white">
+                    {language === 'km' ? 'ការបញ្ចូលលុយបានជោគជ័យ ១០០%!' : 'Reload Dispatched Successfully!'}
+                  </h4>
+                  <p className="text-xs text-neutral-300">
+                    {language === 'km'
+                      ? `ពេជ្រ/កាក់ចំនួន ${selectedPkg?.name} ត្រូវបានបញ្ជូនចូលគណនី ${verifiedNick || 'ហ្គេម'} រួចរាល់។`
+                      : `Payload ${selectedPkg?.name} delivered directly to player account.`}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Floating Sticky Action Bar on Express Page */}
       {selectedPkg && !isPaymentSuccess && (
@@ -791,12 +933,7 @@ export default function ExpressTopUpPage() {
           </div>
           <button
             type="button"
-            onClick={() => {
-              const el = document.getElementById('express-checkout-card');
-              if (el) {
-                el.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
+            onClick={() => setMobileQRModalOpen(true)}
             style={{
               clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
             }}

@@ -40,6 +40,7 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
   // Share Modal State
   const [showShareModal, setShowShareModal] = useState<boolean>(false);
   const [copiedShareLink, setCopiedShareLink] = useState<boolean>(false);
+  const [mobileQRModalOpen, setMobileQRModalOpen] = useState<boolean>(false);
 
   // Initial state is null: No package auto-selected! Customer chooses their package.
   const [selectedPkg, setSelectedPkg] = useState<PackageItem | null>(null);
@@ -657,10 +658,9 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
         </div>
 
         {/* =============================================================== */}
-        {/* RIGHT COLUMN: OFFICIAL LIVE BAKONG KHQR BILL STANDEE           */}
-        {/* Matches User Request: "បើដាក់ QR មកអោយហើយល្អ"                   */}
+        {/* RIGHT COLUMN: OFFICIAL LIVE BAKONG KHQR BILL STANDEE (DESKTOP)  */}
         {/* =============================================================== */}
-        <div id="khqr-checkout-section" className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-28 space-y-4 scroll-mt-24">
+        <div id="khqr-checkout-section" className="hidden lg:block lg:col-span-5 xl:col-span-4 lg:sticky lg:top-28 space-y-4 scroll-mt-24">
           
           <div className="bg-[#090E1E] rounded-3xl border border-white/[0.12] p-5 sm:p-6 shadow-2xl relative overflow-hidden">
             
@@ -698,22 +698,6 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
                     <span>Status:</span>
                     <span className="text-emerald-400 font-bold">DELIVERED &lt; 3S</span>
                   </div>
-                </div>
-
-                <div className="space-y-2 pt-2">
-                  <Link
-                    href="/track-order"
-                    className="block w-full py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs uppercase tracking-wider transition-all shadow-md text-center"
-                  >
-                    {language === 'km' ? 'តាមដានការបញ្ជាទិញ (Track Order)' : 'Track Order / Status'}
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={handleResetForNewOrder}
-                    className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-neutral-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
-                  >
-                    {language === 'km' ? '+ បញ្ចូលលុយកញ្ចប់ថ្មីទៀត' : '+ Top Up Another Package'}
-                  </button>
                 </div>
               </div>
             ) : (
@@ -892,6 +876,135 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
 
       </div>
 
+      {/* =============================================================== */}
+      {/* MOBILE POPUP MODAL FOR BAKONG KHQR CHECKOUT                      */}
+      {/* User Request: "កន្លែងហ្នឹងចាំគេចុច ស្គេនបង់ប្រាក់ចាំ លោត modal QR   */}
+      {/* បង់ប្រាក់មក បាច់ដាក់ QR ដូចក្នុងរូបភាពទី២ទេ"                        */}
+      {/* =============================================================== */}
+      {mobileQRModalOpen && selectedPkg && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 animate-in fade-in duration-200">
+          <div className="relative w-full max-w-sm bg-[#090E1E] rounded-3xl border border-cyan-400/40 p-4 sm:p-5 shadow-2xl max-h-[92vh] overflow-y-auto space-y-3.5 text-left">
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setMobileQRModalOpen(false)}
+              className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-white/[0.08] hover:bg-white/[0.16] border border-white/10 flex items-center justify-center text-white cursor-pointer z-10 transition-all"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pr-8 border-b border-white/[0.08] pb-2.5">
+              <div className="flex items-center gap-2">
+                <QrCode className="w-4 h-4 text-cyan-400" />
+                <span className="text-xs font-mono font-bold tracking-wider text-white uppercase">
+                  {language === 'km' ? 'ផ្ទាំងទូទាត់រហ័ស' : 'QUICK CHECKOUT'}
+                </span>
+              </div>
+              <span className="text-[10px] font-mono text-neutral-400">{orderNumber}</span>
+            </div>
+
+            {/* Selected Game & Package Summary */}
+            <div className="p-2.5 bg-black/40 rounded-xl border border-white/[0.08] space-y-1 text-xs">
+              <div className="flex justify-between items-center text-neutral-300">
+                <span className="text-neutral-400">{language === 'km' ? 'ហ្គេម:' : 'Game:'}</span>
+                <span className="font-bold text-white truncate max-w-[170px]">{game.name}</span>
+              </div>
+              <div className="flex justify-between items-center text-neutral-300">
+                <span className="text-neutral-400">{language === 'km' ? 'កញ្ចប់:' : 'Package:'}</span>
+                <span className="font-bold text-cyan-300 font-mono">{selectedPkg.name}</span>
+              </div>
+              <div className="flex justify-between items-center text-neutral-300">
+                <span className="text-neutral-400">{language === 'km' ? 'គណនី/ID:' : 'Account ID:'}</span>
+                {verifiedNick ? (
+                  <span className="font-bold text-emerald-400 font-mono truncate max-w-[150px]">
+                    ✓ {verifiedNick}
+                  </span>
+                ) : (
+                  <span className="text-neutral-400 font-mono text-[11px]">
+                    {accountValues[game.accountFields[0]?.id] || (language === 'km' ? 'មិនទាន់បញ្ជាក់ ID' : 'Unverified')}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Currency Selector & Countdown Timer */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex p-0.5 rounded-lg bg-black/60 border border-white/10 text-[10px] font-mono font-bold">
+                <button
+                  type="button"
+                  onClick={() => setBillCurrency('USD')}
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                    billCurrency === 'USD'
+                      ? 'bg-cyan-500 text-black font-black shadow-sm'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  $ USD
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBillCurrency('KHR')}
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                    billCurrency === 'KHR'
+                      ? 'bg-[#CE181E] text-white font-black shadow-sm'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  ៛ KHR
+                </button>
+              </div>
+
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-mono font-bold">
+                <Clock className="w-3 h-3 animate-spin" />
+                <span>{formatTimer(timeLeft)}</span>
+              </div>
+            </div>
+
+            {/* Authentic NBC Bakong KHQR Standee Ticket */}
+            <KHQRCard
+              amount={billCurrency === 'USD' ? +discountedUSD : discountedKHR}
+              currency={billCurrency}
+              merchantName="SEA RA PRESTIGE"
+              storeLabel="OFFICIAL STORE"
+              orderNumber={orderNumber}
+              size={140}
+            />
+
+            {/* Quick Simulate / Verification Button */}
+            <button
+              type="button"
+              onClick={handleSimulatePayment}
+              disabled={isSimulating}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500/20 via-emerald-500/30 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-400/40 text-emerald-300 font-extrabold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-95"
+            >
+              <Zap className="w-4 h-4 text-emerald-400 fill-current animate-pulse" />
+              <span>
+                {isSimulating
+                  ? language === 'km' ? 'កំពុងផ្ទៀងផ្ទាត់...' : 'Verifying...'
+                  : language === 'km' ? '⚡ ខ្ញុំបានស្កេនបង់រួចរាល់' : '⚡ I Have Paid'}
+              </span>
+            </button>
+
+            {/* Success Celebration (No Extra Buttons per user request) */}
+            {isPaymentSuccess && (
+              <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/50 text-emerald-300 space-y-1.5 text-center animate-in zoom-in-95 duration-200">
+                <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                <h4 className="text-sm font-black text-white">
+                  {language === 'km' ? 'ការបញ្ចូលលុយបានជោគជ័យ ១០០%!' : 'Reload Dispatched Successfully!'}
+                </h4>
+                <p className="text-xs text-neutral-300">
+                  {language === 'km'
+                    ? `ពេជ្រ/កាក់ចំនួន ${selectedPkg?.name} ត្រូវបានបញ្ជូនចូលគណនី ${verifiedNick || 'ហ្គេម'} រួចរាល់។`
+                    : `Payload ${selectedPkg?.name} delivered directly to player account.`}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Mobile Floating Sticky Action Bar (Fast 1-Tap Checkout on Phones) */}
       {selectedPkg && !isPaymentSuccess && (
         <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 p-3 bg-[#070D1B]/95 backdrop-blur-xl border-t border-cyan-400/30 shadow-[0_-10px_25px_rgba(0,0,0,0.8)] flex items-center justify-between gap-3 animate-in slide-in-from-bottom-2 duration-200">
@@ -910,12 +1023,7 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
           </div>
           <button
             type="button"
-            onClick={() => {
-              const qrEl = document.getElementById('khqr-checkout-section');
-              if (qrEl) {
-                qrEl.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
+            onClick={() => setMobileQRModalOpen(true)}
             style={{
               clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
             }}

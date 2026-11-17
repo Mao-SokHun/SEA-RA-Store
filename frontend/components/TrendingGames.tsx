@@ -13,7 +13,7 @@ export default function TrendingGames() {
   const trendingList = GAMES.slice(0, 5);
 
   return (
-    <section className="relative py-8 sm:py-10 bg-gradient-to-b from-[#0C061E] via-[#120829] to-[#080415] overflow-hidden select-none border-t border-b border-pink-500/20">
+    <section className="relative py-5 sm:py-8 bg-gradient-to-b from-[#0C061E] via-[#120829] to-[#080415] overflow-hidden select-none border-t border-b border-pink-500/20">
       
       {/* Ambient Neon Magenta Glow Bloom */}
       <div className="absolute top-0 left-1/4 w-[400px] h-[200px] bg-pink-500/10 rounded-full blur-[100px] pointer-events-none" />

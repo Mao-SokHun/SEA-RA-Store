@@ -85,8 +85,9 @@ export async function POST(req: Request) {
 
     const results = await Promise.all(promises);
     return NextResponse.json({ success: true, delivered: results.some(Boolean) });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : 'Internal server error';
     console.error('❌ [Next.js Telegram Notify] Internal error:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: false, error: errorMsg }, { status: 500 });
   }
 }

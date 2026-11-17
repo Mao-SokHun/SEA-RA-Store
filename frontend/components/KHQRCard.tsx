@@ -36,7 +36,7 @@ export default function KHQRCard({
     generateOfficialKHQRString({
       merchantName,
       merchantCity: 'Phnom Penh',
-      bakongAccount: 'sokhun_mao@abaa',
+      bakongAccount: currency === 'USD' ? '005282269@abaa' : '005282293@abaa',
       amount,
       currency,
       orderNumber,

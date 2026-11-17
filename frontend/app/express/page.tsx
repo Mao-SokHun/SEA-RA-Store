@@ -34,6 +34,10 @@ import {
   Tag,
 } from 'lucide-react';
 
+function generateExpressOrderNumber(gameId: string): string {
+  return `EXP-${gameId.toUpperCase()}-${Math.floor(10000 + Math.random() * 90000)}`;
+}
+
 export default function ExpressTopUpPage() {
   const { language, t, formatPrice, toKHR, saveOrder, completeOrder } = useApp();
 
@@ -61,29 +65,28 @@ export default function ExpressTopUpPage() {
   const [showGuide, setShowGuide] = useState(false);
 
   // Order reference & countdown
-  const [orderNumber, setOrderNumber] = useState(
-    () => `EXP-${activeGame.id.toUpperCase()}-${Math.floor(10000 + Math.random() * 90000)}`
-  );
+  const [orderNumber, setOrderNumber] = useState(() => generateExpressOrderNumber('mlbb'));
   const [timeLeft, setTimeLeft] = useState(180);
   const [billCurrency, setBillCurrency] = useState<'USD' | 'KHR'>('USD');
   const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
 
-  // Reset inputs when game changes
-  useEffect(() => {
+  const handleSelectGame = (gameId: string) => {
+    setSelectedGameId(gameId);
+    const targetGame = GAMES.find((g) => g.id === gameId) || GAMES[0];
     const initial: Record<string, string> = {};
-    activeGame.accountFields.forEach((f) => {
+    targetGame.accountFields.forEach((f) => {
       initial[f.id] = f.type === 'select' && f.options ? f.options[0].value : '';
     });
     setAccountValues(initial);
     setSelectedPkg(null);
     setVerifiedNick(null);
     setVerifyError(null);
-    setOrderNumber(`EXP-${activeGame.id.toUpperCase()}-${Math.floor(10000 + Math.random() * 90000)}`);
+    setOrderNumber(generateExpressOrderNumber(targetGame.id));
     setTimeLeft(180);
     setIsPaymentSuccess(false);
-  }, [activeGame]);
+  };
 
   // Countdown timer for KHQR
   useEffect(() => {
@@ -307,7 +310,7 @@ export default function ExpressTopUpPage() {
               <button
                 key={game.id}
                 type="button"
-                onClick={() => setSelectedGameId(game.id)}
+                onClick={() => handleSelectGame(game.id)}
                 style={{
                   clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
                   filter: isSelected ? 'drop-shadow(0 0 10px rgba(229,181,94,0.5))' : undefined,

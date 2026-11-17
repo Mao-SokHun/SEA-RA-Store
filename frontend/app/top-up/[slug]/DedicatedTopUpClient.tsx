@@ -262,11 +262,6 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
     setIsPaymentSuccess(false);
   };
 
-  // Official EMVCo standard KHQR payload string
-  const qrString = selectedPkg
-    ? `00020101021229370016bakong.nbc.gov.kh0109SEARAPRES520459995303${billCurrency === 'USD' ? '840' : '116'}540${(billCurrency === 'USD' ? discountedUSD.toFixed(2) : discountedKHR.toString()).length < 10 ? '0' + (billCurrency === 'USD' ? discountedUSD.toFixed(2) : discountedKHR.toString()).length : (billCurrency === 'USD' ? discountedUSD.toFixed(2) : discountedKHR.toString()).length}${billCurrency === 'USD' ? discountedUSD.toFixed(2) : discountedKHR}5802KH5915SEA RA PRESTIGE6010Phnom Penh62190715${orderNumber}6304ABCD`
-    : 'https://bakong.nbc.gov.kh';
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 pb-20 select-none">
       
@@ -775,7 +770,6 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
                     currency={billCurrency}
                     merchantName="SEA RA PRESTIGE"
                     storeLabel="OFFICIAL STORE"
-                    qrString={qrString}
                     orderNumber={orderNumber}
                   />
                 ) : (

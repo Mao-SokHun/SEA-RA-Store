@@ -3,6 +3,8 @@ import './globals.css';
 import { AppProvider } from '@/context/AppContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import TopUpModal from '@/components/TopUpModal';
+import TrackOrderModal from '@/components/TrackOrderModal';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://sea-ra-prestige.vercel.app'),
@@ -76,6 +78,10 @@ export default function RootLayout({
 
           {/* Main Application Container */}
           <main className="flex-1 w-full max-w-full overflow-x-hidden">{children}</main>
+
+          {/* Global Quick Action Modals */}
+          <TopUpModal />
+          <TrackOrderModal />
 
           {/* Global Luxury Footer */}
           <Footer />

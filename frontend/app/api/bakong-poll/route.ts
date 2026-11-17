@@ -46,9 +46,10 @@ export async function POST(req: Request) {
       orderNumber,
       message: 'Awaiting customer payment',
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json(
-      { isPaid: false, error: err.message },
+      { isPaid: false, error: errorMsg },
       { status: 500 }
     );
   }

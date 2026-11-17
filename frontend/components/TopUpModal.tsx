@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { PAYMENT_CHANNELS } from '@/data/games';
-import { PackageItem, TopUpOrder } from '@/types';
+import { GameItem, PackageItem, TopUpOrder } from '@/types';
+import { QRCodeSVG } from 'qrcode.react';
+import { generateOfficialKHQRString } from '@/lib/khqr';
 import {
   verifyPlayerApi,
   createTopUpOrderApi,
@@ -25,13 +27,11 @@ import {
   Clock,
 } from 'lucide-react';
 
-export default function TopUpModal() {
+function TopUpModalContent({ selectedGame }: { selectedGame: GameItem }) {
   const {
     language,
     t,
-    isTopUpOpen,
     closeTopUp,
-    selectedGame,
     selectedPackage,
     setSelectedPackage,
     formatPrice,
@@ -40,8 +40,19 @@ export default function TopUpModal() {
     completeOrder,
   } = useApp();
 
-  // Form State
-  const [accountValues, setAccountValues] = useState<Record<string, string>>({});
+  // Lazy pure state initialization (no cascading effects)
+  const [accountValues, setAccountValues] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
+    selectedGame.accountFields.forEach((f) => {
+      initial[f.id] = f.type === 'select' && f.options ? f.options[0].value : '';
+    });
+    return initial;
+  });
+
+  const [activeOrderNumber] = useState(
+    () => `TU-${selectedGame.id.slice(0, 3).toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`
+  );
+
   const [isVerifying, setIsVerifying] = useState(false);
   const [verifiedNick, setVerifiedNick] = useState<string | null>(null);
   const [verifyError, setVerifyError] = useState<string | null>(null);
@@ -53,32 +64,13 @@ export default function TopUpModal() {
   const [copied, setCopied] = useState(false);
   const [countdown, setCountdown] = useState(180);
 
-  // Initialize when game or modal opens
-  useEffect(() => {
-    if (selectedGame && isTopUpOpen) {
-      const initial: Record<string, string> = {};
-      selectedGame.accountFields.forEach((f) => {
-        initial[f.id] = f.type === 'select' && f.options ? f.options[0].value : '';
-      });
-      setAccountValues(initial);
-      setVerifiedNick(null);
-      setVerifyError(null);
-      setOrderCompleted(false);
-      setShowGuide(false);
-      setCountdown(180);
-    }
-  }, [selectedGame, isTopUpOpen]);
-
   // Real-time Countdown timer
   useEffect(() => {
-    if (!isTopUpOpen) return;
     const timer = setInterval(() => {
       setCountdown((prev) => (prev <= 1 ? 180 : prev - 1));
     }, 1000);
     return () => clearInterval(timer);
-  }, [isTopUpOpen]);
-
-  if (!isTopUpOpen || !selectedGame) return null;
+  }, []);
 
   const currentPkg = selectedPackage || selectedGame.packages[0];
   const priceUSD = currentPkg.priceUSD;
@@ -117,10 +109,16 @@ export default function TopUpModal() {
     }
   };
 
-  const activeOrderNumber = `TU-${selectedGame.id.slice(0, 3).toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`;
-  const realTimeQRUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
-    `KHQR-${activeOrderNumber}-USD-${priceUSD.toFixed(2)}-BAKONG`
-  )}`;
+  // 100% compliant official NBC EMVCo KHQR payload with CRC16
+  const khqrString = generateOfficialKHQRString({
+    merchantName: 'SEA RA PRESTIGE',
+    merchantCity: 'Phnom Penh',
+    bakongAccount: '005282269@abaa',
+    amount: priceUSD,
+    currency: 'USD',
+    orderNumber: activeOrderNumber,
+    storeLabel: 'OFFICIAL STORE',
+  });
 
   const handleSimulatePayment = async () => {
     const idVal = accountValues['userId'] || accountValues['playerId'] || Object.values(accountValues)[0] || '12345678';
@@ -136,38 +134,37 @@ export default function TopUpModal() {
       totalUSD: priceUSD,
       totalKHR: priceKHR,
       status: 'completed',
-      qrCodeUrl: realTimeQRUrl,
+      qrCodeUrl: '/bakong-logo.svg',
       createdAt: new Date().toISOString(),
     };
 
     try {
       await simulatePaymentApi(activeOrderNumber);
-
-      // Dispatch Telegram Alert to Admin
-      void dispatchTelegramNotificationApi({
-        orderNumber: activeOrderNumber,
-        gameTitle: selectedGame.name,
-        packageName: currentPkg.name,
-        totalUSD: priceUSD,
-        totalKHR: priceKHR,
-        playerId: idVal,
-        zoneId: accountValues['zoneId'],
-        playerNickname: verifiedNick || idVal,
-        paymentMethod: 'Bakong KHQR',
-        status: 'completed',
-        deliveryProof: `TXN-${activeOrderNumber}-CONFIRMED`,
-      });
-
-      saveOrder(order);
-      completeOrder(activeOrderNumber);
-      setOrderCompleted(true);
     } catch {
-      saveOrder(order);
-      completeOrder(activeOrderNumber);
-      setOrderCompleted(true);
-    } finally {
-      setIsSimulating(false);
+      // Continue simulation for seamless offline / test UX
     }
+
+    // Save locally
+    saveOrder(order);
+    completeOrder(activeOrderNumber);
+
+    // Send Telegram alert
+    void dispatchTelegramNotificationApi({
+      orderNumber: activeOrderNumber,
+      gameTitle: selectedGame.name,
+      packageName: currentPkg.name,
+      totalUSD: priceUSD,
+      totalKHR: priceKHR,
+      playerId: idVal,
+      zoneId: accountValues['zoneId'],
+      playerNickname: verifiedNick || idVal,
+      paymentMethod: 'Bakong KHQR (Modal Test)',
+      status: 'completed',
+      deliveryProof: `TXN-${activeOrderNumber}-TEST-CONFIRMED`,
+    });
+
+    setIsSimulating(false);
+    setOrderCompleted(true);
   };
 
   const handleCopyOrder = () => {
@@ -176,167 +173,188 @@ export default function TopUpModal() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const formatCountdown = (secs: number) => {
-    const m = Math.floor(secs / 60).toString().padStart(2, '0');
-    const s = (secs % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-  };
+  const minutes = Math.floor(countdown / 60);
+  const seconds = countdown % 60;
+  const timeFormatted = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 select-none animate-in fade-in duration-200">
-      
-      {/* 1-SCREEN ALL-IN-ONE MODAL */}
-      <div className="relative w-full max-w-5xl bg-[#090E1E] border border-white/[0.12] rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col my-auto max-h-[94vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in select-none">
+      <div className="bg-[#0B101E] rounded-3xl border border-white/[0.12] w-full max-w-4xl max-h-[92vh] flex flex-col relative shadow-2xl overflow-hidden">
         
-        {/* Subtle Gold / Cyan Rim Accent */}
-        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#E5B55E] via-cyan-400 to-transparent pointer-events-none" />
+        {/* Top gold accent line */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#E5B55E] to-transparent z-20" />
 
-        {/* ================================================================= */}
-        {/* 1. COMPACT HEADER                                                 */}
-        {/* ================================================================= */}
-        <div className="px-5 py-3.5 border-b border-white/[0.08] bg-[#0C1327]/80 flex items-center justify-between gap-4 shrink-0">
-          <div className="flex items-center gap-3 min-w-0">
+        {/* Modal Header */}
+        <div className="p-4 sm:p-5 border-b border-white/[0.08] flex items-center justify-between bg-[#070D1A]/90 shrink-0">
+          <div className="flex items-center gap-3">
             <img
               src={selectedGame.coverImage}
               alt={selectedGame.name}
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-cover border border-[#E5B55E]/50 shrink-0 shadow-md"
+              className="w-10 h-10 rounded-xl object-cover border border-white/[0.1] shadow-md"
             />
-            <div className="min-w-0">
+            <div>
               <div className="flex items-center gap-2">
-                <span className="px-1.5 py-0.2 rounded text-[8.5px] font-black uppercase bg-[#E5B55E] text-black">
-                  OFFICIAL API
-                </span>
-                <span className="text-[10px] text-neutral-400 font-mono">
-                  {selectedGame.publisher}
+                <h3 className="text-base font-extrabold text-white">
+                  {selectedGame.name}
+                </h3>
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#E5B55E]/15 text-[#E5B55E] border border-[#E5B55E]/30 uppercase font-mono">
+                  {selectedGame.category}
                 </span>
               </div>
-              <h2 className="text-sm sm:text-base font-black text-white truncate">
-                {selectedGame.name}
-              </h2>
+              <p className="text-[11px] text-neutral-400">
+                {selectedGame.publisher} • {language === 'km' ? 'បញ្ចូលស្វ័យប្រវត្តិ < 3 វិនាទី' : 'Instant Auto-Delivery < 3s'}
+              </p>
             </div>
           </div>
 
           <button
             type="button"
             onClick={closeTopUp}
-            className="w-8 h-8 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-neutral-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+            className="text-neutral-400 hover:text-white p-2 rounded-xl hover:bg-white/[0.05] transition-colors cursor-pointer"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* ================================================================= */}
-        {/* 2. BODY CONTENT: 1-SCREEN (LEFT: ID + PACKAGES | RIGHT: LIVE KHQR) */}
-        {/* ================================================================= */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 scrollbar-thin">
-
+        {/* Modal Scrollable Body */}
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-6">
+          
           {orderCompleted ? (
-            /* Completed Success Screen */
-            <div className="max-w-md mx-auto text-center space-y-4 py-8 animate-in zoom-in-95">
-              <div className="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center mx-auto text-emerald-400 shadow-[0_0_35px_rgba(16,185,129,0.35)]">
-                <CheckCircle2 className="w-10 h-10" />
+            /* ============================================================= */
+            /* SUCCESS CONFIRMATION VIEW                                     */
+            /* ============================================================= */
+            <div className="py-8 px-4 text-center max-w-md mx-auto space-y-5 animate-in zoom-in-95">
+              <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_25px_rgba(16,185,129,0.3)]">
+                <CheckCircle2 className="w-8 h-8" />
               </div>
+
               <div>
-                <h3 className="text-2xl font-black text-white">
-                  {language === 'km' ? 'បញ្ចូលលុយជោគជ័យ!' : 'Top-Up Successful!'}
+                <h3 className="text-lg font-black text-white">
+                  {language === 'km' ? 'ការបញ្ចូលលុយបានជោគជ័យ ១០០%!' : 'Reload Dispatched Successfully!'}
                 </h3>
-                <p className="text-xs text-neutral-300 mt-1">
-                  {currentPkg.name} {language === 'km' ? 'ត្រូវបានបញ្ចូលទៅកាន់គណនីរបស់អ្នករួចរាល់' : 'credited to your account'}.
+                <p className="text-xs text-neutral-400 mt-1 leading-relaxed">
+                  {currentPkg.name} {language === 'km' ? 'ត្រូវបានបញ្ចូលទៅក្នុងគណនីរួចរាល់' : 'has been delivered to player account'}:{' '}
+                  <strong className="text-white">{verifiedNick || 'Player'}</strong>.
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-[#0F172E] border border-white/[0.08] text-left text-xs font-mono space-y-1.5">
-                <div className="flex justify-between text-neutral-400 text-[10px]">
-                  <span>ORDER NUMBER:</span>
-                  <span className="text-white font-bold">{activeOrderNumber}</span>
+              {/* Transaction Summary Card */}
+              <div className="bg-[#121B32] rounded-2xl p-4 border border-white/[0.08] text-xs space-y-2 text-left font-mono">
+                <div className="flex justify-between">
+                  <span className="text-neutral-400">Order ID:</span>
+                  <span className="text-[#E5B55E] font-bold">#{activeOrderNumber}</span>
                 </div>
-                <div className="flex justify-between text-neutral-400 text-[10px]">
-                  <span>AMOUNT PAID:</span>
-                  <span className="text-emerald-400 font-bold">${priceUSD.toFixed(2)}</span>
+                <div className="flex justify-between">
+                  <span className="text-neutral-400">Game:</span>
+                  <span className="text-white">{selectedGame.name}</span>
                 </div>
-                <div className="flex justify-between text-neutral-400 text-[10px]">
-                  <span>DELIVERY SPEED:</span>
-                  <span className="text-emerald-400 font-bold">&lt; 3 SECONDS (INJECTED)</span>
+                <div className="flex justify-between">
+                  <span className="text-neutral-400">Package:</span>
+                  <span className="text-white">{currentPkg.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-neutral-400">Paid:</span>
+                  <span className="text-emerald-400 font-bold">${priceUSD.toFixed(2)} ({priceKHR.toLocaleString()} ៛)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-neutral-400">Gateway:</span>
+                  <span className="text-neutral-300">Bakong KHQR (0% Surcharge)</span>
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={closeTopUp}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 text-white font-bold text-xs uppercase tracking-wider cursor-pointer shadow-lg active:scale-95 transition-all"
-              >
-                {language === 'km' ? 'បិទផ្ទាំង' : 'Close'}
-              </button>
+              <div className="flex items-center justify-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={closeTopUp}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#E5B55E] to-[#C49740] text-black font-extrabold text-xs uppercase tracking-wider hover:brightness-110 transition-all cursor-pointer shadow-lg"
+                >
+                  {language === 'km' ? 'រួចរាល់' : 'Done'}
+                </button>
+              </div>
             </div>
           ) : (
-            /* 1-SCREEN WORKFLOW (No multiple steps!) */
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            /* ============================================================= */
+            /* SPLIT COCKPIT: LEFT (FORM & PKGS) + RIGHT (INSTANT KHQR BILL)  */
+            /* ============================================================= */
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               
               {/* ============================================================= */}
-              {/* LEFT COLUMN (7 COLS): USER ID + PACKAGE SELECTOR              */}
+              {/* LEFT COLUMN (7 COLS): USER CREDENTIALS & PACKAGE SELECTION    */}
               {/* ============================================================= */}
-              <div className="lg:col-span-7 space-y-4">
+              <div className="lg:col-span-7 space-y-5">
                 
-                {/* 1. User ID Input Row */}
-                <div className="p-3.5 rounded-2xl bg-[#0B1020] border border-white/[0.08] space-y-2">
+                {/* 1. Account Details Input */}
+                <div className="bg-[#0E162B] rounded-2xl border border-white/[0.08] p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#E5B55E]" />
-                      <span>{language === 'km' ? 'លេខសម្គាល់គណនី (User ID)' : 'Account ID'}</span>
-                    </label>
+                      <span>{language === 'km' ? 'ព័ត៌មានគណនីហ្គេម' : 'Player In-Game ID'}</span>
+                    </span>
                     <button
                       type="button"
                       onClick={() => setShowGuide(!showGuide)}
-                      className="text-[11px] text-[#E5B55E] hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-[10px] text-[#E5B55E] hover:underline flex items-center gap-1 cursor-pointer font-mono"
                     >
-                      <HelpCircle className="w-3.5 h-3.5" />
-                      <span>{t.checkout.whereIsMyId}</span>
+                      <HelpCircle className="w-3 h-3" />
+                      <span>{language === 'km' ? 'របៀបរក ID' : 'Where is my ID?'}</span>
                     </button>
                   </div>
 
                   {showGuide && (
-                    <div className="p-2.5 rounded-xl bg-[#121A30] border border-cyan-400/30 text-[11px] text-neutral-300 animate-in fade-in">
-                      <p className="font-bold text-cyan-300">
-                        {language === 'km' ? selectedGame.guideTitleKh : selectedGame.guideTitle}
-                      </p>
-                      <p className="text-neutral-400 mt-0.5">
-                        {language === 'km' ? selectedGame.guideDescriptionKh : selectedGame.guideDescription}
-                      </p>
+                    <div className="p-3 rounded-xl bg-[#121B32] border border-cyan-500/30 text-[11px] text-cyan-300 leading-relaxed animate-in fade-in">
+                      💡 {language === 'km'
+                        ? 'បើកហ្គេមរបស់អ្នក ចុចលើ Avatar Profile នៅជ្រុងខាងឆ្វេងលើ ដើម្បីចម្លងលេខសម្គាល់គណនី (User ID & Zone ID)។'
+                        : 'Open the game and tap your avatar on top-left to copy your public User ID & Zone ID.'}
                     </div>
                   )}
 
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={accountValues['userId'] || accountValues['playerId'] || Object.values(accountValues)[0] || ''}
-                      onChange={(e) => {
-                        const key = selectedGame.accountFields[0]?.id || 'userId';
-                        handleInputChange(key, e.target.value);
-                      }}
-                      placeholder={selectedGame.id === 'free-fire' ? 'Enter Player UID' : 'User ID (e.g. 12345678)'}
-                      className="flex-1 bg-black/50 border border-white/[0.14] focus:border-[#E5B55E] rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none transition-all font-mono shadow-inner"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {selectedGame.accountFields.map((field) => (
+                      <div key={field.id} className="space-y-1">
+                        <label className="text-[11px] font-mono text-neutral-400 block">
+                          {language === 'km' ? field.labelKh : field.label}
+                          {field.required && <span className="text-red-400 ml-1">*</span>}
+                        </label>
+                        {field.type === 'select' && field.options ? (
+                          <select
+                            value={accountValues[field.id] || ''}
+                            onChange={(e) => handleInputChange(field.id, e.target.value)}
+                            className="w-full bg-[#070D1B] border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#E5B55E] transition-all"
+                          >
+                            {field.options.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type={field.type}
+                            value={accountValues[field.id] || ''}
+                            onChange={(e) => handleInputChange(field.id, e.target.value)}
+                            placeholder={field.placeholder || ''}
+                            className="w-full bg-[#070D1B] border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#E5B55E] transition-all font-mono"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
 
-                    {selectedGame.accountFields.length > 1 && (
-                      <input
-                        type="text"
-                        value={accountValues['zoneId'] || ''}
-                        onChange={(e) => handleInputChange('zoneId', e.target.value)}
-                        placeholder="Zone (2001)"
-                        className="w-24 bg-black/50 border border-white/[0.14] focus:border-[#E5B55E] rounded-xl px-2.5 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none transition-all font-mono shadow-inner"
-                      />
-                    )}
-
+                  {/* Nickname Verification Trigger */}
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-[10px] text-neutral-400">
+                      {language === 'km' ? 'ផ្ទៀងផ្ទាត់ឈ្មោះមុនបង់ប្រាក់:' : 'Validate username:'}
+                    </span>
                     <button
                       type="button"
                       onClick={handleVerify}
                       disabled={isVerifying}
-                      className="px-3 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] border border-white/[0.14] text-white font-bold text-xs flex items-center gap-1 transition-all cursor-pointer shrink-0"
+                      className="px-3 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-xs font-mono font-bold text-white flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
                     >
                       {isVerifying ? (
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <RefreshCw className="w-3 h-3 animate-spin text-[#E5B55E]" />
                       ) : (
-                        <ShieldCheck className="w-3.5 h-3.5 text-[#E5B55E]" />
+                        <ShieldCheck className="w-3 h-3 text-emerald-400" />
                       )}
                       <span>{isVerifying ? '...' : language === 'km' ? 'ផ្ទៀងផ្ទាត់' : 'Verify'}</span>
                     </button>
@@ -439,12 +457,13 @@ export default function TopUpModal() {
                     </p>
                   </div>
 
-                  {/* Pure Clean Sharp QR Code (NO dark emblem blocking center!) */}
-                  <div className="p-2 rounded-xl bg-neutral-50 border border-neutral-200 inline-block max-w-[180px] mx-auto shadow-inner">
-                    <img
-                      src={realTimeQRUrl}
-                      alt="Bakong KHQR"
-                      className="w-full h-full object-contain"
+                  {/* Pure Clean Sharp QR Code */}
+                  <div className="p-2 rounded-xl bg-white border border-neutral-200 inline-block max-w-[170px] mx-auto shadow-inner">
+                    <QRCodeSVG
+                      value={khqrString}
+                      size={150}
+                      level="M"
+                      className="w-full h-full"
                     />
                   </div>
 
@@ -478,21 +497,23 @@ export default function TopUpModal() {
                     <span>•</span>
                     <span>Canadia</span>
                     <span>•</span>
-                    <span className="font-bold text-neutral-700">Bakong 60+ Apps</span>
+                    <span>Bakong</span>
                   </div>
                 </div>
 
-                {/* Real-time Countdown & Instruction */}
-                <div className="mt-3 flex items-center justify-between text-[11px] text-neutral-400 px-1 font-mono">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-amber-400 animate-spin" />
-                    <span>Expires: {formatCountdown(countdown)}</span>
-                  </span>
-                  <span className="text-emerald-400 font-bold">0% FEE KHQR</span>
-                </div>
+                {/* Bottom Control Controls */}
+                <div className="mt-4 space-y-2.5">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400 px-1">
+                    <span className="flex items-center gap-1 text-emerald-400 font-bold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>{language === 'km' ? '0% សេវា' : '0% Fee'}</span>
+                    </span>
+                    <span className="flex items-center gap-1 text-cyan-400">
+                      <Clock className="w-3 h-3" />
+                      <span>{timeFormatted}</span>
+                    </span>
+                  </div>
 
-                {/* Instant Actions & Test Simulation */}
-                <div className="mt-2.5 space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
@@ -545,4 +566,10 @@ export default function TopUpModal() {
       </div>
     </div>
   );
+}
+
+export default function TopUpModal() {
+  const { isTopUpOpen, selectedGame } = useApp();
+  if (!isTopUpOpen || !selectedGame) return null;
+  return <TopUpModalContent key={selectedGame.id} selectedGame={selectedGame} />;
 }

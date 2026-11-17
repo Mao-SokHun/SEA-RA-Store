@@ -96,9 +96,8 @@ export default function AdminDashboardPage() {
   const [staffRole, setStaffRole] = useState<'super_admin' | 'operator'>('super_admin');
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<
-    'overview' | 'bakong' | 'stock' | 'pricing' | 'promos' | 'announcements' | 'smileone'
-  >('overview');
+  type AdminTab = 'overview' | 'bakong' | 'stock' | 'pricing' | 'promos' | 'announcements' | 'smileone';
+  const [activeTab, setActiveTab] = useState<AdminTab>('overview');
 
   // Revenue Currency Toggle
   const [revCurrency, setRevCurrency] = useState<'USD' | 'KHR'>('USD');
@@ -282,9 +281,23 @@ export default function AdminDashboardPage() {
   // ===========================================================================
   // 2. BAKONG KHQR RECONCILIATION ENGINE
   // ===========================================================================
+  interface BakongReconcileResult {
+    hash: string;
+    md5: string;
+    merchantName: string;
+    accountUSD: string;
+    accountKHR: string;
+    amountUSD: number;
+    amountKHR: number;
+    payerBank: string;
+    payerName: string;
+    settlementStatus: string;
+    timestamp: string;
+    matchedOrder: string;
+  }
   const [reconcileHash, setReconcileHash] = useState('');
   const [isReconciling, setIsReconciling] = useState(false);
-  const [reconcileResult, setReconcileResult] = useState<any | null>(null);
+  const [reconcileResult, setReconcileResult] = useState<BakongReconcileResult | null>(null);
 
   const handleCheckBakong = () => {
     if (!reconcileHash.trim()) return;
@@ -724,30 +737,33 @@ export default function AdminDashboardPage() {
 
   // Check Local Auth Session & Storage on Mount
   useEffect(() => {
-    const savedAuth = localStorage.getItem('seara_admin_auth');
-    if (savedAuth === 'true') {
-      setIsAuthenticated(true);
-    }
-    const savedPricing = localStorage.getItem('seara_pricing_overrides');
-    if (savedPricing) {
-      try {
-        setPackagesPricing(JSON.parse(savedPricing));
-      } catch (e) {
-        console.error(e);
+    const timer = setTimeout(() => {
+      const savedAuth = localStorage.getItem('seara_admin_auth');
+      if (savedAuth === 'true') {
+        setIsAuthenticated(true);
       }
-    }
-    const savedAnnouncement = localStorage.getItem('seara_site_announcement');
-    if (savedAnnouncement) {
-      try {
-        const parsed = JSON.parse(savedAnnouncement);
-        setAnnouncementActive(parsed.isActive);
-        setAnnouncementType(parsed.type);
-        setAnnouncementKh(parsed.messageKh);
-        setAnnouncementEn(parsed.messageEn);
-      } catch (e) {
-        console.error(e);
+      const savedPricing = localStorage.getItem('seara_pricing_overrides');
+      if (savedPricing) {
+        try {
+          setPackagesPricing(JSON.parse(savedPricing));
+        } catch (e) {
+          console.error(e);
+        }
       }
-    }
+      const savedAnnouncement = localStorage.getItem('seara_site_announcement');
+      if (savedAnnouncement) {
+        try {
+          const parsed = JSON.parse(savedAnnouncement);
+          setAnnouncementActive(parsed.isActive);
+          setAnnouncementType(parsed.type);
+          setAnnouncementKh(parsed.messageKh);
+          setAnnouncementEn(parsed.messageEn);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -1174,22 +1190,24 @@ export default function AdminDashboardPage() {
       {/* 7 MASTER NAVIGATION TABS                                            */}
       {/* =================================================================== */}
       <div className="flex items-center gap-2 border-b border-white/[0.08] pb-1 overflow-x-auto">
-        {[
-          { id: 'overview', labelKh: 'បញ្ជី Orders & ដោះស្រាយ', labelEn: 'Live Orders & Resolver', icon: Receipt },
-          { id: 'bakong', labelKh: 'ផ្ទៀងផ្ទាត់ Bakong', labelEn: 'Bakong Reconciler', icon: CreditCard },
-          { id: 'stock', labelKh: 'ឃ្លាំងកូដកាត PIN', labelEn: 'Gift Card PIN Vault', icon: Ticket },
-          { id: 'pricing', labelKh: 'កែប្រែតម្លៃ & Margins', labelEn: 'Pricing & Margins', icon: Gamepad2 },
-          { id: 'promos', labelKh: 'គ្រប់គ្រង Promo Codes', labelEn: 'Promo Matrix', icon: Tag },
-          { id: 'announcements', labelKh: 'ផ្សាយដំណឹងលើ Web', labelEn: 'Site Notice Bar', icon: Megaphone },
-          { id: 'smileone', labelKh: 'Smile.One & Staff', labelEn: 'Smile.One & Roles', icon: Server },
-        ].map((tab) => {
+        {(
+          [
+            { id: 'overview', labelKh: 'បញ្ជី Orders & ដោះស្រាយ', labelEn: 'Live Orders & Resolver', icon: Receipt },
+            { id: 'bakong', labelKh: 'ផ្ទៀងផ្ទាត់ Bakong', labelEn: 'Bakong Reconciler', icon: CreditCard },
+            { id: 'stock', labelKh: 'ឃ្លាំងកូដកាត PIN', labelEn: 'Gift Card PIN Vault', icon: Ticket },
+            { id: 'pricing', labelKh: 'កែប្រែតម្លៃ & Margins', labelEn: 'Pricing & Margins', icon: Gamepad2 },
+            { id: 'promos', labelKh: 'គ្រប់គ្រង Promo Codes', labelEn: 'Promo Matrix', icon: Tag },
+            { id: 'announcements', labelKh: 'ផ្សាយដំណឹងលើ Web', labelEn: 'Site Notice Bar', icon: Megaphone },
+            { id: 'smileone', labelKh: 'Smile.One & Staff', labelEn: 'Smile.One & Roles', icon: Server },
+          ] as const
+        ).map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               type="button"
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id)}
               style={{
                 clipPath: 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)',
               }}
@@ -1918,16 +1936,18 @@ export default function AdminDashboardPage() {
             <div className="space-y-2">
               <label className="text-xs font-mono text-neutral-400">Alert Color & Style:</label>
               <div className="flex flex-wrap items-center gap-3">
-                {[
-                  { id: 'info', label: 'Cyan Info (General News)', color: 'border-cyan-400 bg-cyan-500/15 text-cyan-300' },
-                  { id: 'warning', label: 'Amber Warning (Game Maintenance)', color: 'border-amber-400 bg-amber-500/15 text-amber-300' },
-                  { id: 'danger', label: 'Red Alert (Urgent Notice)', color: 'border-red-400 bg-red-500/15 text-red-300' },
-                  { id: 'success', label: 'Emerald Promo (Special Deal)', color: 'border-emerald-400 bg-emerald-500/15 text-emerald-300' },
-                ].map((t) => (
+                {(
+                  [
+                    { id: 'info', label: 'Cyan Info (General News)', color: 'border-cyan-400 bg-cyan-500/15 text-cyan-300' },
+                    { id: 'warning', label: 'Amber Warning (Game Maintenance)', color: 'border-amber-400 bg-amber-500/15 text-amber-300' },
+                    { id: 'danger', label: 'Red Alert (Urgent Notice)', color: 'border-red-400 bg-red-500/15 text-red-300' },
+                    { id: 'success', label: 'Emerald Promo (Special Deal)', color: 'border-emerald-400 bg-emerald-500/15 text-emerald-300' },
+                  ] as const
+                ).map((t) => (
                   <button
                     key={t.id}
                     type="button"
-                    onClick={() => setAnnouncementType(t.id as any)}
+                    onClick={() => setAnnouncementType(t.id)}
                     className={`px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer ${
                       announcementType === t.id ? t.color + ' shadow-md' : 'border-white/10 text-neutral-500'
                     }`}

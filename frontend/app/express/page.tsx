@@ -665,7 +665,7 @@ export default function ExpressTopUpPage() {
                   </div>
 
                   {/* Currency Switcher */}
-                  <div className="flex items-center bg-[#10182C] p-0.5 rounded-md border border-white/10 text-[9px] font-mono shrink-0">
+                  <div className="notranslate flex items-center bg-[#10182C] p-0.5 rounded-md border border-white/10 text-[9px] font-mono shrink-0" translate="no">
                     <button
                       type="button"
                       onClick={() => setBillCurrency('USD')}
@@ -826,7 +826,7 @@ export default function ExpressTopUpPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center bg-[#10182C] p-0.5 rounded-md border border-white/10 text-[9px] font-mono shrink-0">
+                  <div className="notranslate flex items-center bg-[#10182C] p-0.5 rounded-md border border-white/10 text-[9px] font-mono shrink-0" translate="no">
                     <button
                       type="button"
                       onClick={() => setBillCurrency('USD')}
@@ -922,8 +922,8 @@ export default function ExpressTopUpPage() {
             <span className="text-[10px] font-mono text-neutral-400 block truncate">
               {activeGame.name} • {selectedPkg.name}
             </span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-base font-black font-mono text-[#FFE082]">
+            <div className="flex items-baseline gap-1.5" translate="no">
+              <span translate="no" className="notranslate text-base font-black font-mono text-[#FFE082]">
                 {billCurrency === 'USD' ? `$${finalPriceUSD.toFixed(2)}` : `${finalPriceKHR.toLocaleString()} ៛`}
               </span>
               <span className="text-[9px] font-mono text-emerald-400 font-bold">

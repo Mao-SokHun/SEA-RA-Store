@@ -714,8 +714,8 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
                   </div>
 
                   {/* Compact Currency Switcher ($ USD / ៛ KHR) + Timer */}
-                  <div className="flex items-center gap-2">
-                    <div className="flex p-0.5 rounded-lg bg-black/60 border border-white/10 text-[10px] font-mono font-bold">
+                  <div className="flex items-center gap-2" translate="no">
+                    <div className="notranslate flex p-0.5 rounded-lg bg-black/60 border border-white/10 text-[10px] font-mono font-bold" translate="no">
                       <button
                         type="button"
                         onClick={() => setBillCurrency('USD')}
@@ -930,8 +930,8 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
             </div>
 
             {/* Currency Selector & Countdown Timer */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex p-0.5 rounded-lg bg-black/60 border border-white/10 text-[10px] font-mono font-bold">
+            <div className="flex items-center justify-between gap-2" translate="no">
+              <div className="notranslate flex p-0.5 rounded-lg bg-black/60 border border-white/10 text-[10px] font-mono font-bold" translate="no">
                 <button
                   type="button"
                   onClick={() => setBillCurrency('USD')}
@@ -1012,8 +1012,8 @@ export default function DedicatedTopUpClient({ game }: { game: GameItem }) {
             <span className="text-[10px] font-mono text-neutral-400 block truncate">
               {selectedPkg.name}
             </span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-base font-black font-mono text-[#FFE082]">
+            <div className="flex items-baseline gap-1.5" translate="no">
+              <span translate="no" className="notranslate text-base font-black font-mono text-[#FFE082]">
                 {billCurrency === 'USD' ? `$${discountedUSD.toFixed(2)}` : `${discountedKHR.toLocaleString()} ៛`}
               </span>
               <span className="text-[9px] font-mono text-cyan-400 font-bold">

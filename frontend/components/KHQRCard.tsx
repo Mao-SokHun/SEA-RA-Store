@@ -51,11 +51,12 @@ export default function KHQRCard({
 
   return (
     <div
+      translate="no"
       style={{
         clipPath: 'polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px))',
         filter: 'drop-shadow(0 0 24px rgba(0, 212, 255, 0.35))',
       }}
-      className={`p-[1.5px] bg-gradient-to-br from-cyan-400 via-[#FFE082] to-violet-600 max-w-[280px] sm:max-w-[300px] mx-auto select-none relative transition-all duration-300 shadow-xl ${className}`}
+      className={`notranslate p-[1.5px] bg-gradient-to-br from-cyan-400 via-[#FFE082] to-violet-600 max-w-[280px] sm:max-w-[300px] mx-auto select-none relative transition-all duration-300 shadow-xl ${className}`}
     >
       {/* 45° Corner Highlights */}
       <ChamferHighlights size={18} color="cyan" />
@@ -96,12 +97,12 @@ export default function KHQRCard({
         {/* =============================================================== */}
         {/* 2. COMPACT AMOUNT DISPLAY                                        */}
         {/* =============================================================== */}
-        <div className="px-3.5 pt-2 pb-1 flex items-center justify-between">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-2xl sm:text-3xl font-black font-mono text-[#FFE082] tracking-tight drop-shadow-[0_0_12px_rgba(255,224,130,0.35)]">
+        <div className="px-3.5 pt-2 pb-1 flex items-center justify-between" translate="no">
+          <div className="flex items-baseline gap-1.5" translate="no">
+            <span translate="no" className="notranslate text-2xl sm:text-3xl font-black font-mono text-[#FFE082] tracking-tight drop-shadow-[0_0_12px_rgba(255,224,130,0.35)]">
               {currency === 'USD' ? `$${amount.toFixed(2)}` : `${Math.round(amount).toLocaleString()} ៛`}
             </span>
-            <span className="text-[10px] font-black font-mono text-cyan-400 uppercase tracking-wider px-1 py-0.2 rounded bg-cyan-500/15 border border-cyan-400/30">
+            <span translate="no" className="notranslate text-[10px] font-black font-mono text-cyan-400 uppercase tracking-wider px-1 py-0.2 rounded bg-cyan-500/15 border border-cyan-400/30">
               {currency}
             </span>
           </div>
@@ -111,7 +112,7 @@ export default function KHQRCard({
             onClick={handleCopyOrder}
             className="text-[9px] font-mono text-neutral-400 hover:text-cyan-300 flex items-center gap-1 cursor-pointer transition-colors"
           >
-            <span>#{orderNumber}</span>
+            <span translate="no" className="notranslate">#{orderNumber}</span>
             {copied ? <Check className="w-2.5 h-2.5 text-emerald-400" /> : <Copy className="w-2.5 h-2.5" />}
           </button>
         </div>
@@ -150,8 +151,8 @@ export default function KHQRCard({
         {/* =============================================================== */}
         {/* 4. COMPACT BANKING DOCK                                          */}
         {/* =============================================================== */}
-        <div className="px-3.5 pb-2.5 pt-1 space-y-1.5">
-          <div className="flex items-center justify-center gap-1 flex-wrap">
+        <div className="px-3.5 pb-2.5 pt-1 space-y-1.5" translate="no">
+          <div className="flex items-center justify-center gap-1 flex-wrap" translate="no">
             {[
               { name: 'ABA PAY', color: 'bg-[#004B87]/30 border-[#004B87] text-[#38bdf8]' },
               { name: 'Wing', color: 'bg-[#91C73E]/20 border-[#91C73E]/50 text-[#bef264]' },
@@ -161,7 +162,8 @@ export default function KHQRCard({
             ].map((bank, idx) => (
               <span
                 key={idx}
-                className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded border ${bank.color}`}
+                translate="no"
+                className={`notranslate text-[8px] font-mono font-bold px-1.5 py-0.5 rounded border ${bank.color}`}
               >
                 {bank.name}
               </span>

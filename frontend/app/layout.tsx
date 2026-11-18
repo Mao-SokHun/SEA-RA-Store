@@ -62,8 +62,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="km" className="overflow-x-hidden max-w-full">
+    <html lang="km" translate="no" className="notranslate overflow-x-hidden max-w-full">
       <head>
+        <meta name="google" content="notranslate" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
